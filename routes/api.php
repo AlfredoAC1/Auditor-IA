@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\DocumentController;
+use App\Http\Controllers\Api\V1\DocumentParsingController;
+use App\Http\Controllers\Api\V1\DocumentAnalysisController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,4 +24,13 @@ Route::prefix('v1')
         // Document management
         Route::apiResource('documents', DocumentController::class)
             ->only(['index', 'store', 'show']);
+
+        // Document parsing (Unstructured)
+        Route::post('documents/{document}/parse', [DocumentParsingController::class, 'parse']);
+        Route::get('documents/{document}/parsed', [DocumentParsingController::class, 'show']);
+
+        // Document analysis (Groq/LLM)
+        Route::post('documents/{document}/analyze', [DocumentAnalysisController::class, 'analyze']);
+        Route::get('documents/{document}/analyses', [DocumentAnalysisController::class, 'index']);
+        Route::get('documents/{document}/analyses/{analysis}', [DocumentAnalysisController::class, 'show']);
     });

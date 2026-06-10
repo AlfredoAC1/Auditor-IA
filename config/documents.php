@@ -66,4 +66,23 @@ return [
         'max_per_page' => 100,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Unstructured API Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Settings for the Unstructured document parsing service.
+    | Used to convert PDF/DOCX into structured JSON for LLM analysis.
+    |
+    | Local: docker run -p 8000:8000 quay.io/unstructured-io/unstructured-api
+    | Cloud: https://api.unstructured.io/general/v0/general
+    |
+    */
+
+    'unstructured' => [
+        'api_url' => env('UNSTRUCTURED_API_URL', 'http://localhost:8000/general/v0/general'),
+        'api_key' => env('UNSTRUCTURED_API_KEY', ''),
+        'timeout_seconds' => (int) env('UNSTRUCTURED_TIMEOUT', 120),
+    ],
+
 ];

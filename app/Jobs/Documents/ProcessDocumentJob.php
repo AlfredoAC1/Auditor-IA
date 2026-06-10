@@ -67,25 +67,70 @@ class ProcessDocumentJob implements ShouldQueue
         try {
             $document->transitionTo(DocumentStatus::Processing);
 
-            // -------------------------------------------------------
-            // PIPELINE PLACEHOLDER
-            // Future steps will be added here:
-            //
-            // 1. Text Extraction
-            //    $text = $this->textExtractor->extract($document);
-            //
-            // 2. Chunking
-            //    $chunks = $this->chunker->chunk($text);
-            //
-            // 3. AI Analysis (Groq)
-            //    $analysis = $this->groqService->analyze($chunks);
-            //
-            // 4. Embedding Generation
-            //    $this->embeddingService->generate($document, $chunks);
-            //
-            // 5. Store Results
-            //    $document->update(['metadata' => ...]);
-            // -------------------------------------------------------
+            // 1. Text Extraction / Parsing via Unstructured
+            $parsingService = app(\App\Services\Documents\DocumentParsingService::class);
+            $parseResult = $parsingService->parse($document);
+            $compactContent = $parsingService->buildCompactContent($parseResult['elements']);
+
+            $document->update([
+                'metadata' => array_merge($document->metadata ?? [], [
+                    'parsed_elements' => $parseResult['elements'],
+                    'parsed_element_count' => $parseResult['element_count'],
+                    'parsed_estimated_tokens' => $parseResult['estimated_tokens'],
+                    'parsed_compact_content' => $compactContent,
+                    'parsed_at' => now()->toIso8601String(),
+                ]),
+            ]);
+
+            // 2. AI Analysis (Groq) - Run Full Summary by default
+            $groqService = app(\App\Services\LLM\GroqAnalysisService::class);
+            
+            try {
+                $analysisResult = $groqService->analyze(
+                    documentContent: $compactContent,
+                    analysisType: \App\Enums\AnalysisType::FullSummary,
+                    document: $document,
+                );
+
+                \App\Models\DocumentAnalysis::create([
+                    'document_id' => $document->id,
+                    'organization_id' => $document->organization_id,
+                    'requested_by' => $document->uploaded_by,
+                    'analysis_type' => \App\Enums\AnalysisType::FullSummary,
+                    'llm_provider' => $analysisResult['llm_provider'],
+                    'llm_model' => $analysisResult['llm_model'],
+                    'content' => $analysisResult['content'],
+                    'confidence_score' => match ($analysisResult['content']['nivel_confianza'] ?? null) {
+                        'alto' => 0.85,
+                        'medio' => 0.60,
+                        'bajo' => 0.35,
+                        default => null,
+                    },
+                    'input_tokens' => $analysisResult['input_tokens'],
+                    'output_tokens' => $analysisResult['output_tokens'],
+                    'processing_time_ms' => $analysisResult['processing_time_ms'],
+                    'prompt_metadata' => $analysisResult['prompt_metadata'],
+                    'status' => \App\Enums\DocumentStatus::Processed,
+                    'version' => 1,
+                ]);
+            } catch (\Throwable $llmException) {
+                Log::warning('Automatic document analysis failed, but document was parsed successfully.', [
+                    'document_id' => $document->id,
+                    'error' => $llmException->getMessage(),
+                ]);
+                // Create failed analysis entry to let the user retry manually
+                \App\Models\DocumentAnalysis::create([
+                    'document_id' => $document->id,
+                    'organization_id' => $document->organization_id,
+                    'requested_by' => $document->uploaded_by,
+                    'analysis_type' => \App\Enums\AnalysisType::FullSummary,
+                    'llm_provider' => 'groq',
+                    'llm_model' => (string) config('llm.providers.groq.model', 'llama-3.3-70b-versatile'),
+                    'content' => ['error' => $llmException->getMessage()],
+                    'status' => \App\Enums\DocumentStatus::Failed,
+                    'version' => 1,
+                ]);
+            }
 
             $document->transitionTo(DocumentStatus::Processed);
             $document->update(['processed_at' => now()]);

@@ -46,11 +46,10 @@ return new class extends Migration
 
         // Add vector column via raw SQL (pgvector)
         // Dimension 1536 matches OpenAI text-embedding-3-small
-        DB::statement('ALTER TABLE document_chunks ADD COLUMN embedding vector(1536)');
-
-        // Create HNSW index for fast approximate nearest neighbor search
-        // Scoped by organization_id for tenant-isolated similarity searches
-        DB::statement('CREATE INDEX document_chunks_embedding_idx ON document_chunks USING hnsw (embedding vector_cosine_ops)');
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE document_chunks ADD COLUMN embedding vector(1536)');
+            DB::statement('CREATE INDEX document_chunks_embedding_idx ON document_chunks USING hnsw (embedding vector_cosine_ops)');
+        }
     }
 
     /**

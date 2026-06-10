@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,17 +11,10 @@ Route::get('/', function () {
 
 Route::get('/login', function () {
     return view('login');
-});
+})->name('login');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-});
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::post('/dashboard/upload', [DashboardController::class, 'upload'])->name('dashboard.upload');
 
-Route::get('/analisis/arr-001', function () {
-    return view('analysis-detail');
-});
-
-Route::get('/analisis/arr-001/clausulas', function () {
-    return view('analysis-clauses');
-});
-
+Route::get('/analisis/{document}', [DashboardController::class, 'show'])->name('analysis.show');
+Route::get('/analisis/{document}/clausulas', [DashboardController::class, 'showClauses'])->name('analysis.clauses');

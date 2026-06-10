@@ -43,10 +43,10 @@ return new class extends Migration
         });
 
         // Add vector column via raw SQL (pgvector)
-        DB::statement('ALTER TABLE law_embeddings ADD COLUMN embedding vector(1536)');
-
-        // HNSW index for similarity search across Chilean legislation
-        DB::statement('CREATE INDEX law_embeddings_embedding_idx ON law_embeddings USING hnsw (embedding vector_cosine_ops)');
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE law_embeddings ADD COLUMN embedding vector(1536)');
+            DB::statement('CREATE INDEX law_embeddings_embedding_idx ON law_embeddings USING hnsw (embedding vector_cosine_ops)');
+        }
     }
 
     /**

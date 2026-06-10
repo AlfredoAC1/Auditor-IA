@@ -80,7 +80,9 @@ return [
     */
 
     'unstructured' => [
-        'api_url' => env('UNSTRUCTURED_API_URL', 'http://localhost:8000/general/v0/general'),
+        'api_url' => env('UNSTRUCTURED_API_URL', env('UNSTRUCTURED_API_KEY')
+            ? 'https://api.unstructuredapp.io/general/v0/general'
+            : 'http://localhost:8000/general/v0/general'),
         'api_key' => env('UNSTRUCTURED_API_KEY', ''),
         'timeout_seconds' => (int) env('UNSTRUCTURED_TIMEOUT', 120),
     ],

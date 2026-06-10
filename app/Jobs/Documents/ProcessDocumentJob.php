@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Jobs\Documents;
 
+use App\Enums\AnalysisType;
 use App\Enums\DocumentStatus;
 use App\Models\Document;
+use App\Models\DocumentAnalysis;
+use App\Services\Documents\DocumentParsingService;
+use App\Services\LLM\GroqAnalysisService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -53,9 +57,11 @@ class ProcessDocumentJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
-    {
-        $document = $this->document;
+    public function handle(
+        DocumentParsingService $parsingService,
+        GroqAnalysisService $groqService,
+    ): void {
+        $document = $this->document->fresh() ?? $this->document;
 
         Log::info('Document processing started.', [
             'document_id' => $document->id,
@@ -65,10 +71,9 @@ class ProcessDocumentJob implements ShouldQueue
         ]);
 
         try {
-            $document->transitionTo(DocumentStatus::Processing);
+            $document->beginProcessing();
 
             // 1. Text Extraction / Parsing via Unstructured
-            $parsingService = app(\App\Services\Documents\DocumentParsingService::class);
             $parseResult = $parsingService->parse($document);
             $compactContent = $parsingService->buildCompactContent($parseResult['elements']);
 
@@ -83,20 +88,18 @@ class ProcessDocumentJob implements ShouldQueue
             ]);
 
             // 2. AI Analysis (Groq) - Run Full Summary by default
-            $groqService = app(\App\Services\LLM\GroqAnalysisService::class);
-            
             try {
                 $analysisResult = $groqService->analyze(
                     documentContent: $compactContent,
-                    analysisType: \App\Enums\AnalysisType::FullSummary,
+                    analysisType: AnalysisType::FullSummary,
                     document: $document,
                 );
 
-                \App\Models\DocumentAnalysis::create([
+                DocumentAnalysis::create([
                     'document_id' => $document->id,
                     'organization_id' => $document->organization_id,
                     'requested_by' => $document->uploaded_by,
-                    'analysis_type' => \App\Enums\AnalysisType::FullSummary,
+                    'analysis_type' => AnalysisType::FullSummary,
                     'llm_provider' => $analysisResult['llm_provider'],
                     'llm_model' => $analysisResult['llm_model'],
                     'content' => $analysisResult['content'],
@@ -119,11 +122,11 @@ class ProcessDocumentJob implements ShouldQueue
                     'error' => $llmException->getMessage(),
                 ]);
                 // Create failed analysis entry to let the user retry manually
-                \App\Models\DocumentAnalysis::create([
+                DocumentAnalysis::create([
                     'document_id' => $document->id,
                     'organization_id' => $document->organization_id,
                     'requested_by' => $document->uploaded_by,
-                    'analysis_type' => \App\Enums\AnalysisType::FullSummary,
+                    'analysis_type' => AnalysisType::FullSummary,
                     'llm_provider' => 'groq',
                     'llm_model' => (string) config('llm.providers.groq.model', 'llama-3.3-70b-versatile'),
                     'content' => ['error' => $llmException->getMessage()],

@@ -1,7 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
+use App\Services\Documents\DocumentParsingService;
+use App\Services\Documents\DocumentStorageService;
+use App\Services\LLM\GroqAnalysisService;
+use App\Services\System\ExternalServiceHealthService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -14,7 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(DocumentStorageService::class);
+        $this->app->singleton(DocumentParsingService::class);
+        $this->app->singleton(GroqAnalysisService::class);
+        $this->app->singleton(ExternalServiceHealthService::class);
     }
 
     /**

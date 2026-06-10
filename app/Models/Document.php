@@ -145,6 +145,24 @@ class Document extends Model
     }
 
     /**
+     * Move the document into processing, including queue retries from failed state.
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function beginProcessing(): void
+    {
+        if ($this->status === DocumentStatus::Processing) {
+            return;
+        }
+
+        if ($this->status === DocumentStatus::Failed) {
+            $this->transitionTo(DocumentStatus::Pending);
+        }
+
+        $this->transitionTo(DocumentStatus::Processing);
+    }
+
+    /**
      * Get the full storage path for the document file.
      */
     public function fullStoragePath(): string

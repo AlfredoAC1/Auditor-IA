@@ -57,9 +57,9 @@ class DocumentParsingControllerTest extends TestCase
 
         Storage::disk('local')->put($document->fullStoragePath(), 'Fake PDF Content');
 
-        // Mock Unstructured API response
+        // Mock Unstructured API response (local or cloud URL)
         Http::fake([
-            'http://localhost:8000/*' => Http::response([
+            config('documents.unstructured.api_url') => Http::response([
                 [
                     'type' => 'Title',
                     'element_id' => 'elem1',

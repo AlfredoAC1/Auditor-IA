@@ -33,6 +33,9 @@
             </a>
 
             <nav class="flex items-center gap-3">
+                <a href="{{ route('landing') }}#planes" class="hidden sm:inline-flex px-4 py-2 rounded-xl text-[13px] font-medium text-zinc-400 hover:text-white transition-colors">
+                    Planes
+                </a>
                 <a href="{{ route('login') }}" class="px-4 py-2 rounded-xl text-[13px] font-medium text-zinc-400 hover:text-white transition-colors">
                     Iniciar sesión
                 </a>

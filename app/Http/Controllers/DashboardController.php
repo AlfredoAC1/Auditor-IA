@@ -107,11 +107,40 @@ class DashboardController extends Controller
 
         $avgTime = $timeCount > 0 ? number_format(($totalTimeMs / $timeCount) / 1000, 1) : '--';
 
+        $planSlug = config('billing.default_plan', 'free');
+        $activePlan = $user->organization?->activePlan();
+        if ($activePlan !== null) {
+            $planSlug = $activePlan->slug;
+        }
+
+        $planConfig = (array) config("billing.plans.{$planSlug}", config('billing.plans.free', []));
+
+        $periodStart = now()->startOfMonth();
+
+        $documentsThisMonth = Document::query()
+            ->where('organization_id', $user->organization_id)
+            ->where('created_at', '>=', $periodStart)
+            ->count();
+
+        $analysesThisMonth = DocumentAnalysis::query()
+            ->where('organization_id', $user->organization_id)
+            ->where('created_at', '>=', $periodStart)
+            ->count();
+
+        $storageUsedBytes = (int) Document::query()
+            ->where('organization_id', $user->organization_id)
+            ->sum('file_size_bytes');
+
         return view('dashboard', compact(
             'documents',
             'analyzedCount',
             'riskCount',
-            'avgTime'
+            'avgTime',
+            'planSlug',
+            'planConfig',
+            'documentsThisMonth',
+            'analysesThisMonth',
+            'storageUsedBytes',
         ));
     }
 

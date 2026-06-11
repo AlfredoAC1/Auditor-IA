@@ -49,13 +49,13 @@
                 Lorebook
             </a>
 
-            <!-- Plan Pro Link -->
-            <a href="#" 
+            <!-- Plans Link -->
+            <a href="{{ route('landing') }}#planes"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50 transition-all duration-200">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.907c.961 0 1.36 1.246.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.773-.564-.373-1.81.588-1.81h4.907a1 1 0 00.95-.69l1.519-4.674z" />
                 </svg>
-                Plan Pro
+                Planes
             </a>
         </nav>
 
@@ -98,7 +98,15 @@
                 </div>
                 <div class="flex flex-col">
                     <span class="text-[13px] font-semibold text-zinc-200">{{ auth()->user()->name }}</span>
-                    <span class="text-[11px] text-zinc-500">Plan gratuito</span>
+                    @php
+                        $sidebarPlanSlug = config('billing.default_plan', 'free');
+                        $sidebarActivePlan = auth()->user()->organization?->activePlan();
+                        if ($sidebarActivePlan !== null) {
+                            $sidebarPlanSlug = $sidebarActivePlan->slug;
+                        }
+                        $sidebarPlanName = config("billing.plans.{$sidebarPlanSlug}.name", 'Free');
+                    @endphp
+                    <span class="text-[11px] text-zinc-500">Plan {{ $sidebarPlanName }}</span>
                 </div>
             </div>
         @else

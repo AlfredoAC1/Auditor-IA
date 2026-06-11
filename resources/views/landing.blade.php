@@ -32,14 +32,14 @@
             <a href="{{ route('login') }}" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-[15px] font-bold text-white shadow-lg shadow-violet-500/20 transition-all">
                 Analizar mi primer contrato
             </a>
-            <a href="#como-funciona" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-transparent border border-zinc-700/60 hover:bg-zinc-800/30 text-[15px] font-medium text-zinc-300 transition-all">
-                Ver cómo funciona
+            <a href="#planes" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-transparent border border-zinc-700/60 hover:bg-zinc-800/30 text-[15px] font-medium text-zinc-300 transition-all">
+                Ver planes
             </a>
         </div>
     </section>
 
-    {{-- Features placeholder --}}
-    <section id="como-funciona" class="relative max-w-6xl mx-auto px-6 pb-24">
+    {{-- How it works --}}
+    <section id="como-funciona" class="relative max-w-6xl mx-auto px-6 pb-24 scroll-mt-24">
         <div class="text-center mb-12">
             <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mb-3">Cómo funciona</h2>
             <p class="text-zinc-400 text-[15px]">Tres pasos para entender cualquier documento legal</p>
@@ -60,18 +60,26 @@
         </div>
     </section>
 
-    {{-- CTA placeholder --}}
+    {{-- Pricing --}}
+    <x-pricing-section />
+
+    {{-- Final CTA --}}
     <section class="relative max-w-6xl mx-auto px-6 pb-24">
         <div class="bg-[#161616] border border-zinc-800/60 rounded-3xl p-10 md:p-14 text-center">
             <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mb-4">
                 Protege tus decisiones legales
             </h2>
             <p class="text-zinc-400 text-[15px] max-w-xl mx-auto mb-8">
-                Esta es una vista preliminar. Próximamente: planes, registro y más tipos de análisis.
+                Comienza gratis con 3 documentos al mes. Escala a Pro o Lifetime cuando necesites más capacidad.
             </p>
-            <a href="{{ route('login') }}" class="inline-flex px-8 py-4 rounded-xl bg-[#1d1d1d] hover:bg-[#262626] border border-zinc-800 hover:border-zinc-700 text-[15px] font-bold text-white transition-all">
-                Ir al panel de prueba
-            </a>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="{{ route('login') }}" class="inline-flex px-8 py-4 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-[15px] font-bold text-white shadow-lg shadow-violet-500/20 transition-all">
+                    Crear cuenta gratis
+                </a>
+                <a href="{{ route('dashboard') }}" class="inline-flex px-8 py-4 rounded-xl bg-[#1d1d1d] hover:bg-[#262626] border border-zinc-800 hover:border-zinc-700 text-[15px] font-bold text-white transition-all">
+                    Ir al panel
+                </a>
+            </div>
         </div>
     </section>
 

@@ -47,6 +47,18 @@
         </div>
     @endif
 
+    <!-- Plan usage -->
+    <x-plan-usage-card
+        :plan-name="$planConfig['name'] ?? 'Free'"
+        :plan-slug="$planSlug"
+        :documents-used="$documentsThisMonth"
+        :documents-limit="$planConfig['max_documents_per_month'] ?? null"
+        :analyses-used="$analysesThisMonth"
+        :analyses-limit="$planConfig['max_analyses_per_month'] ?? null"
+        :storage-used-bytes="$storageUsedBytes"
+        :storage-limit-bytes="$planConfig['max_storage_bytes'] ?? null"
+    />
+
     <!-- Metrics Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <!-- Metric 1 -->

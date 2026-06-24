@@ -137,4 +137,35 @@ class Organization extends Model
     {
         return $this->activeSubscription?->plan;
     }
+
+    /**
+     * Resolve the effective plan for this organization.
+     */
+    public function currentPlan(): Plan
+    {
+        $plan = $this->activePlan();
+
+        if ($plan !== null) {
+            return $plan;
+        }
+
+        return Plan::freePlan()
+            ?? Plan::query()->where('slug', config('billing.default_plan', 'free'))->firstOrFail();
+    }
+
+    /**
+     * Get the slug of the organization's current plan.
+     */
+    public function currentPlanSlug(): string
+    {
+        return $this->currentPlan()->slug;
+    }
+
+    /**
+     * Determine if the organization has Pro-level access (Pro or Lifetime).
+     */
+    public function hasProAccess(): bool
+    {
+        return in_array($this->currentPlanSlug(), ['pro', 'lifetime'], true);
+    }
 }

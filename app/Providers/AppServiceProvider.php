@@ -24,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(DocumentParsingService::class);
         $this->app->singleton(GroqAnalysisService::class);
         $this->app->singleton(ExternalServiceHealthService::class);
+        $this->app->singleton(\App\Services\Documents\DocumentProcessingDispatcher::class);
+        $this->app->singleton(\App\Services\Dashboard\DashboardMetricsService::class);
     }
 
     /**

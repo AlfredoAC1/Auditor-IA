@@ -1,0 +1,135 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services\Dashboard;
+
+use App\Enums\AnalysisType;
+use App\Enums\DocumentStatus;
+use App\Models\Document;
+use App\Models\DocumentAnalysis;
+use App\Models\Organization;
+use App\Models\User;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+
+final class DashboardMetricsService
+{
+    /**
+     * @return array{
+     *     documents: Collection<int, Document>,
+     *     analyzedCount: int,
+     *     riskCount: int,
+     *     avgTime: string,
+     *     planSlug: string,
+     *     planConfig: array<string, mixed>,
+     *     documentsThisMonth: int,
+     *     analysesThisMonth: int,
+     *     storageUsedBytes: int,
+     *     tokensThisMonth: int,
+     *     analysisTypeCounts: array<string, int>,
+     *     pendingDocumentIds: list<string>,
+     * }
+     */
+    public function forOrganization(User $user): array
+    {
+        $organizationId = (int) $user->organization_id;
+
+        $documents = Document::query()
+            ->where('organization_id', $organizationId)
+            ->with('uploader:id,name')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $analyzedCount = $documents->where('status', DocumentStatus::Processed)->count();
+
+        $riskCount = 0;
+        $totalTimeMs = 0;
+        $timeCount = 0;
+
+        foreach ($documents as $doc) {
+            $latestAnalysis = DocumentAnalysis::query()
+                ->where('document_id', $doc->id)
+                ->where('status', DocumentStatus::Processed)
+                ->orderByDesc('created_at')
+                ->first();
+
+            if ($latestAnalysis === null) {
+                continue;
+            }
+
+            $content = $latestAnalysis->content;
+            if (isset($content['riesgos_identificados']) && is_array($content['riesgos_identificados'])) {
+                $riskCount += count($content['riesgos_identificados']);
+            } elseif (isset($content['riesgos']) && is_array($content['riesgos'])) {
+                $riskCount += count($content['riesgos']);
+            }
+
+            if ($latestAnalysis->processing_time_ms > 0) {
+                $totalTimeMs += $latestAnalysis->processing_time_ms;
+                $timeCount++;
+            }
+        }
+
+        $avgTime = $timeCount > 0 ? number_format(($totalTimeMs / $timeCount) / 1000, 1) : '--';
+
+        $organization = $user->organization ?? Organization::find($organizationId);
+        $planSlug = $organization?->currentPlanSlug() ?? config('billing.default_plan', 'free');
+        $planConfig = (array) config("billing.plans.{$planSlug}", config('billing.plans.free', []));
+
+        $periodStart = now()->startOfMonth();
+
+        $documentsThisMonth = Document::query()
+            ->where('organization_id', $organizationId)
+            ->where('created_at', '>=', $periodStart)
+            ->count();
+
+        $analysesThisMonth = DocumentAnalysis::query()
+            ->where('organization_id', $organizationId)
+            ->where('created_at', '>=', $periodStart)
+            ->count();
+
+        $storageUsedBytes = (int) Document::query()
+            ->where('organization_id', $organizationId)
+            ->sum('file_size_bytes');
+
+        $tokensThisMonth = (int) DocumentAnalysis::query()
+            ->where('organization_id', $organizationId)
+            ->where('created_at', '>=', $periodStart)
+            ->sum(DB::raw('COALESCE(input_tokens, 0) + COALESCE(output_tokens, 0)'));
+
+        $analysisTypeCounts = DocumentAnalysis::query()
+            ->where('organization_id', $organizationId)
+            ->where('status', DocumentStatus::Processed)
+            ->where('created_at', '>=', $periodStart)
+            ->get()
+            ->groupBy(fn (DocumentAnalysis $analysis): string => $analysis->analysis_type->value)
+            ->map(fn ($group): int => $group->count())
+            ->all();
+
+        foreach (AnalysisType::cases() as $type) {
+            $analysisTypeCounts[$type->value] ??= 0;
+        }
+
+        $pendingDocumentIds = $documents
+            ->filter(fn (Document $doc): bool => in_array($doc->status, [DocumentStatus::Pending, DocumentStatus::Processing], true))
+            ->pluck('id')
+            ->values()
+            ->all();
+
+        return compact(
+            'documents',
+            'analyzedCount',
+            'riskCount',
+            'avgTime',
+            'planSlug',
+            'planConfig',
+            'documentsThisMonth',
+            'analysesThisMonth',
+            'storageUsedBytes',
+            'tokensThisMonth',
+            'analysisTypeCounts',
+            'pendingDocumentIds',
+        );
+    }
+}

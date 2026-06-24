@@ -90,4 +90,12 @@ class User extends Authenticatable
     {
         return $this->organization_id === $organizationId;
     }
+
+    /**
+     * Determine if the user's organization has Pro-level access.
+     */
+    public function hasProAccess(): bool
+    {
+        return $this->organization?->hasProAccess() ?? false;
+    }
 }

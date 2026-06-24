@@ -67,11 +67,24 @@
             </div>
 
             <!-- Form -->
-            <form action="{{ url('/dashboard') }}" method="GET" class="flex flex-col gap-5">
+            <form action="{{ route('login.store') }}" method="POST" class="flex flex-col gap-5">
+                @csrf
+                @if(session('error'))
+                    <div class="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-xl text-[13px]">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-xl px-4 py-3 text-[12px] text-zinc-500 leading-relaxed">
+                    <p class="font-semibold text-zinc-400 mb-1">Cuentas de prueba</p>
+                    <p>Free: <span class="text-zinc-300">free@auditor-ia.test</span></p>
+                    <p>Pro: <span class="text-violet-300">pro@auditor-ia.test</span></p>
+                    <p class="mt-1">Contraseña: <span class="text-zinc-300">password</span></p>
+                </div>
                 <!-- Email Field -->
                 <div class="flex flex-col gap-2">
                     <label for="email" class="text-[13px] font-semibold text-zinc-400">Correo electrónico</label>
-                    <input type="email" id="email" name="email" required placeholder="usuario@ejemplo.cl" 
+                    <input type="email" id="email" name="email" required placeholder="pro@auditor-ia.test" value="{{ old('email') }}"
                            class="w-full py-3.5 px-4 rounded-xl bg-zinc-900/40 border border-zinc-850 focus:border-violet-500/60 focus:bg-zinc-900/60 text-[14px] text-white placeholder-zinc-600 outline-none transition-all duration-200" />
                 </div>
 

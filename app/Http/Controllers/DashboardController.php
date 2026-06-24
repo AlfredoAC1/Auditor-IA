@@ -9,8 +9,9 @@ use App\DTOs\Documents\StoreDocumentDTO;
 use App\Enums\DocumentStatus;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
-use App\Models\Organization;
 use App\Models\User;
+use App\Services\Dashboard\DashboardMetricsService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,127 +22,51 @@ class DashboardController extends Controller
 {
     public function __construct(
         private readonly StoreDocumentAction $storeAction,
+        private readonly DashboardMetricsService $metricsService,
     ) {}
-
-    /**
-     * Ensure a user is authenticated (convenience for development/testing).
-     */
-    private function ensureAuthenticatedUser(): User
-    {
-        if (! Auth::check()) {
-            $user = User::first();
-            if (! $user) {
-                $org = Organization::create([
-                    'name' => 'Demo Org',
-                    'slug' => 'demo-org',
-                    'is_active' => true,
-                ]);
-                $user = User::create([
-                    'name' => 'Alfredo Águila',
-                    'email' => 'alfredo@example.com',
-                    'password' => bcrypt('password'),
-                    'organization_id' => $org->id,
-                ]);
-            }
-            Auth::login($user);
-        }
-
-        /** @var User $user */
-        $user = Auth::user();
-
-        // Ensure user is associated with an organization
-        if ($user->organization_id === null) {
-            $org = Organization::first() ?: Organization::create([
-                'name' => 'Demo Org',
-                'slug' => 'demo-org',
-                'is_active' => true,
-            ]);
-            $user->update(['organization_id' => $org->id]);
-        }
-
-        return $user;
-    }
 
     /**
      * Show the dashboard with document list and metrics.
      */
     public function index(): View
     {
-        $user = $this->ensureAuthenticatedUser();
+        /** @var User $user */
+        $user = Auth::user();
+        $metrics = $this->metricsService->forOrganization($user);
 
-        $documents = Document::query()
-            ->where('organization_id', $user->organization_id)
-            ->with('uploader:id,name')
+        $view = $user->hasProAccess() ? 'dashboard-pro' : 'dashboard';
+
+        return view($view, $metrics);
+    }
+
+    /**
+     * Poll document processing status (used by dashboard live updates).
+     */
+    public function documentStatus(Request $request, Document $document): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if ($document->organization_id !== $user->organization_id) {
+            abort(403);
+        }
+
+        $document->refresh();
+
+        $analysis = DocumentAnalysis::query()
+            ->where('document_id', $document->id)
+            ->where('status', DocumentStatus::Processed)
             ->orderByDesc('created_at')
-            ->get();
+            ->first();
 
-        $analyzedCount = $documents->where('status', DocumentStatus::Processed)->count();
-
-        // Calculate risk clauses count across all documents
-        $riskCount = 0;
-        $totalTimeMs = 0;
-        $timeCount = 0;
-
-        foreach ($documents as $doc) {
-            $latestAnalysis = DocumentAnalysis::query()
-                ->where('document_id', $doc->id)
-                ->where('status', DocumentStatus::Processed)
-                ->orderByDesc('created_at')
-                ->first();
-
-            if ($latestAnalysis) {
-                // If there's a risk assessment or summary, check for risks list
-                $content = $latestAnalysis->content;
-                if (isset($content['riesgos_identificados']) && is_array($content['riesgos_identificados'])) {
-                    $riskCount += count($content['riesgos_identificados']);
-                } elseif (isset($content['riesgos']) && is_array($content['riesgos'])) {
-                    $riskCount += count($content['riesgos']);
-                }
-
-                if ($latestAnalysis->processing_time_ms > 0) {
-                    $totalTimeMs += $latestAnalysis->processing_time_ms;
-                    $timeCount++;
-                }
-            }
-        }
-
-        $avgTime = $timeCount > 0 ? number_format(($totalTimeMs / $timeCount) / 1000, 1) : '--';
-
-        $planSlug = config('billing.default_plan', 'free');
-        $activePlan = $user->organization?->activePlan();
-        if ($activePlan !== null) {
-            $planSlug = $activePlan->slug;
-        }
-
-        $planConfig = (array) config("billing.plans.{$planSlug}", config('billing.plans.free', []));
-
-        $periodStart = now()->startOfMonth();
-
-        $documentsThisMonth = Document::query()
-            ->where('organization_id', $user->organization_id)
-            ->where('created_at', '>=', $periodStart)
-            ->count();
-
-        $analysesThisMonth = DocumentAnalysis::query()
-            ->where('organization_id', $user->organization_id)
-            ->where('created_at', '>=', $periodStart)
-            ->count();
-
-        $storageUsedBytes = (int) Document::query()
-            ->where('organization_id', $user->organization_id)
-            ->sum('file_size_bytes');
-
-        return view('dashboard', compact(
-            'documents',
-            'analyzedCount',
-            'riskCount',
-            'avgTime',
-            'planSlug',
-            'planConfig',
-            'documentsThisMonth',
-            'analysesThisMonth',
-            'storageUsedBytes',
-        ));
+        return response()->json([
+            'id' => $document->id,
+            'status' => $document->status->value,
+            'status_label' => $document->status->label(),
+            'is_terminal' => in_array($document->status, [DocumentStatus::Processed, DocumentStatus::Failed], true),
+            'analysis_url' => $analysis !== null ? route('analysis.show', $document) : null,
+            'error' => $document->metadata['last_error'] ?? null,
+        ]);
     }
 
     /**
@@ -149,9 +74,9 @@ class DashboardController extends Controller
      */
     public function show(Document $document): View
     {
-        $user = $this->ensureAuthenticatedUser();
+        /** @var User $user */
+        $user = Auth::user();
 
-        // Enforce tenant isolation
         if ($document->organization_id !== $user->organization_id) {
             abort(403, 'No tienes permiso para ver este documento.');
         }
@@ -170,7 +95,8 @@ class DashboardController extends Controller
      */
     public function showClauses(Document $document): View
     {
-        $user = $this->ensureAuthenticatedUser();
+        /** @var User $user */
+        $user = Auth::user();
 
         if ($document->organization_id !== $user->organization_id) {
             abort(403, 'No tienes permiso para ver este documento.');
@@ -190,13 +116,14 @@ class DashboardController extends Controller
      */
     public function upload(Request $request): RedirectResponse
     {
-        $user = $this->ensureAuthenticatedUser();
+        /** @var User $user */
+        $user = Auth::user();
 
         $request->validate([
             'file' => [
                 'required',
                 'file',
-                'max:51200', // 50MB
+                'max:51200',
                 'mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ],
         ], [
@@ -212,18 +139,19 @@ class DashboardController extends Controller
                 uploadedBy: (int) $user->id,
             );
 
-            // Execute the action (stores, saves to DB, dispatches job)
-            $document = $this->storeAction->execute(
+            $this->storeAction->execute(
                 dto: $dto,
                 ipAddress: $request->ip(),
+                processImmediately: true,
             );
 
-            // Since it runs in the background, we can inform the user.
-            // But if the queue is running synchronously (e.g. testing or sync driver),
-            // it will finish immediately.
+            $message = $user->hasProAccess()
+                ? 'Documento subido. Procesamiento prioritario iniciado — actualizaremos el estado en segundos.'
+                : 'Documento subido correctamente. El análisis comenzará en unos segundos.';
+
             return redirect()
                 ->route('dashboard')
-                ->with('success', 'Documento subido correctamente. El procesamiento ha comenzado en segundo plano.');
+                ->with('success', $message);
         } catch (\Throwable $exception) {
             Log::error('Web document upload failed.', [
                 'user_id' => $user->id,

@@ -7,8 +7,8 @@ namespace App\Actions\Documents;
 use App\DTOs\Documents\StoreDocumentDTO;
 use App\Enums\DocumentStatus;
 use App\Events\Documents\DocumentUploaded;
-use App\Jobs\Documents\ProcessDocumentJob;
 use App\Models\Document;
+use App\Services\Documents\DocumentProcessingDispatcher;
 use App\Services\Documents\DocumentStorageService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -29,6 +29,7 @@ final class StoreDocumentAction
 {
     public function __construct(
         private readonly DocumentStorageService $storageService,
+        private readonly DocumentProcessingDispatcher $processingDispatcher,
     ) {}
 
     /**
@@ -37,8 +38,11 @@ final class StoreDocumentAction
      * @throws \RuntimeException If file storage fails
      * @throws \Throwable If database transaction fails
      */
-    public function execute(StoreDocumentDTO $dto, ?string $ipAddress = null): Document
-    {
+    public function execute(
+        StoreDocumentDTO $dto,
+        ?string $ipAddress = null,
+        bool $processImmediately = false,
+    ): Document {
         // 1. Store file on disk
         $storageResult = $this->storageService->store($dto->file, $dto->organizationId);
 
@@ -77,8 +81,8 @@ final class StoreDocumentAction
             throw $exception;
         }
 
-        // 3. Dispatch async processing job
-        ProcessDocumentJob::dispatch($document);
+        // 3. Dispatch processing (immediate on dashboard uploads)
+        $this->processingDispatcher->dispatch($document, $processImmediately);
 
         // 4. Fire event for listeners (audit log, notifications, etc.)
         DocumentUploaded::dispatch(

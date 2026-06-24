@@ -106,9 +106,21 @@
                         }
                         $sidebarPlanName = config("billing.plans.{$sidebarPlanSlug}.name", 'Free');
                     @endphp
-                    <span class="text-[11px] text-zinc-500">Plan {{ $sidebarPlanName }}</span>
+                    <span @class([
+                        'text-[11px] font-semibold',
+                        'text-violet-400' => $sidebarPlanSlug === 'pro' || $sidebarPlanSlug === 'lifetime',
+                        'text-zinc-500' => $sidebarPlanSlug === 'free',
+                    ])>Plan {{ $sidebarPlanName }}</span>
                 </div>
             </div>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer" aria-label="Cerrar sesión" title="Cerrar sesión">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                </button>
+            </form>
         @else
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 text-[13px] font-bold">
@@ -120,10 +132,5 @@
                 </div>
             </div>
         @endif
-        <button class="text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer" aria-label="Opciones de perfil">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-        </button>
     </div>
 </aside>

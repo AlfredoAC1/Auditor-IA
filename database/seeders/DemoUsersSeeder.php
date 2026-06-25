@@ -27,6 +27,7 @@ class DemoUsersSeeder extends Seeder
         $freeOrg = Organization::updateOrCreate(
             ['slug' => 'demo-free'],
             [
+                'uuid' => (string) \Illuminate\Support\Str::uuid(),
                 'name' => 'Demo Free Org',
                 'is_active' => true,
             ],
@@ -50,6 +51,7 @@ class DemoUsersSeeder extends Seeder
         $proOrg = Organization::updateOrCreate(
             ['slug' => 'demo-pro'],
             [
+                'uuid' => (string) \Illuminate\Support\Str::uuid(),
                 'name' => 'Demo Pro Org',
                 'is_active' => true,
             ],

@@ -41,8 +41,10 @@ class Organization extends Model
     /**
      * Boot the model and auto-generate UUID on creation.
      */
-    protected static function booted(): void
+    protected static function boot(): void
     {
+        parent::boot();
+
         static::creating(function (Organization $organization): void {
             if (empty($organization->uuid)) {
                 $organization->uuid = (string) Str::uuid();

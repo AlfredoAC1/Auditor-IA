@@ -26,6 +26,7 @@ class User extends Authenticatable
         'email',
         'password',
         'organization_id',
+        'dismissed_tutorial',
     ];
 
     /**
@@ -48,6 +49,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'dismissed_tutorial' => 'boolean',
         ];
     }
 

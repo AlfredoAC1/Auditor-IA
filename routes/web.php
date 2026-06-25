@@ -25,4 +25,7 @@ Route::middleware('auth')->group(function (): void {
 
     Route::get('/analisis/{document}', [DashboardController::class, 'show'])->name('analysis.show');
     Route::get('/analisis/{document}/clausulas', [DashboardController::class, 'showClauses'])->name('analysis.clauses');
+
+    Route::post('/user/dismiss-tutorial', [\App\Http\Controllers\UserController::class, 'dismissTutorial'])
+        ->name('user.dismiss-tutorial');
 });

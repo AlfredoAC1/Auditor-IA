@@ -42,10 +42,21 @@ return new class extends Migration
             $table->index('is_current');
         });
 
-        // Add vector column via raw SQL (pgvector)
+        // Add vector column via raw SQL (pgvector) if available, otherwise fallback to json
+        $hasVector = false;
         if (DB::connection()->getDriverName() === 'pgsql') {
+            try {
+                $hasVector = DB::selectOne("SELECT 1 FROM pg_extension WHERE extname = 'vector'") !== null;
+            } catch (\Exception $e) {}
+        }
+
+        if ($hasVector) {
             DB::statement('ALTER TABLE law_embeddings ADD COLUMN embedding vector(1536)');
             DB::statement('CREATE INDEX law_embeddings_embedding_idx ON law_embeddings USING hnsw (embedding vector_cosine_ops)');
+        } else {
+            Schema::table('law_embeddings', function (Blueprint $table) {
+                $table->json('embedding')->nullable()->comment('Fallback for pgvector when not available');
+            });
         }
     }
 

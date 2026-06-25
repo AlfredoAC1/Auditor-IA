@@ -60,7 +60,7 @@
 
     <x-dashboard-upload-zone :is-pro="false" />
 
-    <section class="flex flex-col gap-4">
+    <section id="recent-analyses-container" class="flex flex-col gap-4">
         <div class="flex items-center justify-between gap-4">
             <h2 class="text-lg font-bold text-white tracking-tight">Análisis recientes</h2>
             @if(count($pendingDocumentIds) > 0)

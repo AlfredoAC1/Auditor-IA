@@ -44,11 +44,21 @@ return new class extends Migration
             $table->index('organization_id');
         });
 
-        // Add vector column via raw SQL (pgvector)
-        // Dimension 1536 matches OpenAI text-embedding-3-small
+        // Add vector column via raw SQL (pgvector) if available, otherwise fallback to json
+        $hasVector = false;
         if (DB::connection()->getDriverName() === 'pgsql') {
+            try {
+                $hasVector = DB::selectOne("SELECT 1 FROM pg_extension WHERE extname = 'vector'") !== null;
+            } catch (\Exception $e) {}
+        }
+
+        if ($hasVector) {
             DB::statement('ALTER TABLE document_chunks ADD COLUMN embedding vector(1536)');
             DB::statement('CREATE INDEX document_chunks_embedding_idx ON document_chunks USING hnsw (embedding vector_cosine_ops)');
+        } else {
+            Schema::table('document_chunks', function (Blueprint $table) {
+                $table->json('embedding')->nullable()->comment('Fallback for pgvector when not available');
+            });
         }
     }
 

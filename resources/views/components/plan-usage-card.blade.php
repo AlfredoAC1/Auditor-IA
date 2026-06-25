@@ -21,7 +21,7 @@
     $limitLabel = fn (?int $limit, string $suffix = ''): string => $limit === null ? 'Ilimitado' : number_format($limit, 0, ',', '.') . $suffix;
 @endphp
 
-<section class="bg-[#161616] border border-zinc-800/60 rounded-2xl p-6 flex flex-col gap-5">
+<section id="plan-usage-card" class="bg-[#161616] border border-zinc-800/60 rounded-2xl p-6 flex flex-col gap-5">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
             <div class="flex items-center gap-2">

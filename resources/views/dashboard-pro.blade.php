@@ -72,7 +72,7 @@
     </div>
 
     <!-- Analysis types panel (Pro exclusive) -->
-    <section class="bg-[#161616] border border-violet-500/20 rounded-2xl p-6 flex flex-col gap-5">
+    <section id="analysis-types-panel" class="bg-[#161616] border border-violet-500/20 rounded-2xl p-6 flex flex-col gap-5">
         <div class="flex flex-col gap-1">
             <h2 class="text-lg font-bold text-white">Tipos de análisis disponibles</h2>
             <p class="text-[13px] text-zinc-500">Como usuario Pro tienes acceso a todos los informes especializados.</p>
@@ -96,7 +96,7 @@
     <x-dashboard-upload-zone :is-pro="true" />
 
     <!-- Documents table -->
-    <section class="flex flex-col gap-4">
+    <section id="recent-analyses-container" class="flex flex-col gap-4">
         <div class="flex items-center justify-between gap-4">
             <h2 class="text-lg font-bold text-white tracking-tight">Análisis recientes</h2>
             @if(count($pendingDocumentIds) > 0)

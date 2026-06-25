@@ -60,7 +60,7 @@
         </nav>
 
         <!-- Recents List Section -->
-        <div class="flex flex-col gap-3">
+        <div id="sidebar-recents" class="flex flex-col gap-3">
             <span class="text-[11px] font-bold text-zinc-500 tracking-widest px-3 uppercase">Recientes</span>
             @php
                 $recentDocs = auth()->check() ? \App\Models\Document::query()

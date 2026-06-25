@@ -21,7 +21,11 @@ return new class extends Migration
     public function up(): void
     {
         if (DB::connection()->getDriverName() === 'pgsql') {
-            DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
+            try {
+                DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('pgvector extension is not available on this PostgreSQL server: ' . $e->getMessage());
+            }
         }
     }
 

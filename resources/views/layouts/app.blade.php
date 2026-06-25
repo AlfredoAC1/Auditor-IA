@@ -47,5 +47,8 @@
         @yield('content')
     </main>
 
+    <!-- Interactive onboarding guide -->
+    <x-tutorial-guide />
+
 </body>
 </html>

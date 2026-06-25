@@ -2,7 +2,7 @@
     'isPro' => false,
 ])
 
-<form action="{{ route('dashboard.upload') }}" method="POST" enctype="multipart/form-data" class="bg-[#161616]/40 border-2 border-dashed {{ $isPro ? 'border-violet-500/30 hover:border-violet-500/50' : 'border-zinc-850 hover:border-zinc-750' }} rounded-2xl p-8 md:p-12 flex flex-col items-center justify-center gap-6 transition-colors duration-300">
+<form id="upload-zone" action="{{ route('dashboard.upload') }}" method="POST" enctype="multipart/form-data" class="bg-[#161616]/40 border-2 border-dashed {{ $isPro ? 'border-violet-500/30 hover:border-violet-500/50' : 'border-zinc-850 hover:border-zinc-750' }} rounded-2xl p-8 md:p-12 flex flex-col items-center justify-center gap-6 transition-colors duration-300">
     @csrf
     <input type="file" name="file" id="file-input" class="hidden" accept=".pdf,.docx" onchange="this.form.submit()">
 

@@ -52,8 +52,11 @@
 
     <footer class="border-t border-zinc-800/60 py-8">
         <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px] text-zinc-500">
-            <p>&copy; {{ date('Y') }} Auditor-IA. Todos los derechos reservados.</p>
-            <p class="text-zinc-600">No constituye asesoría legal. Consulta siempre con un abogado.</p>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+                <p>&copy; {{ date('Y') }} Auditor-IA. Todos los derechos reservados.</p>
+                <a href="{{ route('terms') }}" class="hover:text-zinc-350 transition-colors">Términos y Condiciones</a>
+            </div>
+            <p class="text-zinc-650">No constituye asesoría legal. Consulta siempre con un abogado.</p>
         </div>
     </footer>
 

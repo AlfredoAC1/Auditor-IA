@@ -35,7 +35,7 @@ final class GroqAnalysisService implements LLMAnalysisServiceInterface
         $this->baseUrl = (string) ($config['base_url'] ?? 'https://api.groq.com/openai/v1');
         $this->maxTokens = (int) ($config['max_tokens'] ?? 4096);
         $this->temperature = (float) ($config['temperature'] ?? 0.3);
-        $this->timeoutSeconds = (int) ($config['timeout_seconds'] ?? 60);
+        $this->timeoutSeconds = (int) ($config['timeout_seconds'] ?? 180);
     }
 
     /**
@@ -61,6 +61,9 @@ final class GroqAnalysisService implements LLMAnalysisServiceInterface
         AnalysisType $analysisType,
         Document $document,
     ): array {
+        @set_time_limit(300);
+        @ini_set('max_execution_time', '300');
+
         if ($this->apiKey === '') {
             throw new \RuntimeException('Groq API key is not configured. Set GROQ_API_KEY in .env.');
         }

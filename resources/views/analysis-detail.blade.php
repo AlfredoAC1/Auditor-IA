@@ -58,6 +58,9 @@
                     <span class="text-[12px] text-zinc-500">
                         Auditado {{ $analysis->created_at->diffForHumans() }}
                     </span>
+                    <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold {{ str_contains(strtolower($analysis->llm_provider), 'nvidia') ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-violet-600/10 text-violet-400 border border-violet-500/20' }}">
+                        Motor IA: {{ str_contains(strtolower($analysis->llm_provider), 'nvidia') ? 'NVIDIA NIM' : 'Groq Cloud' }}
+                    </span>
                 </div>
             </div>
             
@@ -68,6 +71,17 @@
                     </svg>
                     Ver Cláusulas
                 </a>
+
+                <form action="{{ route('dashboard.documents.destroy', $document->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este documento y su análisis en cascada? Esta acción no se puede deshacer.');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-[13px] font-bold text-rose-400 transition-all cursor-pointer">
+                        <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Eliminar Documento
+                    </button>
+                </form>
             </div>
         </header>
 
@@ -172,8 +186,48 @@
                 </section>
             </div>
 
-            <!-- Right Column: Metadata, Parties, Recommendations -->
+            <!-- Right Column: Metadata, Provider, Parties, Recommendations -->
             <div class="flex flex-col gap-8">
+                
+                <!-- Motor de Inteligencia Artificial -->
+                <section class="bg-[#161616]/60 border {{ str_contains(strtolower($analysis->llm_provider), 'nvidia') ? 'border-emerald-500/30' : 'border-violet-500/30' }} rounded-2xl p-5 flex flex-col gap-3.5 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-[14px] font-bold text-white tracking-tight flex items-center gap-2">
+                            <svg class="w-4.5 h-4.5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            Inferencia y Motor IA
+                        </h3>
+                        @if(str_contains(strtolower($analysis->llm_provider), 'nvidia'))
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                                NVIDIA NIM
+                            </span>
+                        @else
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-violet-600/10 text-violet-400 border border-violet-500/20 uppercase tracking-wider">
+                                Groq Cloud
+                            </span>
+                        @endif
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-[12px] pt-1 border-t border-zinc-800/60">
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-zinc-500 font-medium">Proveedor</span>
+                            <span class="text-zinc-200 font-bold uppercase">{{ $analysis->llm_provider }}</span>
+                        </div>
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-zinc-500 font-medium">Modelo</span>
+                            <span class="text-zinc-200 font-semibold truncate" title="{{ $analysis->llm_model }}">{{ $analysis->llm_model }}</span>
+                        </div>
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-zinc-500 font-medium">Tiempo de Respuesta</span>
+                            <span class="text-zinc-200 font-semibold">{{ number_format($analysis->processing_time_ms / 1000, 2) }} s ({{ $analysis->processing_time_ms }} ms)</span>
+                        </div>
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-zinc-500 font-medium">Tokens Consumidos</span>
+                            <span class="text-zinc-200 font-semibold">{{ number_format($analysis->totalTokens(), 0, ',', '.') }} tokens</span>
+                        </div>
+                    </div>
+                </section>
                 
                 <!-- Diagnóstico & Abogado -->
                 @if(isset($content['requiere_abogado']) && $content['requiere_abogado'])

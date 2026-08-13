@@ -93,7 +93,9 @@
         </div>
     </section>
 
-    <x-dashboard-upload-zone :is-pro="true" />
+    <x-provider-selector :current-provider="$currentProvider" :is-pro="true" />
+
+    <x-dashboard-upload-zone :is-pro="true" :current-provider="$currentProvider" />
 
     <!-- Documents table -->
     <section id="recent-analyses-container" class="flex flex-col gap-4">

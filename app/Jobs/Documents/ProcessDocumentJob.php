@@ -59,8 +59,10 @@ class ProcessDocumentJob implements ShouldQueue
      */
     public function handle(
         DocumentParsingService $parsingService,
-        GroqAnalysisService $groqService,
     ): void {
+        @set_time_limit(300);
+        @ini_set('max_execution_time', '300');
+
         $document = $this->document->fresh() ?? $this->document;
 
         Log::info('Document processing started.', [
@@ -73,9 +75,9 @@ class ProcessDocumentJob implements ShouldQueue
         try {
             $document->beginProcessing();
 
-            // 1. Text Extraction / Parsing via Unstructured
+            // 1. Parsing & Content Extraction
             $parseResult = $parsingService->parse($document);
-            $compactContent = $parsingService->buildCompactContent($parseResult['elements']);
+            $compactContent = $parsingService->toCompactString($parseResult);
 
             $document->update([
                 'metadata' => array_merge($document->metadata ?? [], [
@@ -87,9 +89,17 @@ class ProcessDocumentJob implements ShouldQueue
                 ]),
             ]);
 
-            // 2. AI Analysis (Groq) - Run Full Summary by default
+            // 2. AI Analysis (Dynamic Provider: Groq vs NVIDIA NIM)
+            $requestedProvider = (string) ($document->metadata['llm_provider'] ?? config('llm.default_provider', 'groq'));
+
+            /** @var \App\Contracts\LLM\LLMAnalysisServiceInterface $llmService */
+            $llmService = match ($requestedProvider) {
+                'nvidia_nim', 'nvidia' => app(\App\Services\LLM\NvidiaNimAnalysisService::class),
+                default => app(\App\Services\LLM\GroqAnalysisService::class),
+            };
+
             try {
-                $analysisResult = $groqService->analyze(
+                $analysisResult = $llmService->analyze(
                     documentContent: $compactContent,
                     analysisType: AnalysisType::FullSummary,
                     document: $document,
@@ -119,6 +129,7 @@ class ProcessDocumentJob implements ShouldQueue
             } catch (\Throwable $llmException) {
                 Log::warning('Automatic document analysis failed, but document was parsed successfully.', [
                     'document_id' => $document->id,
+                    'provider' => $requestedProvider,
                     'error' => $llmException->getMessage(),
                 ]);
                 // Create failed analysis entry to let the user retry manually
@@ -127,8 +138,8 @@ class ProcessDocumentJob implements ShouldQueue
                     'organization_id' => $document->organization_id,
                     'requested_by' => $document->uploaded_by,
                     'analysis_type' => AnalysisType::FullSummary,
-                    'llm_provider' => 'groq',
-                    'llm_model' => (string) config('llm.providers.groq.model', 'llama-3.3-70b-versatile'),
+                    'llm_provider' => $requestedProvider,
+                    'llm_model' => (string) config("llm.providers.{$requestedProvider}.model", 'unknown'),
                     'content' => ['error' => $llmException->getMessage()],
                     'status' => \App\Enums\DocumentStatus::Failed,
                     'version' => 1,

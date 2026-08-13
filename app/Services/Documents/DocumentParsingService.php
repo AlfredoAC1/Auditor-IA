@@ -144,6 +144,20 @@ final class DocumentParsingService
     }
 
     /**
+     * Convert parsing result array directly to a compact string.
+     *
+     * @param  array{elements?: array<int, array<string, mixed>>}|array<int, array<string, mixed>>  $parseResult
+     */
+    public function toCompactString(array $parseResult): string
+    {
+        $elements = isset($parseResult['elements']) && is_array($parseResult['elements'])
+            ? $parseResult['elements']
+            : $parseResult;
+
+        return $this->buildCompactContent($elements);
+    }
+
+    /**
      * Call the Unstructured API with the document file.
      *
      * @return array<int, array<string, mixed>>

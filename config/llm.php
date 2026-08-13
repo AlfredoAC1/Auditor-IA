@@ -35,7 +35,7 @@ return [
             'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
             'max_tokens' => (int) env('GROQ_MAX_TOKENS', 8192),
             'temperature' => (float) env('GROQ_TEMPERATURE', 0.3),
-            'timeout_seconds' => (int) env('GROQ_TIMEOUT', 60),
+            'timeout_seconds' => (int) env('GROQ_TIMEOUT', 180),
         ],
 
         'nvidia_nim' => [
@@ -44,7 +44,7 @@ return [
             'base_url' => env('NVIDIA_NIM_BASE_URL', 'https://integrate.api.nvidia.com/v1'),
             'max_tokens' => (int) env('NVIDIA_NIM_MAX_TOKENS', 4096),
             'temperature' => (float) env('NVIDIA_NIM_TEMPERATURE', 0.3),
-            'timeout_seconds' => (int) env('NVIDIA_NIM_TIMEOUT', 90),
+            'timeout_seconds' => (int) env('NVIDIA_NIM_TIMEOUT', 180),
             'rate_limit_rpm' => (int) env('NVIDIA_NIM_RPM', 40),
         ],
 

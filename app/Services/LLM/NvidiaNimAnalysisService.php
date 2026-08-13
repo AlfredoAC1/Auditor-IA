@@ -37,7 +37,7 @@ final class NvidiaNimAnalysisService implements LLMAnalysisServiceInterface
         $this->baseUrl = (string) ($config['base_url'] ?? 'https://integrate.api.nvidia.com/v1');
         $this->maxTokens = (int) ($config['max_tokens'] ?? 4096);
         $this->temperature = (float) ($config['temperature'] ?? 0.3);
-        $this->timeoutSeconds = (int) ($config['timeout_seconds'] ?? 90);
+        $this->timeoutSeconds = (int) ($config['timeout_seconds'] ?? 180);
         $this->rateLimitRpm = (int) ($config['rate_limit_rpm'] ?? 40);
     }
 
@@ -64,6 +64,9 @@ final class NvidiaNimAnalysisService implements LLMAnalysisServiceInterface
         AnalysisType $analysisType,
         Document $document,
     ): array {
+        @set_time_limit(300);
+        @ini_set('max_execution_time', '300');
+
         if ($this->apiKey === '') {
             throw new \RuntimeException('NVIDIA NIM API key is not configured. Set NVIDIA_NIM_API_KEY in .env.');
         }

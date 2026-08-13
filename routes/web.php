@@ -24,9 +24,12 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/provider', [DashboardController::class, 'setProvider'])->name('dashboard.provider');
     Route::post('/dashboard/upload', [DashboardController::class, 'upload'])->name('dashboard.upload');
     Route::get('/dashboard/documents/{document}/status', [DashboardController::class, 'documentStatus'])
         ->name('dashboard.document.status');
+    Route::delete('/dashboard/documents/{document}', [DashboardController::class, 'destroy'])
+        ->name('dashboard.documents.destroy');
 
     Route::get('/analisis/{document}', [DashboardController::class, 'show'])->name('analysis.show');
     Route::get('/analisis/{document}/clausulas', [DashboardController::class, 'showClauses'])->name('analysis.clauses');

@@ -1,9 +1,11 @@
 @props([
     'isPro' => false,
+    'currentProvider' => 'groq',
 ])
 
 <form id="upload-zone" action="{{ route('dashboard.upload') }}" method="POST" enctype="multipart/form-data" class="bg-[#161616]/40 border-2 border-dashed {{ $isPro ? 'border-violet-500/30 hover:border-violet-500/50' : 'border-zinc-850 hover:border-zinc-750' }} rounded-2xl p-8 md:p-12 flex flex-col items-center justify-center gap-6 transition-colors duration-300">
     @csrf
+    <input type="hidden" name="llm_provider" value="{{ $currentProvider }}">
     <input type="file" name="file" id="file-input" class="hidden" accept=".pdf,.docx" onchange="this.form.submit()">
 
     <div onclick="document.getElementById('file-input').click()" class="w-14 h-14 rounded-2xl {{ $isPro ? 'bg-violet-600/20 border-violet-500/30' : 'bg-violet-600/10 border-violet-500/20' }} border flex items-center justify-center text-violet-400 shadow-inner cursor-pointer hover:bg-violet-600/20 transition-colors">
@@ -16,11 +18,7 @@
         <h2 class="text-lg font-bold text-white tracking-tight">Arrastra tu documento aquí</h2>
         <p class="text-[13px] text-zinc-400 leading-relaxed">
             PDF o DOCX · hasta 50MB · en español <br>
-            @if($isPro)
-                <span class="text-violet-300">Procesamiento prioritario · sin worker externo</span>
-            @else
-                <span class="text-zinc-500">El análisis comienza automáticamente al subir</span>
-            @endif
+            <span class="text-xs text-zinc-400">Procesando con proveedor: <strong class="{{ $currentProvider === 'nvidia_nim' ? 'text-emerald-400' : 'text-violet-400' }}">{{ $currentProvider === 'nvidia_nim' ? 'NVIDIA NIM (40 RPM)' : 'Groq Cloud' }}</strong></span>
         </p>
     </div>
 

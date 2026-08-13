@@ -33,9 +33,19 @@ return [
             'api_key' => env('GROQ_API_KEY'),
             'model' => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
             'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
-            'max_tokens' => (int) env('GROQ_MAX_TOKENS', 4096),
+            'max_tokens' => (int) env('GROQ_MAX_TOKENS', 8192),
             'temperature' => (float) env('GROQ_TEMPERATURE', 0.3),
             'timeout_seconds' => (int) env('GROQ_TIMEOUT', 60),
+        ],
+
+        'nvidia_nim' => [
+            'api_key' => env('NVIDIA_NIM_API_KEY'),
+            'model' => env('NVIDIA_NIM_MODEL', 'meta/llama-3.3-70b-instruct'),
+            'base_url' => env('NVIDIA_NIM_BASE_URL', 'https://integrate.api.nvidia.com/v1'),
+            'max_tokens' => (int) env('NVIDIA_NIM_MAX_TOKENS', 4096),
+            'temperature' => (float) env('NVIDIA_NIM_TEMPERATURE', 0.3),
+            'timeout_seconds' => (int) env('NVIDIA_NIM_TIMEOUT', 90),
+            'rate_limit_rpm' => (int) env('NVIDIA_NIM_RPM', 40),
         ],
 
         'deepseek' => [
@@ -89,6 +99,10 @@ return [
     'cost_per_1k_tokens' => [
         'groq' => [
             'input' => 0.0,   // Groq free tier during testing
+            'output' => 0.0,
+        ],
+        'nvidia_nim' => [
+            'input' => 0.0,   // NVIDIA NIM API free tier credits / self-hosted
             'output' => 0.0,
         ],
         'deepseek' => [

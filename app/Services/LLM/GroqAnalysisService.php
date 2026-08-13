@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\LLM;
 
+use App\Contracts\LLM\LLMAnalysisServiceInterface;
 use App\Enums\AnalysisType;
 use App\Models\Document;
 use Illuminate\Support\Facades\Http;
@@ -15,12 +16,8 @@ use Illuminate\Support\Facades\Log;
  *
  * Builds specialized prompts per analysis type and returns
  * structured JSON results with full traceability metadata.
- *
- * This service is provider-specific (Groq). When migrating to
- * Deepseek/Azure, implement LLMProviderInterface and swap
- * via config — this service's prompt logic remains reusable.
  */
-final class GroqAnalysisService
+final class GroqAnalysisService implements LLMAnalysisServiceInterface
 {
     private readonly string $apiKey;
     private readonly string $model;
@@ -68,6 +65,12 @@ final class GroqAnalysisService
             throw new \RuntimeException('Groq API key is not configured. Set GROQ_API_KEY in .env.');
         }
 
+        // Safeguard document chunk length to prevent exceeding token context
+        $maxChunkChars = ((int) config('llm.analysis.max_chunk_tokens', 4000)) * 4;
+        if (mb_strlen($documentContent) > $maxChunkChars) {
+            $documentContent = mb_substr($documentContent, 0, $maxChunkChars) . "\n\n[... TEXTO TRUNCADO POR EXTENSIÓN PARA EL MODELO ...]";
+        }
+
         $systemPrompt = $this->buildSystemPrompt($analysisType);
         $userPrompt = $this->buildUserPrompt($documentContent, $analysisType, $document);
 
@@ -100,15 +103,25 @@ final class GroqAnalysisService
 
         if ($response->failed()) {
             $errorBody = $response->body();
+            $decodedError = json_decode($errorBody, true);
+            $errorMessage = $decodedError['error']['message'] ?? $errorBody;
 
             Log::error('Groq API call failed.', [
                 'document_id' => $document->id,
                 'status' => $response->status(),
+                'model' => $this->model,
+                'max_tokens' => $this->maxTokens,
                 'error' => mb_substr($errorBody, 0, 500),
             ]);
 
+            if (str_contains($errorBody, 'max completion tokens reached') || str_contains($errorBody, 'json_validate_failed')) {
+                throw new \RuntimeException(
+                    "Groq token limit reached (max completion tokens) before completing JSON output for model [{$this->model}] (max_tokens={$this->maxTokens}). Try setting GROQ_MAX_TOKENS higher (e.g., 8192) in .env or using a model with larger token limits like llama-3.3-70b-versatile."
+                );
+            }
+
             throw new \RuntimeException(
-                "Groq API returned status [{$response->status()}]: " . mb_substr($errorBody, 0, 200)
+                "Groq API returned status [{$response->status()}]: " . mb_substr((string) $errorMessage, 0, 200)
             );
         }
 
@@ -162,7 +175,9 @@ REGLAS DE RESPUESTA:
 - Responde SIEMPRE en español chileno.
 - Usa lenguaje simple y claro, evitando jerga legal innecesaria.
 - Cuando uses términos legales, explícalos brevemente entre paréntesis.
-- Estructura tu respuesta en el formato JSON especificado.
+- Estructura tu respuesta estrictamente en el formato JSON especificado.
+- Sé conciso y directo en cada valor del JSON. Limita los arreglos a un máximo de 10 ítems significativos.
+- Mantén las explicaciones breves (1-2 oraciones por campo) para asegurar que el JSON se genere completo sin alcanzar el límite de tokens.
 - NO inventes leyes ni artículos que no existan.
 - Si no tienes certeza sobre un punto legal, indícalo explícitamente.
 - NUNCA des asesoría legal definitiva — siempre recomienda consultar con un abogado para decisiones importantes.

@@ -19,6 +19,7 @@ final class ExternalServiceHealthService
     {
         return [
             'groq' => $this->checkGroq(),
+            'nvidia_nim' => $this->checkNvidiaNim(),
             'unstructured' => $this->checkUnstructured(),
         ];
     }
@@ -90,6 +91,84 @@ final class ExternalServiceHealthService
                 'connected' => false,
                 'message' => 'No se pudo conectar con Groq: ' . $exception->getMessage(),
                 'details' => ['model' => $model],
+            ];
+        }
+    }
+
+    /**
+     * @return array{configured: bool, connected: bool, message: string, details?: array<string, mixed>}
+     */
+    public function checkNvidiaNim(): array
+    {
+        $config = (array) config('llm.providers.nvidia_nim', []);
+        $apiKey = trim((string) ($config['api_key'] ?? ''));
+        $baseUrl = rtrim((string) ($config['base_url'] ?? 'https://integrate.api.nvidia.com/v1'), '/');
+        $model = (string) ($config['model'] ?? 'meta/llama-3.3-70b-instruct');
+        $rpm = (int) ($config['rate_limit_rpm'] ?? 40);
+
+        if ($apiKey === '') {
+            return [
+                'configured' => false,
+                'connected' => false,
+                'message' => 'NVIDIA_NIM_API_KEY no está configurada.',
+            ];
+        }
+
+        try {
+            $response = Http::timeout(15)
+                ->withHeaders([
+                    'Authorization' => "Bearer {$apiKey}",
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$baseUrl}/models");
+
+            if ($response->failed()) {
+                return [
+                    'configured' => true,
+                    'connected' => false,
+                    'message' => "NVIDIA NIM respondió con estado HTTP {$response->status()}.",
+                    'details' => [
+                        'model' => $model,
+                        'status' => $response->status(),
+                        'rate_limit_rpm' => $rpm,
+                    ],
+                ];
+            }
+
+            $models = collect($response->json('data', []))
+                ->pluck('id')
+                ->filter()
+                ->values()
+                ->all();
+
+            $modelAvailable = in_array($model, $models, true);
+
+            return [
+                'configured' => true,
+                'connected' => true,
+                'message' => $modelAvailable
+                    ? "NVIDIA NIM conectado. Modelo [{$model}] disponible (Límite: {$rpm} RPM)."
+                    : "NVIDIA NIM conectado, pero el modelo [{$model}] no aparece en la lista.",
+                'details' => [
+                    'model' => $model,
+                    'model_available' => $modelAvailable,
+                    'models_count' => count($models),
+                    'rate_limit_rpm' => $rpm,
+                ],
+            ];
+        } catch (\Throwable $exception) {
+            Log::warning('NVIDIA NIM connectivity check failed.', [
+                'error' => $exception->getMessage(),
+            ]);
+
+            return [
+                'configured' => true,
+                'connected' => false,
+                'message' => 'No se pudo conectar con NVIDIA NIM: ' . $exception->getMessage(),
+                'details' => [
+                    'model' => $model,
+                    'rate_limit_rpm' => $rpm,
+                ],
             ];
         }
     }

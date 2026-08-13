@@ -104,11 +104,19 @@
         </div>
 
         <!-- Footer -->
-        <div class="text-center text-[13px] text-zinc-500">
-            ¿No tienes cuenta? <a href="#" class="text-violet-400 hover:text-violet-300 font-medium hover:underline transition-colors">Regístrate gratis</a>
+        <div class="flex flex-col gap-2 text-center text-[13px] text-zinc-500">
+            <div>
+                ¿No tienes cuenta? <a href="#" class="text-violet-400 hover:text-violet-300 font-medium hover:underline transition-colors">Regístrate gratis</a>
+            </div>
+            <div class="text-[12px] text-zinc-600">
+                Al ingresar o registrarte, aceptas nuestros <a href="{{ route('terms') }}" class="text-zinc-400 hover:text-zinc-300 underline">Términos y Condiciones</a>.
+            </div>
         </div>
 
     </div>
 
+    <x-terms-popup-modal />
+
 </body>
 </html>
+

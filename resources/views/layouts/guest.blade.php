@@ -24,7 +24,7 @@
     <header class="w-full border-b border-zinc-800/60 bg-[#0b0b0b]/80 backdrop-blur-sm sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
             <a href="{{ route('landing') }}" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/10">
+                <div class="w-9 h-9 rounded-xl bg-linear-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/10">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
@@ -54,11 +54,14 @@
         <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px] text-zinc-500">
             <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
                 <p>&copy; {{ date('Y') }} Auditor-IA. Todos los derechos reservados.</p>
-                <a href="{{ route('terms') }}" class="hover:text-zinc-350 transition-colors">Términos y Condiciones</a>
+                <a href="{{ route('terms') }}" class="hover:text-zinc-300 transition-colors">Términos y Condiciones</a>
             </div>
-            <p class="text-zinc-650">No constituye asesoría legal. Consulta siempre con un abogado.</p>
+            <p class="text-zinc-500">No constituye asesoría legal. Consulta siempre con un abogado.</p>
         </div>
     </footer>
+
+    <x-terms-popup-modal />
+
 
 </body>
 </html>

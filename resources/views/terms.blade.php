@@ -30,7 +30,7 @@
                 Marco Legal & Términos de Uso
             </span>
             <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
-                Términos y <span class="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">Condiciones de Uso</span>
+                Términos y <span class="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">Condiciones de Uso</span>
             </h1>
             <p class="text-zinc-400 text-sm md:text-base">
                 Última actualización: 02 de Julio, 2026. Por favor, lea detenidamente este documento antes de utilizar nuestros servicios.
@@ -92,10 +92,10 @@
                         Naturaleza y Objeto del Servicio
                     </h2>
                     <p>
-                        Auditor-IA es una herramienta SaaS de soporte analítico basada en inteligencia artificial (modelos de lenguaje de gran tamaño - LLM) y tecnologías de procesamiento documental. El propósito de la Plataforma es ayudar al Usuario a automatizar la extracción de texto, identificar cláusulas clave, detectar riesgos potenciales y generar sugerencias preliminares en base a patrones definidos y alineados con la legislación de la República de Chile.
+                        Auditor-IA es una herramienta SaaS (Software como Servicio) de soporte analítico basada en inteligencia artificial (modelos de lenguaje de gran tamaño - LLM) y tecnologías de procesamiento documental. El propósito de la Plataforma es ayudar al Usuario a automatizar la extracción de texto, identificar cláusulas clave, detectar riesgos potenciales y generar sugerencias preliminares en base a patrones definidos y alineados con la legislación de la República de Chile.
                     </p>
                     <p>
-                        El Usuario reconoce que los resultados generados por el sistema son análisis estadísticos y probabilísticos y que la tecnología aplicada no es infalible. Los análisis son de carácter general y preliminar, y en ningún caso constituyen dictámenes jurídicos.
+                        El Usuario reconoce que los resultados generados por la plataforma son análisis estadísticos y probabilísticos y que la tecnología aplicada no es infalible. Los análisis son de carácter general y preliminar, y en ningún caso constituyen dictámenes jurídicos.
                     </p>
                 </section>
 
@@ -134,7 +134,7 @@
                     </h2>
 
                     {{-- Premium Highlighted Box for the Exculpation Clause --}}
-                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-950/20 to-fuchsia-950/20 border border-violet-500/35 p-6 md:p-8 space-y-4">
+                    <div class="relative overflow-hidden rounded-2xl bg-linear-to-r from-violet-950/20 to-fuchsia-950/20 border border-violet-500/35 p-6 md:p-8 space-y-4">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-violet-500/10 rounded-full blur-2xl"></div>
                         
                         <h3 class="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">

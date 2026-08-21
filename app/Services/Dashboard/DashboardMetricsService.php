@@ -6,6 +6,7 @@ namespace App\Services\Dashboard;
 
 use App\Enums\AnalysisType;
 use App\Enums\DocumentStatus;
+use App\Models\AiCreditLedger;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Models\Organization;
@@ -27,6 +28,11 @@ final class DashboardMetricsService
      *     analysesThisMonth: int,
      *     storageUsedBytes: int,
      *     tokensThisMonth: int,
+     *     creditsRemaining: int,
+     *     creditsQuota: int,
+     *     creditRefreshInterval: string,
+     *     periodExpiresAt: ?\Carbon\Carbon,
+     *     allowsModelSelection: bool,
      *     analysisTypeCounts: array<string, int>,
      *     pendingDocumentIds: list<string>,
      * }
@@ -117,6 +123,16 @@ final class DashboardMetricsService
             ->values()
             ->all();
 
+        // AI Credit ledger data
+        $creditLedger = $organization?->getOrCreateCreditLedger();
+        $plan = $organization?->currentPlan();
+
+        $creditsRemaining = $creditLedger?->credits_remaining ?? 0;
+        $creditsQuota = $creditLedger?->credits_quota ?? 0;
+        $creditRefreshInterval = $plan?->credit_refresh_interval?->value ?? 'monthly';
+        $periodExpiresAt = $creditLedger?->period_expires_at;
+        $allowsModelSelection = $plan?->allowsModelSelection() ?? false;
+
         return compact(
             'documents',
             'analyzedCount',
@@ -128,6 +144,11 @@ final class DashboardMetricsService
             'analysesThisMonth',
             'storageUsedBytes',
             'tokensThisMonth',
+            'creditsRemaining',
+            'creditsQuota',
+            'creditRefreshInterval',
+            'periodExpiresAt',
+            'allowsModelSelection',
             'analysisTypeCounts',
             'pendingDocumentIds',
         );

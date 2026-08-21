@@ -8,8 +8,10 @@ use App\Enums\AnalysisType;
 use App\Enums\DocumentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\DocumentAnalysisResource;
+use App\Models\AiModel;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
+use App\Services\Billing\AiCreditService;
 use App\Services\LLM\GroqAnalysisService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,18 +20,16 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 /**
- * Controller for document analysis via LLM (Groq).
+ * Controller for document analysis via LLM.
  *
- * Receives a document ID and analysis type, sends the parsed
- * content to Groq, and stores the structured analysis result.
- *
- * This controller only coordinates — analysis logic lives in
- * GroqAnalysisService. Authorization via DocumentPolicy.
+ * Coordinates model selection, AI credit quota validation,
+ * document analysis execution, and credit deduction.
  */
 class DocumentAnalysisController extends Controller
 {
     public function __construct(
         private readonly GroqAnalysisService $groqService,
+        private readonly AiCreditService $creditService,
     ) {}
 
     /**
@@ -45,9 +45,11 @@ class DocumentAnalysisController extends Controller
 
         $validated = $request->validate([
             'analysis_type' => ['required', 'string', Rule::enum(AnalysisType::class)],
+            'model_slug' => ['nullable', 'string', 'exists:ai_models,slug'],
         ], [
             'analysis_type.required' => 'Debe especificar el tipo de análisis.',
             'analysis_type.enum' => 'El tipo de análisis no es válido.',
+            'model_slug.exists' => 'El modelo seleccionado no está disponible.',
         ]);
 
         $analysisType = AnalysisType::from($validated['analysis_type']);
@@ -65,12 +67,50 @@ class DocumentAnalysisController extends Controller
 
         /** @var \App\Models\User $user */
         $user = $request->user();
+        $organization = $user->organization;
+
+        if ($organization === null) {
+            return response()->json([
+                'error' => 'no_organization',
+                'message' => 'El usuario no pertenece a ninguna organización.',
+            ], JsonResponse::HTTP_FORBIDDEN);
+        }
+
+        $plan = $organization->currentPlan();
+
+        // 1. Resolve AI Model to use
+        $requestedModelSlug = $validated['model_slug'] ?? null;
+
+        if (! $plan->allowsModelSelection() || $requestedModelSlug === null) {
+            // Free users or unselected: default model for their tier
+            $aiModel = AiModel::query()
+                ->active()
+                ->whereIn('tier', array_map(fn ($tier) => $tier->value, $plan->allowedTiers()))
+                ->ordered()
+                ->first() ?? AiModel::defaultModel();
+        } else {
+            // Pro / Lifetime users choosing a model
+            $aiModel = AiModel::findBySlug($requestedModelSlug);
+        }
+
+        // 2. Validate AI Credit Quota
+        if (! $this->creditService->canPerformAnalysis($organization, $aiModel)) {
+            return response()->json([
+                'error' => 'credits_depleted',
+                'message' => 'Créditos de Inteligencia Artificial insuficientes para realizar este análisis. Por favor, actualiza tu plan para obtener más créditos.',
+                'meta' => [
+                    'required_credits' => $aiModel->creditCostPerAnalysis(),
+                    'model_tier' => $aiModel->tier->value,
+                ],
+            ], JsonResponse::HTTP_PAYMENT_REQUIRED);
+        }
 
         try {
             $result = $this->groqService->analyze(
                 documentContent: $compactContent,
                 analysisType: $analysisType,
                 document: $document,
+                overrideModel: $aiModel->provider_model_id,
             );
 
             // Determine version (increment if same type already exists)
@@ -85,16 +125,22 @@ class DocumentAnalysisController extends Controller
                 'requested_by' => $user->id,
                 'analysis_type' => $analysisType,
                 'llm_provider' => $result['llm_provider'],
-                'llm_model' => $result['llm_model'],
+                'llm_model' => $aiModel->slug,
                 'content' => $result['content'],
                 'confidence_score' => $this->extractConfidence($result['content']),
                 'input_tokens' => $result['input_tokens'],
                 'output_tokens' => $result['output_tokens'],
                 'processing_time_ms' => $result['processing_time_ms'],
-                'prompt_metadata' => $result['prompt_metadata'],
+                'prompt_metadata' => array_merge($result['prompt_metadata'] ?? [], [
+                    'model_tier' => $aiModel->tier->value,
+                    'credit_cost' => $aiModel->creditCostPerAnalysis(),
+                ]),
                 'status' => DocumentStatus::Processed,
                 'version' => $latestVersion + 1,
             ]);
+
+            // Deduct AI credits for completed analysis
+            $this->creditService->deductCredits($organization, $user, $aiModel, $analysis);
 
             $analysis->load('requester:id,name');
 
@@ -106,21 +152,28 @@ class DocumentAnalysisController extends Controller
                 'document_id' => $document->id,
                 'organization_id' => $document->organization_id,
                 'analysis_type' => $analysisType->value,
+                'model_slug' => $aiModel->slug,
                 'error' => $exception->getMessage(),
             ]);
 
             // Store failed analysis for audit trail
-            DocumentAnalysis::create([
+            $failedAnalysis = DocumentAnalysis::create([
                 'document_id' => $document->id,
                 'organization_id' => $document->organization_id,
                 'requested_by' => $user->id,
                 'analysis_type' => $analysisType,
-                'llm_provider' => 'groq',
-                'llm_model' => (string) config('llm.providers.groq.model', 'unknown'),
+                'llm_provider' => $aiModel->provider,
+                'llm_model' => $aiModel->slug,
                 'content' => ['error' => $exception->getMessage()],
                 'status' => DocumentStatus::Failed,
                 'version' => 1,
             ]);
+
+            // If credits were depleted during error handling, purge failed record if needed
+            $ledger = $organization->getOrCreateCreditLedger();
+            if ($plan->is_free && $ledger->isDepleted()) {
+                $this->creditService->purgeDepletedAnalysis($failedAnalysis, 'free_tier_credits_depleted');
+            }
 
             return response()->json([
                 'error' => 'analysis_failed',

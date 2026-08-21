@@ -60,7 +60,9 @@ final class GroqAnalysisService implements LLMAnalysisServiceInterface
         string $documentContent,
         AnalysisType $analysisType,
         Document $document,
+        ?string $overrideModel = null,
     ): array {
+        $activeModel = $overrideModel ?? $this->model;
         @set_time_limit(300);
         @ini_set('max_execution_time', '300');
 
@@ -92,7 +94,7 @@ final class GroqAnalysisService implements LLMAnalysisServiceInterface
                 'Content-Type' => 'application/json',
             ])
             ->post("{$this->baseUrl}/chat/completions", [
-                'model' => $this->model,
+                'model' => $activeModel,
                 'messages' => [
                     ['role' => 'system', 'content' => $systemPrompt],
                     ['role' => 'user', 'content' => $userPrompt],
@@ -143,7 +145,7 @@ final class GroqAnalysisService implements LLMAnalysisServiceInterface
         return [
             'content' => $content,
             'llm_provider' => 'groq',
-            'llm_model' => $this->model,
+            'llm_model' => $activeModel,
             'input_tokens' => (int) ($usage['prompt_tokens'] ?? 0),
             'output_tokens' => (int) ($usage['completion_tokens'] ?? 0),
             'processing_time_ms' => $processingTimeMs,

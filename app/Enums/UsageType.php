@@ -7,9 +7,8 @@ namespace App\Enums;
 enum UsageType: string
 {
     case DocumentUpload = 'document_upload';
-    case Analysis = 'analysis';
-    case TokensConsumed = 'tokens_consumed';
     case StorageBytes = 'storage_bytes';
+    case AiCreditsConsumed = 'ai_credits_consumed';
 
     /**
      * Get human-readable label.
@@ -18,9 +17,8 @@ enum UsageType: string
     {
         return match ($this) {
             self::DocumentUpload => 'Subida de documento',
-            self::Analysis => 'Análisis IA',
-            self::TokensConsumed => 'Tokens consumidos',
             self::StorageBytes => 'Almacenamiento usado',
+            self::AiCreditsConsumed => 'Créditos IA consumidos',
         };
     }
 
@@ -31,9 +29,8 @@ enum UsageType: string
     {
         return match ($this) {
             self::DocumentUpload => 'documentos',
-            self::Analysis => 'análisis',
-            self::TokensConsumed => 'tokens',
             self::StorageBytes => 'bytes',
+            self::AiCreditsConsumed => 'créditos',
         };
     }
 }

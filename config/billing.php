@@ -21,8 +21,15 @@ return [
     |--------------------------------------------------------------------------
     |
     | NULL values mean unlimited.
-    | price_monthly_clp / price_yearly_clp used for recurring plans.
-    | price_lifetime_clp used for one-time Lifetime plan.
+    | AI credits replace the old max_analyses_per_month and max_tokens_per_month.
+    |
+    | credit_refresh_interval:
+    |   - 'weekly'  → Free tier (resets 7 days from last usage)
+    |   - 'monthly' → Pro/Lifetime (calendar month cycle)
+    |
+    | allowed_model_tiers:
+    |   - Free users: only 'lightweight' (model is fixed, can choose analysis type)
+    |   - Pro/Lifetime: all tiers (can choose between AI models, providers hidden)
     |
     */
 
@@ -37,12 +44,14 @@ return [
             'price_yearly_clp' => 0,
             'price_lifetime_clp' => null,
             'max_documents_per_month' => 3,
-            'max_analyses_per_month' => 5,
             'max_storage_bytes' => 104857600, // 100 MB
-            'max_tokens_per_month' => 50000,
+            'ai_credits_quota' => 25,
+            'credit_refresh_interval' => 'weekly',
+            'allowed_model_tiers' => ['lightweight'],
             'highlights' => [
                 'Resumen y detección de riesgos',
                 'Análisis según legislación chilena',
+                '25 créditos IA semanales',
                 'Soporte por email',
             ],
         ],
@@ -56,12 +65,15 @@ return [
             'price_yearly_clp' => 149900,
             'price_lifetime_clp' => null,
             'max_documents_per_month' => 50,
-            'max_analyses_per_month' => 200,
             'max_storage_bytes' => 5368709120, // 5 GB
-            'max_tokens_per_month' => 2000000,
+            'ai_credits_quota' => 500,
+            'credit_refresh_interval' => 'monthly',
+            'allowed_model_tiers' => ['lightweight', 'standard', 'advanced', 'premium'],
             'popular' => true,
             'highlights' => [
                 'Todos los tipos de análisis',
+                'Selección de modelo IA',
+                '500 créditos IA mensuales',
                 'Prioridad en procesamiento',
                 'Exportación de informes',
                 'Soporte prioritario',
@@ -77,11 +89,14 @@ return [
             'price_yearly_clp' => null,
             'price_lifetime_clp' => 399900,
             'max_documents_per_month' => null,
-            'max_analyses_per_month' => null,
             'max_storage_bytes' => null,
-            'max_tokens_per_month' => null,
+            'ai_credits_quota' => null, // Unlimited
+            'credit_refresh_interval' => 'monthly',
+            'allowed_model_tiers' => ['lightweight', 'standard', 'advanced', 'premium'],
             'highlights' => [
                 'Todas las funciones actuales y futuras',
+                'Créditos IA ilimitados',
+                'Selección de modelo IA',
                 'Sin renovaciones ni sorpresas',
                 'Soporte prioritario de por vida',
             ],

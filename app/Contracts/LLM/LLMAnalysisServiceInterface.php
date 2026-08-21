@@ -18,6 +18,7 @@ interface LLMAnalysisServiceInterface
      * @param  string  $documentContent  Compact text extracted from the document
      * @param  AnalysisType  $analysisType  Type of analysis to execute
      * @param  Document  $document  Document instance for contextual tracing
+     * @param  string|null  $overrideModel  Optional model override
      * @return array{
      *     content: array<string, mixed>,
      *     llm_provider: string,
@@ -34,5 +35,6 @@ interface LLMAnalysisServiceInterface
         string $documentContent,
         AnalysisType $analysisType,
         Document $document,
+        ?string $overrideModel = null,
     ): array;
 }

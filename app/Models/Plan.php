@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\AiModelTier;
+use App\Enums\CreditRefreshInterval;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,9 +23,10 @@ class Plan extends Model
         'description',
         'stripe_price_id',
         'max_documents_per_month',
-        'max_analyses_per_month',
         'max_storage_bytes',
-        'max_tokens_per_month',
+        'ai_credits_quota',
+        'credit_refresh_interval',
+        'allowed_model_tiers',
         'features',
         'price_clp',
         'sort_order',
@@ -38,9 +41,10 @@ class Plan extends Model
     {
         return [
             'max_documents_per_month' => 'integer',
-            'max_analyses_per_month' => 'integer',
             'max_storage_bytes' => 'integer',
-            'max_tokens_per_month' => 'integer',
+            'ai_credits_quota' => 'integer',
+            'credit_refresh_interval' => CreditRefreshInterval::class,
+            'allowed_model_tiers' => 'array',
             'features' => 'array',
             'price_clp' => 'integer',
             'sort_order' => 'integer',
@@ -111,5 +115,56 @@ class Plan extends Model
     public static function freePlan(): ?self
     {
         return static::query()->where('is_free', true)->first();
+    }
+
+    /**
+     * Determine if this plan has unlimited AI credits.
+     */
+    public function hasUnlimitedCredits(): bool
+    {
+        return $this->ai_credits_quota === null;
+    }
+
+    /**
+     * Get the allowed model tiers as AiModelTier enum instances.
+     *
+     * @return list<AiModelTier>
+     */
+    public function allowedTiers(): array
+    {
+        $tiers = $this->allowed_model_tiers ?? [];
+
+        return array_filter(
+            array_map(
+                fn (string $value) => AiModelTier::tryFrom($value),
+                $tiers,
+            ),
+        );
+    }
+
+    /**
+     * Determine if this plan allows access to a specific model tier.
+     */
+    public function allowsTier(AiModelTier $tier): bool
+    {
+        $allowed = $this->allowed_model_tiers ?? [];
+
+        // No restrictions = all tiers allowed (for unlimited plans)
+        if ($allowed === []) {
+            return true;
+        }
+
+        return in_array($tier->value, $allowed, true);
+    }
+
+    /**
+     * Determine if this plan allows model selection.
+     *
+     * Free users can only switch analysis type, not models.
+     * Pro/Lifetime users can choose between AI models.
+     */
+    public function allowsModelSelection(): bool
+    {
+        return ! $this->is_free;
     }
 }

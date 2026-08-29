@@ -4,18 +4,12 @@
 @section('meta_description', 'Conoce los términos y condiciones de uso de Auditor-IA. Exclusión de responsabilidad, alcance del análisis con IA y legislación chilena aplicable.')
 
 @section('content')
-<div class="relative overflow-hidden min-h-screen py-16 md:py-24">
-    
-    {{-- Decorative Background Glows --}}
-    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div class="absolute top-0 left-1/4 -translate-x-1/2 w-[600px] h-[400px] bg-violet-600/10 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-1/4 right-1/4 translate-x-1/2 w-[500px] h-[500px] bg-fuchsia-600/5 rounded-full blur-[100px]"></div>
-    </div>
+<div class="relative overflow-hidden min-h-screen py-16 md:py-24 bg-[#151311]">
 
     <div class="relative max-w-6xl mx-auto px-6">
         <!-- Breadcrumbs -->
         <div class="mb-8">
-            <a href="{{ route('landing') }}" class="inline-flex items-center gap-2 text-zinc-400 hover:text-white text-sm font-medium transition-colors group">
+            <a href="{{ route('landing') }}" class="inline-flex items-center gap-2 font-mono text-[#EED3BA]/70 hover:text-[#EED3BA] text-sm font-bold transition-colors group">
                 <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -25,14 +19,14 @@
 
         <!-- Header -->
         <div class="max-w-3xl mb-16">
-            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-[12px] font-semibold text-violet-300 mb-6">
-                <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span>
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#4B262F] border border-[#EED3BA]/40 text-[12px] font-mono font-bold text-[#EED3BA] shadow-brutal-sm mb-6 uppercase tracking-wider">
+                <span class="w-1.5 h-1.5 bg-[#EED3BA]"></span>
                 Marco Legal & Términos de Uso
             </span>
-            <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
-                Términos y <span class="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">Condiciones de Uso</span>
+            <h1 class="text-4xl md:text-5xl font-serif font-bold text-[#EED3BA] tracking-tight leading-tight mb-4">
+                Términos y <span class="underline decoration-[#4B262F] underline-offset-8">Condiciones de Uso</span>
             </h1>
-            <p class="text-zinc-400 text-sm md:text-base">
+            <p class="font-mono text-[#EED3BA]/70 text-sm md:text-base">
                 Última actualización: 02 de Julio, 2026. Por favor, lea detenidamente este documento antes de utilizar nuestros servicios.
             </p>
         </div>
@@ -41,40 +35,40 @@
         <div class="grid lg:grid-cols-12 gap-8 items-start">
             
             <!-- Sticky Navigation (Desktop) -->
-            <aside class="hidden lg:block lg:col-span-4 sticky top-28 bg-[#161616]/40 border border-zinc-800/60 rounded-2xl p-6 backdrop-blur-md">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-4 px-2">Tabla de Contenidos</h3>
-                <nav class="space-y-1" id="terms-toc">
-                    <a href="#aceptacion" class="toc-link block px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/40 transition-all duration-200">
+            <aside class="hidden lg:block lg:col-span-4 sticky top-28 bg-[#2A171B] border-2 border-[#4B262F] p-6 shadow-brutal">
+                <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[#EED3BA]/60 mb-4 px-2">Tabla de Contenidos</h3>
+                <nav class="space-y-1 font-mono" id="terms-toc">
+                    <a href="#aceptacion" class="toc-link block px-3 py-2.5 text-[13px] font-medium text-[#EED3BA]/70 hover:text-[#EED3BA] hover:bg-[#151311] transition-all">
                         1. Aceptación de los Términos
                     </a>
-                    <a href="#objeto" class="toc-link block px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/40 transition-all duration-200">
+                    <a href="#objeto" class="toc-link block px-3 py-2.5 text-[13px] font-medium text-[#EED3BA]/70 hover:text-[#EED3BA] hover:bg-[#151311] transition-all">
                         2. Naturaleza y Objeto del Servicio
                     </a>
-                    <a href="#asesoria" class="toc-link block px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/40 transition-all duration-200">
+                    <a href="#asesoria" class="toc-link block px-3 py-2.5 text-[13px] font-medium text-[#EED3BA]/70 hover:text-[#EED3BA] hover:bg-[#151311] transition-all">
                         3. Exclusión de Asesoría Legal
                     </a>
-                    <a href="#exencion" class="toc-link block px-3 py-2.5 rounded-xl text-[13.5px] font-semibold text-violet-400 hover:text-violet-300 hover:bg-zinc-800/40 transition-all duration-200 border-l-2 border-violet-500 pl-4 bg-violet-950/10">
+                    <a href="#exencion" class="toc-link block px-3 py-2.5 text-[13px] font-bold text-[#EED3BA] bg-[#4B262F] border-l-4 border-[#EED3BA] pl-4">
                         4. Liberación de Responsabilidad e Indemnidad
                     </a>
-                    <a href="#privacidad" class="toc-link block px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/40 transition-all duration-200">
+                    <a href="#privacidad" class="toc-link block px-3 py-2.5 text-[13px] font-medium text-[#EED3BA]/70 hover:text-[#EED3BA] hover:bg-[#151311] transition-all">
                         5. Privacidad y Datos Personales
                     </a>
-                    <a href="#propiedad" class="toc-link block px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/40 transition-all duration-200">
+                    <a href="#propiedad" class="toc-link block px-3 py-2.5 text-[13px] font-medium text-[#EED3BA]/70 hover:text-[#EED3BA] hover:bg-[#151311] transition-all">
                         6. Propiedad Intelectual
                     </a>
-                    <a href="#jurisdiccion" class="toc-link block px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/40 transition-all duration-200">
+                    <a href="#jurisdiccion" class="toc-link block px-3 py-2.5 text-[13px] font-medium text-[#EED3BA]/70 hover:text-[#EED3BA] hover:bg-[#151311] transition-all">
                         7. Jurisdicción y Ley Aplicable
                     </a>
                 </nav>
             </aside>
 
             <!-- Legal Text Content -->
-            <div class="lg:col-span-8 bg-[#161616]/30 border border-zinc-800/50 rounded-3xl p-6 md:p-12 backdrop-blur-md space-y-12 text-zinc-300 leading-relaxed text-[14.5px]">
+            <div class="lg:col-span-8 bg-[#2A171B] border-2 border-[#4B262F] p-6 md:p-12 shadow-brutal space-y-12 text-[#EED3BA]/90 leading-relaxed text-[14.5px]">
                 
                 <!-- Section 1: Aceptación -->
                 <section id="aceptacion" class="scroll-mt-28 space-y-4">
-                    <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                        <span class="text-violet-400 text-sm font-mono">01.</span>
+                    <h2 class="text-xl font-serif font-bold text-[#EED3BA] tracking-tight flex items-center gap-2">
+                        <span class="text-[#EED3BA] text-sm font-mono font-bold">01.</span>
                         Aceptación de los Términos y Condiciones
                     </h2>
                     <p>
@@ -87,8 +81,8 @@
 
                 <!-- Section 2: Objeto -->
                 <section id="objeto" class="scroll-mt-28 space-y-4">
-                    <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                        <span class="text-violet-400 text-sm font-mono">02.</span>
+                    <h2 class="text-xl font-serif font-bold text-[#EED3BA] tracking-tight flex items-center gap-2">
+                        <span class="text-[#EED3BA] text-sm font-mono font-bold">02.</span>
                         Naturaleza y Objeto del Servicio
                     </h2>
                     <p>
@@ -101,25 +95,25 @@
 
                 <!-- Section 3: Exclusión de Asesoría Legal -->
                 <section id="asesoria" class="scroll-mt-28 space-y-4">
-                    <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                        <span class="text-violet-400 text-sm font-mono">03.</span>
+                    <h2 class="text-xl font-serif font-bold text-[#EED3BA] tracking-tight flex items-center gap-2">
+                        <span class="text-[#EED3BA] text-sm font-mono font-bold">03.</span>
                         Exclusión de Asesoría Legal Profesional
                     </h2>
                     
                     {{-- Alert Box --}}
-                    <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 flex gap-3 text-[13.5px]">
-                        <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <div class="p-4 bg-[#151311] border-2 border-[#4B262F] text-[#F8CECC] flex gap-3 text-[13.5px] font-mono shadow-brutal-sm">
+                        <svg class="w-5 h-5 shrink-0 mt-0.5 text-[#F8CECC]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                         <div>
-                            <span class="font-bold">Advertencia Legal:</span> Auditor-IA no es una firma de abogados, no provee representación legal y no ofrece asesoría jurídica profesional en los términos del ordenamiento jurídico chileno.
+                            <span class="font-bold uppercase">Advertencia Legal:</span> Auditor-IA no es una firma de abogados, no provee representación legal y no ofrece asesoría jurídica profesional en los términos del ordenamiento jurídico chileno.
                         </div>
                     </div>
 
                     <p>
                         En estricto cumplimiento del <strong>Código Orgánico de Tribunales de Chile</strong> (en especial, sus artículos 520 y siguientes, y las disposiciones penales relativas al ejercicio ilegal de la profesión), el Usuario declara y acepta que:
                     </p>
-                    <ul class="list-disc pl-5 space-y-2 text-zinc-400 text-[14px]">
+                    <ul class="list-disc pl-5 space-y-2 font-mono text-[#EED3BA]/80 text-[13.5px]">
                         <li>El uso de la Plataforma no crea una relación abogado-cliente.</li>
                         <li>Los informes y recomendaciones emitidos por Auditor-IA no sustituyen, en ningún caso, la asesoría personalizada, el juicio crítico y la revisión técnica de un abogado habilitado para el ejercicio de la profesión en Chile.</li>
                         <li>La Plataforma recomienda expresamente al Usuario someter todo análisis documental y contrato a la revisión final de un profesional del derecho calificado antes de tomar decisiones vinculantes, realizar firmas o proceder a transacciones.</li>
@@ -128,25 +122,23 @@
 
                 <!-- Section 4: EXENCIÓN Y LIBERACIÓN DE RESPONSABILIDAD (CRITICAL CLAUSE) -->
                 <section id="exencion" class="scroll-mt-28 space-y-5">
-                    <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                        <span class="text-violet-400 text-sm font-mono">04.</span>
+                    <h2 class="text-xl font-serif font-bold text-[#EED3BA] tracking-tight flex items-center gap-2">
+                        <span class="text-[#EED3BA] text-sm font-mono font-bold">04.</span>
                         Exención y Liberación de Responsabilidad e Indemnidad
                     </h2>
 
                     {{-- Premium Highlighted Box for the Exculpation Clause --}}
-                    <div class="relative overflow-hidden rounded-2xl bg-linear-to-r from-violet-950/20 to-fuchsia-950/20 border border-violet-500/35 p-6 md:p-8 space-y-4">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-violet-500/10 rounded-full blur-2xl"></div>
-                        
-                        <h3 class="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
+                    <div class="relative overflow-hidden bg-[#151311] border-2 border-[#4B262F] p-6 md:p-8 space-y-4 shadow-brutal-sm">
+                        <h3 class="text-base font-serif font-bold text-[#EED3BA] uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-2 h-2 bg-[#EED3BA]"></span>
                             Cláusula de Exclusión Absoluta de Responsabilidad
                         </h3>
                         
-                        <p class="text-zinc-200 font-medium text-[13.5px] leading-relaxed">
+                        <p class="font-mono text-[#EED3BA] font-bold text-[13px] leading-relaxed uppercase">
                             DE CONFORMIDAD CON LAS NORMAS GENERALES DE LA RESPONSABILIDAD CIVIL CONTRACTUAL Y EXTRACONTRACTUAL BAJO EL CÓDIGO CIVIL DE LA REPÚBLICA DE CHILE, EL USUARIO ACEPTA EXPRESAMENTE LIBERAR DE TODA RESPONSABILIDAD Y EXONERAR EN SU TOTALIDAD A AUDITOR-IA, ASÍ COMO A SUS PROPIETARIOS, DESARROLLADORES, PROVEEDORES, FILIALES Y EMPLEADOS, DE CUALQUIER RECLAMO, DAÑO, PERJUICIO O ACCIÓN LEGAL QUE PUDIERA ORIGINARSE A PARTIR DEL USO DEL SERVICIO.
                         </p>
 
-                        <div class="border-t border-zinc-800/80 pt-4 space-y-2 text-[13px] text-zinc-400">
+                        <div class="border-t border-[#4B262F] pt-4 space-y-2 font-mono text-[12.5px] text-[#EED3BA]/70">
                             <p>Esta exención incluye, de manera ilustrativa mas no limitativa, los siguientes supuestos:</p>
                             <ul class="list-decimal pl-4 space-y-1">
                                 <li>Errores, omisiones, imprecisiones, falsos positivos o alucinaciones generadas por la Inteligencia Artificial en el análisis de contratos.</li>
@@ -160,7 +152,7 @@
                         El Usuario declara conocer que, bajo el amparo de la <strong>Ley N° 19.496 sobre Protección de los Derechos de los Consumidores</strong> en Chile, el Servicio se suministra como una herramienta de apoyo analítico meramente probabilístico ("as is" o "tal como está"), existiendo un consentimiento expreso y previo del Usuario acerca de las limitaciones técnicas de la inteligencia artificial. Por lo tanto, el uso que haga el Usuario de la información o de los análisis es bajo su exclusiva cuenta, costo y riesgo.
                     </p>
 
-                    <h4 class="text-sm font-semibold text-white">Obligación de Indemnidad:</h4>
+                    <h4 class="text-sm font-serif font-bold text-[#EED3BA]">Obligación de Indemnidad:</h4>
                     <p>
                         El Usuario se compromete a defender, indemnizar y mantener indemne a Auditor-IA frente a cualquier demanda, querella, multa, sanción, costo judicial u honorario de abogados derivado de reclamaciones de terceros debido a un mal uso del Servicio, violación de estos términos, o por decisiones de negocio u operaciones comerciales que el Usuario ejecute basándose en los informes analíticos del sistema.
                     </p>
@@ -168,14 +160,14 @@
 
                 <!-- Section 5: Privacidad -->
                 <section id="privacidad" class="scroll-mt-28 space-y-4">
-                    <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                        <span class="text-violet-400 text-sm font-mono">05.</span>
+                    <h2 class="text-xl font-serif font-bold text-[#EED3BA] tracking-tight flex items-center gap-2">
+                        <span class="text-[#EED3BA] text-sm font-mono font-bold">05.</span>
                         Privacidad y Protección de Datos (Ley N° 19.628)
                     </h2>
                     <p>
                         La privacidad de los documentos legales subidos por el Usuario es una prioridad crítica para Auditor-IA. Todo procesamiento de datos personales e información confidencial se realiza en conformidad estricta con la <strong>Ley N° 19.628 sobre Protección de la Vida Privada</strong> y las directrices de ciberseguridad chilenas:
                     </p>
-                    <ul class="list-disc pl-5 space-y-2 text-zinc-400 text-[14px]">
+                    <ul class="list-disc pl-5 space-y-2 font-mono text-[#EED3BA]/80 text-[13.5px]">
                         <li><strong>Aislamiento de Datos (Multi-Tenant):</strong> Cada documento cargado se asocia de forma exclusiva al identificador de organización (Tenant) del usuario autenticado, asegurando la inaccesibilidad absoluta de la información por parte de terceros.</li>
                         <li><strong>Retención:</strong> El almacenamiento se efectúa en servidores privados con encriptación en tránsito y reposo. Los datos no son vendidos, arrendados ni utilizados para el entrenamiento de modelos de IA de terceros sin consentimiento expreso.</li>
                         <li><strong>Derechos ARCO:</strong> El Usuario podrá solicitar en cualquier momento el acceso, rectificación, cancelación u oposición de sus datos personales a través de los canales internos habilitados.</li>
@@ -184,8 +176,8 @@
 
                 <!-- Section 6: Propiedad -->
                 <section id="propiedad" class="scroll-mt-28 space-y-4">
-                    <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                        <span class="text-violet-400 text-sm font-mono">06.</span>
+                    <h2 class="text-xl font-serif font-bold text-[#EED3BA] tracking-tight flex items-center gap-2">
+                        <span class="text-[#EED3BA] text-sm font-mono font-bold">06.</span>
                         Propiedad Intelectual
                     </h2>
                     <p>
@@ -198,8 +190,8 @@
 
                 <!-- Section 7: Jurisdicción -->
                 <section id="jurisdiccion" class="scroll-mt-28 space-y-4">
-                    <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                        <span class="text-violet-400 text-sm font-mono">07.</span>
+                    <h2 class="text-xl font-serif font-bold text-[#EED3BA] tracking-tight flex items-center gap-2">
+                        <span class="text-[#EED3BA] text-sm font-mono font-bold">07.</span>
                         Jurisdicción y Ley Aplicable
                     </h2>
                     <p>
@@ -225,22 +217,22 @@
             let current = '';
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
                 if (pageYOffset >= (sectionTop - 150)) {
                     current = section.getAttribute('id');
                 }
             });
 
             tocLinks.forEach(link => {
-                link.classList.remove('text-violet-400', 'font-semibold', 'border-l-2', 'border-violet-500', 'pl-4', 'bg-violet-950/10');
-                link.classList.add('text-zinc-400', 'font-medium');
+                link.classList.remove('text-[#EED3BA]', 'font-bold', 'bg-[#4B262F]', 'border-l-4', 'border-[#EED3BA]', 'pl-4');
+                link.classList.add('text-[#EED3BA]/70', 'font-medium');
                 
                 if (link.getAttribute('href').substring(1) === current) {
-                    link.classList.remove('text-zinc-400', 'font-medium');
-                    link.classList.add('text-violet-400', 'font-semibold', 'border-l-2', 'border-violet-500', 'pl-4', 'bg-violet-950/10');
+                    link.classList.remove('text-[#EED3BA]/70', 'font-medium');
+                    link.classList.add('text-[#EED3BA]', 'font-bold', 'bg-[#4B262F]', 'border-l-4', 'border-[#EED3BA]', 'pl-4');
                 }
             });
         });
     });
 </script>
 @endsection
+

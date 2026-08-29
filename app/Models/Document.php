@@ -86,6 +86,16 @@ class Document extends Model
         return $this->hasMany(DocumentAnalysis::class);
     }
 
+    /**
+     * Get records where this document acts as a supporting document for other analyses.
+     *
+     * @return HasMany<AnalysisSupportingDocument, $this>
+     */
+    public function supportingIn(): HasMany
+    {
+        return $this->hasMany(AnalysisSupportingDocument::class, 'document_id');
+    }
+
     // ---------------------------------------------------------------
     // Scopes
     // ---------------------------------------------------------------

@@ -37,4 +37,13 @@ Route::prefix('v1')
         Route::post('documents/{document}/analyze', [DocumentAnalysisController::class, 'analyze']);
         Route::get('documents/{document}/analyses', [DocumentAnalysisController::class, 'index']);
         Route::get('documents/{document}/analyses/{analysis}', [DocumentAnalysisController::class, 'show']);
+
+        // Supporting documents — attach additional context to an existing analysis
+        Route::post('analyses/{analysis}/supporting-documents', [DocumentAnalysisController::class, 'attachDocument']);
+        Route::get('analyses/{analysis}/supporting-documents', [DocumentAnalysisController::class, 'listSupportingDocuments']);
+        Route::delete('analyses/{analysis}/supporting-documents/{document}', [DocumentAnalysisController::class, 'detachDocument']);
+
+        // Contextual re-analysis — analyse with all supporting document context
+        Route::post('analyses/{analysis}/analyze-with-context', [DocumentAnalysisController::class, 'analyzeWithContext']);
     });
+

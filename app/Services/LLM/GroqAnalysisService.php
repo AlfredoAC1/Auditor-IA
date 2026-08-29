@@ -7,6 +7,8 @@ namespace App\Services\LLM;
 use App\Contracts\LLM\LLMAnalysisServiceInterface;
 use App\Enums\AnalysisType;
 use App\Models\Document;
+use App\Models\DocumentAnalysis;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -343,9 +345,297 @@ Responde en formato JSON con la siguiente estructura:
   "nivel_confianza": "alto|medio|bajo"
 }
 PROMPT,
+            AnalysisType::ContextualSummary => <<<'PROMPT'
+
+TIPO DE ANÁLISIS: Análisis Contextual con Documentos de Apoyo
+Este análisis integra el documento principal con documentos de apoyo adicionales y el análisis previo.
+Identifica relaciones, contradicciones, complementariedades y aclaraciones entre todos los documentos.
+Responde en formato JSON con la siguiente estructura:
+{
+  "tipo_documento": "Tipo del documento principal",
+  "resumen_integrado": "Resumen que integra todos los documentos analizados en 2-3 párrafos",
+  "relaciones_entre_documentos": [
+    {
+      "documento_a": "Nombre del primer documento",
+      "documento_b": "Nombre del segundo documento",
+      "tipo_relacion": "complementa|contradice|aclara|referencia|modifica",
+      "descripcion": "Explicación de la relación entre ambos documentos"
+    }
+  ],
+  "puntos_clave_integrados": [
+    {
+      "punto": "Punto relevante que emerge de la lectura conjunta",
+      "fuente": "Documento o documentos de los que surge",
+      "importancia": "alta|media|baja"
+    }
+  ],
+  "contradicciones": [
+    {
+      "descripcion": "Descripción de la contradicción o inconsistencia",
+      "documentos_involucrados": ["Nombres de los documentos involucrados"],
+      "recomendacion": "Qué debería hacer el usuario al respecto"
+    }
+  ],
+  "riesgos_identificados": [
+    {
+      "riesgo": "Descripción del riesgo",
+      "severidad": "alta|media|baja",
+      "referencia_legal": "Ley chilena aplicable",
+      "documento_origen": "Documento del que surge el riesgo"
+    }
+  ],
+  "recomendaciones_finales": [
+    {
+      "recomendacion": "Acción sugerida",
+      "prioridad": "alta|media|baja",
+      "justificacion": "Por qué se recomienda"
+    }
+  ],
+  "documentos_analizados": ["Lista de nombres de todos los documentos considerados"],
+  "requiere_abogado": true,
+  "nivel_confianza": "alto|medio|bajo",
+  "notas_adicionales": "Observaciones relevantes sobre la coherencia del conjunto de documentos"
+}
+PROMPT,
         };
 
         return $baseContext . $specificInstructions;
+    }
+
+    /**
+     * Analyze a document with enriched context from supporting documents.
+     *
+     * Builds a multi-document prompt that includes:
+     * 1. The original document's parsed content
+     * 2. A concise summary of the prior analysis
+     * 3. Each supporting document's parsed content (skipped if unparsed)
+     *
+     * @param  Document  $primaryDocument  The original document
+     * @param  DocumentAnalysis  $existingAnalysis  The prior analysis to build upon
+     * @param  Collection<int, Document>  $supportingDocuments  Additional documents for context
+     * @param  AnalysisType  $analysisType  Type of analysis to perform
+     * @param  string|null  $overrideModel  Optional model override
+     * @return array{
+     *     content: array<string, mixed>,
+     *     llm_provider: string,
+     *     llm_model: string,
+     *     input_tokens: int,
+     *     output_tokens: int,
+     *     processing_time_ms: int,
+     *     prompt_metadata: array<string, mixed>,
+     *     skipped_documents: array<string>,
+     * }
+     *
+     * @throws \RuntimeException If the API call fails or response is invalid
+     */
+    public function analyzeWithContext(
+        Document $primaryDocument,
+        DocumentAnalysis $existingAnalysis,
+        Collection $supportingDocuments,
+        AnalysisType $analysisType = AnalysisType::ContextualSummary,
+        ?string $overrideModel = null,
+    ): array {
+        $activeModel = $overrideModel ?? $this->model;
+        @set_time_limit(300);
+        @ini_set('max_execution_time', '300');
+
+        if ($this->apiKey === '') {
+            throw new \RuntimeException('Groq API key is not configured. Set GROQ_API_KEY in .env.');
+        }
+
+        // Gather primary document content
+        $primaryContent = (string) ($primaryDocument->metadata['parsed_compact_content'] ?? '');
+        $maxChunkChars  = ((int) config('llm.analysis.max_chunk_tokens', 4000)) * 4;
+
+        if (mb_strlen($primaryContent) > $maxChunkChars) {
+            $primaryContent = mb_substr($primaryContent, 0, $maxChunkChars)
+                . "\n\n[... TEXTO TRUNCADO POR EXTENSIÓN ...]"; // @phpstan-ignore-line
+        }
+
+        // Build supporting document sections
+        $supportingParts = [];
+        $skippedDocuments = [];
+
+        foreach ($supportingDocuments as $supportDoc) {
+            $supportContent = (string) ($supportDoc->metadata['parsed_compact_content'] ?? '');
+
+            if ($supportContent === '') {
+                $skippedDocuments[] = $supportDoc->original_filename;
+                Log::warning('Supporting document skipped — not yet parsed.', [
+                    'document_id' => $supportDoc->id,
+                    'filename'    => $supportDoc->original_filename,
+                ]);
+                continue;
+            }
+
+            if (mb_strlen($supportContent) > $maxChunkChars) {
+                $supportContent = mb_substr($supportContent, 0, $maxChunkChars)
+                    . "\n\n[... TEXTO TRUNCADO ...]";
+            }
+
+            $supportingParts[] = [
+                'filename' => $supportDoc->original_filename,
+                'content'  => $supportContent,
+            ];
+        }
+
+        $systemPrompt = $this->buildSystemPrompt($analysisType);
+        $userPrompt   = $this->buildContextualUserPrompt(
+            primaryDocument: $primaryDocument,
+            primaryContent: $primaryContent,
+            existingAnalysis: $existingAnalysis,
+            supportingParts: $supportingParts,
+            analysisType: $analysisType,
+        );
+
+        $startTime = microtime(true);
+
+        Log::info('Groq contextual analysis started.', [
+            'document_id'             => $primaryDocument->id,
+            'analysis_id'             => $existingAnalysis->id,
+            'analysis_type'           => $analysisType->value,
+            'supporting_document_count' => count($supportingParts),
+            'skipped_document_count'  => count($skippedDocuments),
+            'model'                   => $activeModel,
+        ]);
+
+        $response = Http::timeout($this->timeoutSeconds)
+            ->withHeaders([
+                'Authorization' => "Bearer {$this->apiKey}",
+                'Content-Type'  => 'application/json',
+            ])
+            ->post("{$this->baseUrl}/chat/completions", [
+                'model'           => $activeModel,
+                'messages'        => [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user', 'content' => $userPrompt],
+                ],
+                'max_tokens'      => $this->maxTokens,
+                'temperature'     => $this->temperature,
+                'response_format' => ['type' => 'json_object'],
+            ]);
+
+        $processingTimeMs = (int) ((microtime(true) - $startTime) * 1000);
+
+        if ($response->failed()) {
+            $errorBody     = $response->body();
+            $decodedError  = json_decode($errorBody, true);
+            $errorMessage  = $decodedError['error']['message'] ?? $errorBody;
+
+            Log::error('Groq contextual analysis API call failed.', [
+                'document_id' => $primaryDocument->id,
+                'status'      => $response->status(),
+                'error'       => mb_substr($errorBody, 0, 500),
+            ]);
+
+            throw new \RuntimeException(
+                "Groq API returned status [{$response->status()}]: " . mb_substr((string) $errorMessage, 0, 200)
+            );
+        }
+
+        $data    = $response->json();
+        $content = $this->extractAnalysisContent($data);
+        $usage   = $data['usage'] ?? [];
+
+        Log::info('Groq contextual analysis completed.', [
+            'document_id'   => $primaryDocument->id,
+            'analysis_type' => $analysisType->value,
+            'input_tokens'  => $usage['prompt_tokens'] ?? 0,
+            'output_tokens' => $usage['completion_tokens'] ?? 0,
+            'processing_time_ms' => $processingTimeMs,
+        ]);
+
+        return [
+            'content'           => $content,
+            'llm_provider'      => 'groq',
+            'llm_model'         => $activeModel,
+            'input_tokens'      => (int) ($usage['prompt_tokens'] ?? 0),
+            'output_tokens'     => (int) ($usage['completion_tokens'] ?? 0),
+            'processing_time_ms'=> $processingTimeMs,
+            'skipped_documents' => $skippedDocuments,
+            'prompt_metadata'   => [
+                'system_prompt_hash'        => hash('sha256', $systemPrompt),
+                'analysis_type'             => $analysisType->value,
+                'document_type'             => $primaryDocument->document_type?->value,
+                'model'                     => $activeModel,
+                'temperature'               => $this->temperature,
+                'max_tokens'                => $this->maxTokens,
+                'prior_analysis_id'         => $existingAnalysis->id,
+                'supporting_document_count' => count($supportingParts),
+                'skipped_documents'         => $skippedDocuments,
+            ],
+        ];
+    }
+
+    /**
+     * Build the user prompt for contextual analysis with multiple documents.
+     *
+     * @param  array<int, array{filename: string, content: string}>  $supportingParts
+     */
+    private function buildContextualUserPrompt(
+        Document $primaryDocument,
+        string $primaryContent,
+        DocumentAnalysis $existingAnalysis,
+        array $supportingParts,
+        AnalysisType $analysisType,
+    ): string {
+        // --- Primary document block ---
+        $primaryHeader = "DOCUMENTO PRINCIPAL: {$primaryDocument->original_filename}";
+        if ($primaryDocument->document_type !== null) {
+            $primaryHeader .= "\nTipo: {$primaryDocument->document_type->label()}";
+        }
+
+        // --- Prior analysis summary block ---
+        $priorContent = $existingAnalysis->content;
+        $priorSummary = '';
+
+        if (isset($priorContent['resumen_general'])) {
+            $priorSummary .= "Resumen previo: {$priorContent['resumen_general']}\n";
+        }
+        if (isset($priorContent['tipo_documento'])) {
+            $priorSummary .= "Tipo identificado previamente: {$priorContent['tipo_documento']}\n";
+        }
+        if (isset($priorContent['nivel_confianza'])) {
+            $priorSummary .= "Nivel de confianza previo: {$priorContent['nivel_confianza']}\n";
+        }
+
+        if ($priorSummary === '') {
+            $priorSummary = 'Análisis previo disponible (ver prompt_metadata para referencia).';
+        }
+
+        // --- Supporting documents block ---
+        $supportingBlock = '';
+        if ($supportingParts !== []) {
+            $supportingBlock = "\n\n" . str_repeat('=', 60) . "\nDOCUMENTOS DE APOYO (".count($supportingParts).")\n" . str_repeat('=', 60);
+            foreach ($supportingParts as $i => $part) {
+                $num = $i + 1;
+                $supportingBlock .= "\n\n--- DOCUMENTO DE APOYO #{$num}: {$part['filename']} ---\n\n{$part['content']}";
+            }
+        }
+
+        $separator = str_repeat('=', 60);
+
+        return <<<PROMPT
+CONTEXTO DEL ANÁLISIS:
+Este es un análisis de tipo "{$analysisType->label()}" que incorpora el contexto de un análisis previo y documentos de apoyo adicionales.
+
+{$primaryHeader}
+
+--- CONTENIDO DEL DOCUMENTO PRINCIPAL ---
+
+{$primaryContent}
+
+{$separator}
+ANÁLISIS PREVIO (resumen)
+{$separator}
+
+{$priorSummary}{$supportingBlock}
+
+{$separator}
+INSTRUCCIÓN
+{$separator}
+Considerando el documento principal, el análisis previo, y todos los documentos de apoyo adjuntos, realiza un análisis de tipo "{$analysisType->label()}" integrado. Identifica relaciones, contradicciones, complementariedades o aclaraciones entre los documentos. Responde siguiendo estrictamente el formato JSON indicado en las instrucciones del sistema.
+PROMPT;
     }
 
     /**

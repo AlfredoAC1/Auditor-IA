@@ -327,7 +327,414 @@
                 </section>
             </div>
         </div>
+
+        {{-- ================================================================ --}}
+        {{-- SUPPORTING DOCUMENTS SECTION (full width, below main grid) --}}
+        {{-- ================================================================ --}}
+        <section id="supporting-docs-section" class="bg-[#161616]/40 border border-violet-500/20 rounded-2xl p-6 flex flex-col gap-5">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <h2 class="text-[15px] font-bold text-white tracking-tight flex items-center gap-2">
+                    <svg class="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    Documentos de Apoyo
+                    <span id="supporting-docs-count" class="ml-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-violet-600/10 text-violet-400 border border-violet-500/20">
+                        {{ $analysis ? $analysis->supportingDocuments()->count() : 0 }}
+                    </span>
+                </h2>
+                <div class="flex items-center gap-3">
+                    <button
+                        id="btn-analyze-context"
+                        type="button"
+                        class="hidden flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-[13px] font-bold text-white transition-all shadow-lg shadow-violet-500/20 cursor-pointer"
+                        onclick="triggerContextualAnalysis()"
+                    >
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.347.347a3.5 3.5 0 01-4.95 0l-.347-.347z" />
+                        </svg>
+                        Analizar con Contexto
+                    </button>
+                    <button
+                        id="btn-attach-doc"
+                        type="button"
+                        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-750 border border-zinc-700 text-[13px] font-bold text-white transition-all cursor-pointer"
+                        onclick="openAttachModal()"
+                    >
+                        <svg class="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Adjuntar Documento
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-[12px] text-zinc-500 leading-relaxed">
+                Adjunta documentos relacionados, referenciados o complementarios a este análisis. La IA podrá acceder a todos ellos para generar un análisis contextual enriquecido.
+            </p>
+
+            {{-- Supporting Documents List --}}
+            <div id="supporting-docs-list" class="flex flex-col gap-3">
+                @php $supportingDocs = $analysis ? $analysis->supportingDocuments()->with('document')->get() : collect(); @endphp
+                @if($supportingDocs->isEmpty())
+                    <div id="empty-state" class="text-center py-8 text-zinc-600 text-[13px] italic flex flex-col items-center gap-2">
+                        <svg class="w-8 h-8 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        Sin documentos de apoyo adjuntos aún.
+                    </div>
+                @else
+                    @foreach($supportingDocs as $pivot)
+                        <div class="supporting-doc-item flex items-center justify-between gap-3 p-4 rounded-xl bg-zinc-900/30 border border-zinc-800/60" data-pivot-id="{{ $pivot->id }}" data-document-id="{{ $pivot->document_id }}">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-8 h-8 rounded-lg bg-violet-600/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col gap-0.5 min-w-0">
+                                    <span class="text-[13px] font-semibold text-white truncate">{{ $pivot->document?->original_filename ?? 'Documento' }}</span>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        @if($pivot->relationship_type)
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-violet-400 bg-violet-600/10 border border-violet-500/10 px-1.5 py-0.5 rounded">
+                                                {{ $pivot->relationshipLabel() }}
+                                            </span>
+                                        @endif
+                                        @if(isset($pivot->document?->metadata['parsed_compact_content']))
+                                            <span class="text-[10px] font-bold text-emerald-400">✓ Procesado</span>
+                                        @else
+                                            <span class="text-[10px] font-bold text-amber-400">⚠ Sin procesar</span>
+                                        @endif
+                                    </div>
+                                    @if($pivot->notes)
+                                        <span class="text-[11px] text-zinc-500 italic truncate">{{ $pivot->notes }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="flex-shrink-0 p-2 rounded-lg hover:bg-rose-500/10 text-zinc-600 hover:text-rose-400 transition-colors cursor-pointer"
+                                title="Desvincular documento"
+                                onclick="detachDocument('{{ $analysis->id }}', '{{ $pivot->document_id }}', this)"
+                            >
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+
+            {{-- Contextual Analysis Result --}}
+            <div id="contextual-result" class="hidden flex flex-col gap-4 pt-4 border-t border-zinc-800/60">
+                <h3 class="text-[14px] font-bold text-white">Resultado del Análisis Contextual</h3>
+                <div id="contextual-result-content" class="text-[12.5px] text-zinc-300 leading-relaxed bg-zinc-900/40 rounded-xl p-4 border border-zinc-800"></div>
+            </div>
+        </section>
+
+        {{-- ================================================================ --}}
+        {{-- ATTACH DOCUMENT MODAL --}}
+        {{-- ================================================================ --}}
+        <div id="attach-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <div class="w-full max-w-lg bg-[#111] border border-zinc-800 rounded-2xl p-6 flex flex-col gap-5 shadow-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-[16px] font-bold text-white">Adjuntar Documento de Apoyo</h3>
+                    <button type="button" onclick="closeAttachModal()" class="text-zinc-500 hover:text-white transition-colors cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <form id="attach-form" onsubmit="submitAttachForm(event)">
+                    @csrf
+                    <div class="flex flex-col gap-4">
+                        <div class="flex flex-col gap-2">
+                            <label for="attach-document-select" class="text-[13px] font-semibold text-zinc-300">Documento de apoyo <span class="text-rose-400">*</span></label>
+                            <select
+                                id="attach-document-select"
+                                name="document_id"
+                                required
+                                class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-[13px] text-white focus:border-violet-500 focus:outline-none transition-colors"
+                            >
+                                <option value="">Seleccionar documento...</option>
+                                @foreach(\App\Models\Document::query()->forOrganization(auth()->user()->organization_id)->where('id', '!=', $document->id)->orderByDesc('created_at')->limit(50)->get() as $doc)
+                                    <option value="{{ $doc->id }}" {{ !isset($doc->metadata['parsed_compact_content']) ? 'data-unparsed=true' : '' }}>
+                                        {{ $doc->original_filename }}{{ !isset($doc->metadata['parsed_compact_content']) ? ' ⚠ (sin procesar)' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="attach-relationship" class="text-[13px] font-semibold text-zinc-300">Tipo de relación</label>
+                            <select id="attach-relationship" name="relationship_type" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-[13px] text-white focus:border-violet-500 focus:outline-none transition-colors">
+                                <option value="">Sin especificar</option>
+                                <option value="referenced">Referenciado — el documento principal lo menciona</option>
+                                <option value="related">Relacionado — misma operación o partes</option>
+                                <option value="clarification">Aclaración — explica o amplía el principal</option>
+                                <option value="complementary">Complementario — aporta contexto adicional</option>
+                            </select>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="attach-notes" class="text-[13px] font-semibold text-zinc-300">Notas <span class="text-zinc-600 font-normal">(opcional)</span></label>
+                            <textarea
+                                id="attach-notes"
+                                name="notes"
+                                rows="2"
+                                maxlength="1000"
+                                placeholder="¿Por qué este documento es relevante para el análisis?"
+                                class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-[13px] text-white placeholder-zinc-600 focus:border-violet-500 focus:outline-none transition-colors resize-none"
+                            ></textarea>
+                        </div>
+
+                        <div id="attach-error" class="hidden text-[12px] text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2"></div>
+
+                        <div class="flex items-center justify-end gap-3 pt-2">
+                            <button type="button" onclick="closeAttachModal()" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-[13px] font-semibold text-zinc-300 transition-colors cursor-pointer">
+                                Cancelar
+                            </button>
+                            <button type="submit" id="attach-submit-btn" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-[13px] font-bold text-white transition-all cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                Adjuntar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     @endif
 
 </div>
+
+@push('scripts')
+<script>
+    const ANALYSIS_ID = '{{ $analysis?->id }}';
+    const API_BASE    = '/api/v1';
+
+    // ---------------------------------------------------------------
+    // Modal helpers
+    // ---------------------------------------------------------------
+    function openAttachModal() {
+        document.getElementById('attach-modal').classList.remove('hidden');
+        document.getElementById('attach-modal').classList.add('flex');
+        document.getElementById('attach-error').classList.add('hidden');
+    }
+
+    function closeAttachModal() {
+        document.getElementById('attach-modal').classList.add('hidden');
+        document.getElementById('attach-modal').classList.remove('flex');
+    }
+
+    // ---------------------------------------------------------------
+    // Attach document
+    // ---------------------------------------------------------------
+    async function submitAttachForm(event) {
+        event.preventDefault();
+        const btn  = document.getElementById('attach-submit-btn');
+        const errEl = document.getElementById('attach-error');
+        const form = document.getElementById('attach-form');
+
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Adjuntando...';
+        errEl.classList.add('hidden');
+
+        const formData = new FormData(form);
+        const body = {
+            document_id:       formData.get('document_id'),
+            relationship_type: formData.get('relationship_type') || null,
+            notes:             formData.get('notes') || null,
+        };
+
+        try {
+            const res = await fetch(`${API_BASE}/analyses/${ANALYSIS_ID}/supporting-documents`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept':       'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(body),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                errEl.textContent = data.message ?? 'Error al adjuntar el documento.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            // Append new item to list UI
+            addDocumentToList(data.supporting_document);
+            updateCount(1);
+            closeAttachModal();
+            form.reset();
+        } catch (e) {
+            errEl.textContent = 'Error de conexión. Intente nuevamente.';
+            errEl.classList.remove('hidden');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> Adjuntar';
+        }
+    }
+
+    function addDocumentToList(doc) {
+        const list = document.getElementById('supporting-docs-list');
+        const empty = document.getElementById('empty-state');
+        if (empty) empty.remove();
+
+        const isParsed = doc.is_parsed;
+        const relLabel = doc.relationship_label || 'Adjunto';
+
+        const div = document.createElement('div');
+        div.className = 'supporting-doc-item flex items-center justify-between gap-3 p-4 rounded-xl bg-zinc-900/30 border border-zinc-800/60';
+        div.setAttribute('data-pivot-id', doc.pivot_id ?? '');
+        div.setAttribute('data-document-id', doc.id ?? '');
+        div.innerHTML = `
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-lg bg-violet-600/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-0.5 min-w-0">
+                    <span class="text-[13px] font-semibold text-white truncate">${escapeHtml(doc.original_filename ?? 'Documento')}</span>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        ${doc.relationship_type ? `<span class="text-[10px] font-bold uppercase tracking-wider text-violet-400 bg-violet-600/10 border border-violet-500/10 px-1.5 py-0.5 rounded">${escapeHtml(relLabel)}</span>` : ''}
+                        <span class="text-[10px] font-bold ${isParsed ? 'text-emerald-400' : 'text-amber-400'}">${isParsed ? '✓ Procesado' : '⚠ Sin procesar'}</span>
+                    </div>
+                    ${doc.notes ? `<span class="text-[11px] text-zinc-500 italic truncate">${escapeHtml(doc.notes)}</span>` : ''}
+                </div>
+            </div>
+            <button type="button" class="flex-shrink-0 p-2 rounded-lg hover:bg-rose-500/10 text-zinc-600 hover:text-rose-400 transition-colors cursor-pointer" title="Desvincular" onclick="detachDocument('${ANALYSIS_ID}', '${doc.id}', this)">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>`;
+        list.appendChild(div);
+        updateAnalyzeButton();
+    }
+
+    // ---------------------------------------------------------------
+    // Detach document
+    // ---------------------------------------------------------------
+    async function detachDocument(analysisId, documentId, btn) {
+        if (!confirm('¿Desvincular este documento de apoyo del análisis?')) return;
+
+        const row = btn.closest('.supporting-doc-item');
+        row.style.opacity = '0.4';
+
+        try {
+            const res = await fetch(`${API_BASE}/analyses/${analysisId}/supporting-documents/${documentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Accept':       'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                },
+                credentials: 'same-origin',
+            });
+
+            if (!res.ok) {
+                row.style.opacity = '1';
+                alert('Error al desvincular. Intente nuevamente.');
+                return;
+            }
+
+            row.remove();
+            updateCount(-1);
+            updateAnalyzeButton();
+
+            const list = document.getElementById('supporting-docs-list');
+            if (list.querySelectorAll('.supporting-doc-item').length === 0) {
+                list.innerHTML = `<div id="empty-state" class="text-center py-8 text-zinc-600 text-[13px] italic flex flex-col items-center gap-2">
+                    <svg class="w-8 h-8 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                    Sin documentos de apoyo adjuntos aún.
+                </div>`;
+            }
+        } catch (e) {
+            row.style.opacity = '1';
+            alert('Error de conexión.');
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // Contextual analysis
+    // ---------------------------------------------------------------
+    async function triggerContextualAnalysis() {
+        const btn = document.getElementById('btn-analyze-context');
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Analizando...';
+
+        try {
+            const res = await fetch(`${API_BASE}/analyses/${ANALYSIS_ID}/analyze-with-context`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept':       'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({ analysis_type: 'contextual_summary' }),
+            });
+
+            const data = await res.json();
+
+            const resultSection = document.getElementById('contextual-result');
+            const resultContent = document.getElementById('contextual-result-content');
+            resultSection.classList.remove('hidden');
+
+            if (!res.ok) {
+                resultContent.innerHTML = `<span class="text-rose-400">${escapeHtml(data.message ?? 'Error en el análisis.')}</span>`;
+            } else {
+                const c = data.content ?? {};
+                let html = '';
+                if (c.resumen_integrado) html += `<p class="font-semibold text-white mb-2">Resumen Integrado</p><p class="mb-4">${escapeHtml(c.resumen_integrado)}</p>`;
+                if (c.nivel_confianza)  html += `<p class="text-[11px] text-zinc-500">Nivel de confianza: <strong class="text-zinc-300">${escapeHtml(c.nivel_confianza)}</strong></p>`;
+                if (data.skipped_documents?.length) html += `<p class="text-[11px] text-amber-400 mt-2">⚠ Documentos omitidos (sin procesar): ${data.skipped_documents.map(escapeHtml).join(', ')}</p>`;
+                if (!html) html = `<pre class="text-[11px] overflow-auto max-h-64">${escapeHtml(JSON.stringify(c, null, 2))}</pre>`;
+                resultContent.innerHTML = html;
+            }
+        } catch (e) {
+            const resultSection = document.getElementById('contextual-result');
+            const resultContent = document.getElementById('contextual-result-content');
+            resultSection.classList.remove('hidden');
+            resultContent.innerHTML = '<span class="text-rose-400">Error de conexión. Intente nuevamente.</span>';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.347.347a3.5 3.5 0 01-4.95 0l-.347-.347z"/></svg> Analizar con Contexto';
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // UI helpers
+    // ---------------------------------------------------------------
+    function updateCount(delta) {
+        const el = document.getElementById('supporting-docs-count');
+        if (!el) return;
+        el.textContent = Math.max(0, parseInt(el.textContent) + delta);
+    }
+
+    function updateAnalyzeButton() {
+        const btn = document.getElementById('btn-analyze-context');
+        const count = document.querySelectorAll('.supporting-doc-item').length;
+        if (count > 0) {
+            btn.classList.remove('hidden');
+        } else {
+            btn.classList.add('hidden');
+        }
+    }
+
+    function escapeHtml(str) {
+        const d = document.createElement('div');
+        d.textContent = String(str ?? '');
+        return d.innerHTML;
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', updateAnalyzeButton);
+</script>
+@endpush
+
 @endsection

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DocumentAnalysis extends Model
 {
@@ -79,6 +81,33 @@ class DocumentAnalysis extends Model
     public function requester(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    /**
+     * Get all supporting-document pivot records for this analysis.
+     *
+     * @return HasMany<AnalysisSupportingDocument, $this>
+     */
+    public function supportingDocuments(): HasMany
+    {
+        return $this->hasMany(AnalysisSupportingDocument::class, 'analysis_id')
+            ->with('document:id,original_filename,status,mime_type,metadata');
+    }
+
+    /**
+     * Get the Document models attached as supporting documents.
+     *
+     * @return BelongsToMany<Document, $this>
+     */
+    public function supportingDocumentFiles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Document::class,
+            'analysis_supporting_documents',
+            'analysis_id',
+            'document_id',
+        )->withPivot(['relationship_type', 'notes', 'attached_by'])
+            ->withTimestamps();
     }
 
     // ---------------------------------------------------------------

@@ -19,7 +19,7 @@
                     Procesamiento integrado activo
                 </span>
             </div>
-            <p class="text-[13px] font-mono text-[#A4D8FF]/70">{{ $analyzedCount }} análisis completados · acceso a todos los tipos de informe</p>
+            <p class="text-[13px] font-mono text-[#A4D8FF]/70">Bienvenido, {{ auth()->user()->name }} · acceso a todos los tipos de informe</p>
         </div>
         <button onclick="document.getElementById('file-input').click()" class="flex items-center gap-2 px-5 py-2.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[13px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer shrink-0 uppercase tracking-wider">
             <svg class="w-4 h-4 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -36,19 +36,7 @@
         <div class="bg-[#0F1E36] border-2 border-[#15181B] text-[#A4D8FF] px-4 py-3.5 shadow-brutal-sm text-[13px] font-mono font-medium">{{ session('error') }}</div>
     @endif
 
-    {{-- Plan usage (storage + documents) --}}
-    <x-plan-usage-card
-        :plan-name="$planConfig['name'] ?? 'Pro'"
-        :plan-slug="$planSlug"
-        :documents-used="$documentsThisMonth"
-        :documents-limit="$planConfig['max_documents_per_month'] ?? null"
-        :analyses-used="$analysesThisMonth"
-        :analyses-limit="$planConfig['max_analyses_per_month'] ?? null"
-        :storage-used-bytes="$storageUsedBytes"
-        :storage-limit-bytes="$planConfig['max_storage_bytes'] ?? null"
-    />
-
-    {{-- AI Credits card (Pro layout: wider, shows model selection note) --}}
+    {{-- AI Credits card --}}
     <x-ai-credits-card
         :credits-remaining="$creditsRemaining"
         :credits-quota="$creditsQuota"
@@ -60,7 +48,7 @@
     />
 
     <!-- Pro metrics -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div class="bg-[#222629] border-2 border-[#35393C] p-5 flex flex-col gap-2 shadow-brutal">
             <span class="text-[12px] font-mono font-bold text-[#A4D8FF] uppercase tracking-wide">Documentos analizados</span>
             <span class="text-4xl font-serif font-extrabold text-[#A4D8FF]">{{ $analyzedCount }}</span>
@@ -75,11 +63,6 @@
             <span class="text-[12px] font-mono font-bold text-[#A4D8FF]/80 uppercase tracking-wide">Tiempo prom. análisis</span>
             <span class="text-4xl font-serif font-extrabold text-[#A4D8FF]">{{ $avgTime }}{{ $avgTime !== '--' ? 's' : '' }}</span>
             <span class="text-[11px] font-mono text-[#A4D8FF]/60">Procesamiento prioritario</span>
-        </div>
-        <div class="bg-[#222629] border-2 border-[#35393C] p-5 flex flex-col gap-2 shadow-brutal">
-            <span class="text-[12px] font-mono font-bold text-[#A4D8FF]/80 uppercase tracking-wide">Tokens este mes</span>
-            <span class="text-4xl font-serif font-extrabold text-[#A4D8FF]">{{ number_format($tokensThisMonth, 0, ',', '.') }}</span>
-            <span class="text-[11px] font-mono text-[#A4D8FF]/60">Todos los proveedores</span>
         </div>
     </div>
 

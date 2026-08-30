@@ -8,7 +8,7 @@
     <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-[#35393C]">
         <div class="flex flex-col gap-1">
             <h1 class="text-2xl md:text-3xl font-serif font-bold text-[#A4D8FF] tracking-tight">Dashboard</h1>
-            <p class="text-[13px] font-mono text-[#A4D8FF]/70">{{ $analyzedCount }} {{ $analyzedCount === 1 ? 'análisis disponible' : 'análisis disponibles' }} en tu organización</p>
+            <p class="text-[13px] font-mono text-[#A4D8FF]/70">Bienvenido, {{ auth()->user()->name }}</p>
         </div>
         <button onclick="document.getElementById('file-input').click()" class="flex items-center gap-2 px-4 py-2.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[13px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider">
             <svg class="w-4 h-4 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -31,18 +31,6 @@
             {{ session('error') }}
         </div>
     @endif
-
-    {{-- Plan usage (storage + documents) --}}
-    <x-plan-usage-card
-        :plan-name="$planConfig['name'] ?? 'Free'"
-        :plan-slug="$planSlug"
-        :documents-used="$documentsThisMonth"
-        :documents-limit="$planConfig['max_documents_per_month'] ?? null"
-        :analyses-used="$analysesThisMonth"
-        :analyses-limit="$planConfig['max_analyses_per_month'] ?? null"
-        :storage-used-bytes="$storageUsedBytes"
-        :storage-limit-bytes="$planConfig['max_storage_bytes'] ?? null"
-    />
 
     {{-- AI Credits card --}}
     <x-ai-credits-card

@@ -33,15 +33,6 @@
                 Mis análisis
             </a>
 
-            <!-- Lorebook Link -->
-            <a href="#" 
-               class="flex items-center gap-3 px-3 py-2.5 text-[13.5px] font-mono text-icy/70 hover:text-icy hover:bg-navy-light border border-transparent transition-all">
-                <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                Lorebook
-            </a>
-
             <!-- Plans Link -->
             <a href="{{ route('landing') }}#planes"
                class="flex items-center gap-3 px-3 py-2.5 text-[13.5px] font-mono text-icy/70 hover:text-icy hover:bg-navy-light border border-transparent transition-all">
@@ -49,6 +40,16 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.907c.961 0 1.36 1.246.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.773-.564-.373-1.81.588-1.81h4.907a1 1 0 00.95-.69l1.519-4.674z" />
                 </svg>
                 Planes
+            </a>
+
+            <!-- Settings Link -->
+            <a href="{{ route('settings') }}"
+               class="flex items-center gap-3 px-3 py-2.5 text-[13.5px] font-mono transition-all {{ request()->is('configuracion*') ? 'bg-navy-dark text-icy font-bold border border-icy/40 shadow-brutal-sm' : 'text-icy/70 hover:text-icy hover:bg-navy-light border border-transparent' }}">
+                <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Configuración
             </a>
         </nav>
 

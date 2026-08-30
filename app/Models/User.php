@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -9,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -27,6 +30,7 @@ class User extends Authenticatable
         'password',
         'organization_id',
         'dismissed_tutorial',
+        'avatar_path',
     ];
 
     /**
@@ -99,5 +103,27 @@ class User extends Authenticatable
     public function hasProAccess(): bool
     {
         return $this->organization?->hasProAccess() ?? false;
+    }
+
+    /**
+     * Return a temporary signed URL for the user's private avatar,
+     * or null if no avatar has been set.
+     */
+    public function avatarUrl(): ?string
+    {
+        if ($this->avatar_path === null) {
+            return null;
+        }
+
+        // Serve via signed route so the private file is never directly exposed.
+        return route('settings.avatar.serve', ['user' => $this->id]);
+    }
+
+    /**
+     * Return the two-letter initials used as an avatar fallback.
+     */
+    public function initials(): string
+    {
+        return strtoupper(mb_substr($this->name, 0, 2));
     }
 }

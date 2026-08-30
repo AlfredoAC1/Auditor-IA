@@ -36,4 +36,12 @@ Route::middleware('auth')->group(function (): void {
 
     Route::post('/user/dismiss-tutorial', [\App\Http\Controllers\UserController::class, 'dismissTutorial'])
         ->name('user.dismiss-tutorial');
+
+    // Account settings
+    Route::get('/configuracion', [\App\Http\Controllers\UserController::class, 'showSettings'])->name('settings');
+    Route::post('/configuracion/profile', [\App\Http\Controllers\UserController::class, 'updateProfile'])->name('settings.profile');
+    Route::post('/configuracion/avatar', [\App\Http\Controllers\UserController::class, 'updateAvatar'])->name('settings.avatar');
+    Route::get('/configuracion/avatar/{user}', [\App\Http\Controllers\UserController::class, 'serveAvatar'])->name('settings.avatar.serve');
+    Route::post('/configuracion/password', [\App\Http\Controllers\UserController::class, 'updatePassword'])->name('settings.password');
+    Route::delete('/configuracion/account', [\App\Http\Controllers\UserController::class, 'deleteAccount'])->name('settings.delete');
 });

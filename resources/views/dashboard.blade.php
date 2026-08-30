@@ -32,6 +32,7 @@
         </div>
     @endif
 
+    {{-- Plan usage (storage + documents) --}}
     <x-plan-usage-card
         :plan-name="$planConfig['name'] ?? 'Free'"
         :plan-slug="$planSlug"
@@ -43,7 +44,19 @@
         :storage-limit-bytes="$planConfig['max_storage_bytes'] ?? null"
     />
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    {{-- AI Credits card --}}
+    <x-ai-credits-card
+        :credits-remaining="$creditsRemaining"
+        :credits-quota="$creditsQuota"
+        :credit-refresh-interval="$creditRefreshInterval"
+        :period-expires-at="$periodExpiresAt"
+        :plan-slug="$planSlug"
+        :plan-name="$planConfig['name'] ?? 'Free'"
+        :allows-model-selection="$allowsModelSelection"
+    />
+
+    {{-- Quick stats --}}
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div class="bg-[#222629] border-2 border-[#35393C] p-5 flex flex-col gap-2 shadow-brutal">
             <span class="text-4xl font-serif font-extrabold text-[#A4D8FF] tracking-tight">{{ $analyzedCount }}</span>
             <span class="text-[12px] font-mono uppercase tracking-wider text-[#A4D8FF]/70">Documentos analizados</span>
@@ -84,5 +97,3 @@
 
 </div>
 @endsection
-
-

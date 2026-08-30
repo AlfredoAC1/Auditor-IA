@@ -35,7 +35,7 @@
                     {{ $planName }}
                 </span>
             </div>
-            <p class="text-[13px] font-mono text-[#A4D8FF]/70">Uso del periodo actual · se renueva cada mes</p>
+            <p class="text-[13px] font-mono text-[#A4D8FF]/70">Uso del periodo actual · se renueva {{ $planSlug === 'free' ? 'semanalmente' : 'cada mes' }}</p>
         </div>
         @if ($planSlug !== 'lifetime')
             <a href="{{ route('landing') }}#planes" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[13px] font-mono font-bold text-[#A4D8FF] shadow-brutal-sm hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all shrink-0 uppercase tracking-wider">

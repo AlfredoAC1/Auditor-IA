@@ -9,7 +9,7 @@ use App\Enums\DocumentStatus;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Services\Documents\DocumentParsingService;
-use App\Services\LLM\GroqAnalysisService;
+use App\Services\LLM\LlmAnalysisService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -91,18 +91,17 @@ class ProcessDocumentJob implements ShouldQueue
 
             // 2. AI Analysis (Dynamic Provider: Groq vs NVIDIA NIM)
             $requestedProvider = (string) ($document->metadata['llm_provider'] ?? config('llm.default_provider', 'groq'));
+            $requestedModel    = (string) config("llm.providers.{$requestedProvider}.model", '');
 
-            /** @var \App\Contracts\LLM\LLMAnalysisServiceInterface $llmService */
-            $llmService = match ($requestedProvider) {
-                'nvidia_nim', 'nvidia' => app(\App\Services\LLM\NvidiaNimAnalysisService::class),
-                default => app(\App\Services\LLM\GroqAnalysisService::class),
-            };
+            /** @var LlmAnalysisService $llmService */
+            $llmService = app(LlmAnalysisService::class);
 
             try {
                 $analysisResult = $llmService->analyze(
                     documentContent: $compactContent,
                     analysisType: AnalysisType::FullSummary,
                     document: $document,
+                    overrideModel: $requestedModel !== '' ? "{$requestedProvider}::{$requestedModel}" : null,
                 );
 
                 DocumentAnalysis::create([

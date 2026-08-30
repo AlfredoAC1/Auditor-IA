@@ -16,7 +16,7 @@ use App\Models\AnalysisSupportingDocument;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Services\Billing\AiCreditService;
-use App\Services\LLM\GroqAnalysisService;
+use App\Services\LLM\LlmAnalysisService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -35,7 +35,7 @@ use Illuminate\Validation\Rule;
 class DocumentAnalysisController extends Controller
 {
     public function __construct(
-        private readonly GroqAnalysisService $groqService,
+        private readonly LlmAnalysisService $llmService,
         private readonly AiCreditService $creditService,
         private readonly AttachSupportingDocumentAction $attachAction,
     ) {}
@@ -112,11 +112,11 @@ class DocumentAnalysisController extends Controller
         }
 
         try {
-            $result = $this->groqService->analyze(
+            $result = $this->llmService->analyze(
                 documentContent: $compactContent,
                 analysisType: $analysisType,
                 document: $document,
-                overrideModel: $aiModel->provider_model_id,
+                overrideModel: "{$aiModel->provider}::{$aiModel->provider_model_id}",
             );
 
             $latestVersion = DocumentAnalysis::query()
@@ -472,12 +472,12 @@ class DocumentAnalysisController extends Controller
         }
 
         try {
-            $result = $this->groqService->analyzeWithContext(
+            $result = $this->llmService->analyzeWithContext(
                 primaryDocument: $primaryDocument,
                 existingAnalysis: $analysis,
                 supportingDocuments: $supportingDocuments,
                 analysisType: $analysisType,
-                overrideModel: $aiModel->provider_model_id,
+                overrideModel: "{$aiModel->provider}::{$aiModel->provider_model_id}",
             );
 
             $latestVersion = DocumentAnalysis::query()

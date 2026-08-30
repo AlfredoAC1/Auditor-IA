@@ -7,8 +7,8 @@ namespace App\Providers;
 use App\Contracts\LLM\LLMAnalysisServiceInterface;
 use App\Services\Documents\DocumentParsingService;
 use App\Services\Documents\DocumentStorageService;
-use App\Services\LLM\GroqAnalysisService;
-use App\Services\LLM\NvidiaNimAnalysisService;
+use App\Services\LLM\LlmAnalysisService;
+use App\Services\LLM\LlmPromptBuilder;
 use App\Services\System\ExternalServiceHealthService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -24,20 +24,18 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(DocumentStorageService::class);
         $this->app->singleton(DocumentParsingService::class);
-        $this->app->singleton(GroqAnalysisService::class);
-        $this->app->singleton(NvidiaNimAnalysisService::class);
         $this->app->singleton(ExternalServiceHealthService::class);
         $this->app->singleton(\App\Services\Documents\DocumentProcessingDispatcher::class);
         $this->app->singleton(\App\Services\Dashboard\DashboardMetricsService::class);
 
-        $this->app->bind(LLMAnalysisServiceInterface::class, function ($app) {
-            $provider = config('llm.default_provider', 'groq');
+        // Prompt builder is stateless — share one instance
+        $this->app->singleton(LlmPromptBuilder::class);
 
-            return match ($provider) {
-                'nvidia_nim', 'nvidia' => $app->make(NvidiaNimAnalysisService::class),
-                default => $app->make(GroqAnalysisService::class),
-            };
-        });
+        // Unified LLM analysis service (resolves provider at call-time, not boot-time)
+        $this->app->singleton(LlmAnalysisService::class);
+
+        // Bind the interface to the unified service
+        $this->app->bind(LLMAnalysisServiceInterface::class, LlmAnalysisService::class);
     }
 
     /**

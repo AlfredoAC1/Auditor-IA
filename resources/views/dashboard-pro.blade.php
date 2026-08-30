@@ -36,6 +36,7 @@
         <div class="bg-[#0F1E36] border-2 border-[#15181B] text-[#A4D8FF] px-4 py-3.5 shadow-brutal-sm text-[13px] font-mono font-medium">{{ session('error') }}</div>
     @endif
 
+    {{-- Plan usage (storage + documents) --}}
     <x-plan-usage-card
         :plan-name="$planConfig['name'] ?? 'Pro'"
         :plan-slug="$planSlug"
@@ -45,6 +46,17 @@
         :analyses-limit="$planConfig['max_analyses_per_month'] ?? null"
         :storage-used-bytes="$storageUsedBytes"
         :storage-limit-bytes="$planConfig['max_storage_bytes'] ?? null"
+    />
+
+    {{-- AI Credits card (Pro layout: wider, shows model selection note) --}}
+    <x-ai-credits-card
+        :credits-remaining="$creditsRemaining"
+        :credits-quota="$creditsQuota"
+        :credit-refresh-interval="$creditRefreshInterval"
+        :period-expires-at="$periodExpiresAt"
+        :plan-slug="$planSlug"
+        :plan-name="$planConfig['name'] ?? 'Pro'"
+        :allows-model-selection="$allowsModelSelection"
     />
 
     <!-- Pro metrics -->
@@ -67,7 +79,7 @@
         <div class="bg-[#222629] border-2 border-[#35393C] p-5 flex flex-col gap-2 shadow-brutal">
             <span class="text-[12px] font-mono font-bold text-[#A4D8FF]/80 uppercase tracking-wide">Tokens este mes</span>
             <span class="text-4xl font-serif font-extrabold text-[#A4D8FF]">{{ number_format($tokensThisMonth, 0, ',', '.') }}</span>
-            <span class="text-[11px] font-mono text-[#A4D8FF]/60">Límite: {{ isset($planConfig['max_tokens_per_month']) && $planConfig['max_tokens_per_month'] ? number_format($planConfig['max_tokens_per_month'], 0, ',', '.') : 'Ilimitado' }}</span>
+            <span class="text-[11px] font-mono text-[#A4D8FF]/60">Todos los proveedores</span>
         </div>
     </div>
 
@@ -120,5 +132,3 @@
 
 </div>
 @endsection
-
-

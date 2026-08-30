@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Inicia sesión en Auditor-IA para comenzar a analizar tus contratos legales.">
     <title>Iniciar Sesión - Auditor-IA</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo.png') }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,28 +25,28 @@
         }
     </style>
 </head>
-<body class="bg-[#15181B] text-[#A4D8FF] antialiased min-h-screen flex items-center justify-center p-4">
+<body class="bg-gunmetal-dark text-icy antialiased min-h-screen flex items-center justify-center p-4">
 
     <!-- Login Card Container -->
-    <div class="w-full max-w-[460px] bg-[#222629] border-2 border-[#35393C] p-8 md:p-10 shadow-brutal flex flex-col gap-8">
+    <div class="w-full max-w-115 bg-gunmetal-card border-2 border-gunmetal p-8 md:p-10 shadow-brutal flex flex-col gap-8">
         
         <!-- Header & Logo -->
         <div class="flex flex-col gap-6">
             <a href="{{ route('landing') }}" class="flex items-center gap-3 group">
-                <img src="{{ asset('images/logo.png') }}" alt="Auditor-IA Logo" class="h-10 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_8px_rgba(164,216,255,0.25)]">
-                <img src="{{ asset('images/text-logo.png') }}" alt="Auditor-IA" class="h-7 w-auto object-contain group-hover:brightness-110 transition-all">
+                <img src="{{ asset('images/logo.png') }}" alt="Auditor-IA Logo" class="h-12 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_8px_rgba(164,216,255,0.25)]">
+                <img src="{{ asset('images/text-logo.png') }}" alt="Auditor-IA" class="h-8 w-auto object-contain group-hover:brightness-110 transition-all">
             </a>
             
             <div class="flex flex-col gap-2">
-                <h1 id="login-title" class="text-[32px] font-serif font-bold text-[#A4D8FF] tracking-tight leading-none">Bienvenido</h1>
-                <p class="text-[14px] font-mono text-[#A4D8FF]/70">Analiza contratos con IA antes de firmar.</p>
+                <h1 id="login-title" class="text-[32px] font-serif font-bold text-icy tracking-tight leading-none">Bienvenido</h1>
+                <p class="text-[14px] font-mono text-icy/70">Analiza contratos con IA antes de firmar.</p>
             </div>
         </div>
 
         <!-- Action Area -->
         <div class="flex flex-col gap-6">
             <!-- Google Sign-In Button -->
-            <button class="w-full py-3 px-4 bg-[#15181B] border-2 border-[#35393C] hover:bg-[#162A45] text-[13px] font-mono font-bold text-[#A4D8FF] flex items-center justify-center gap-3 shadow-brutal-sm transition-all cursor-pointer uppercase tracking-wider">
+            <button class="w-full py-3 px-4 bg-gunmetal-dark border-2 border-gunmetal hover:bg-navy-light text-[13px] font-mono font-bold text-icy flex items-center justify-center gap-3 shadow-brutal-sm transition-all cursor-pointer uppercase tracking-wider">
                 <!-- SVG Google Icon -->
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -57,55 +60,55 @@
             <!-- Divider -->
             <div class="relative flex items-center justify-center">
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div class="w-full border-t border-[#35393C]"></div>
+                    <div class="w-full border-t border-gunmetal"></div>
                 </div>
-                <div class="relative bg-[#222629] px-3 text-[12px] font-mono font-bold text-[#A4D8FF]/60 uppercase tracking-widest">o</div>
+                <div class="relative bg-gunmetal-card px-3 text-[12px] font-mono font-bold text-icy/60 uppercase tracking-widest">o</div>
             </div>
 
             <!-- Form -->
             <form action="{{ route('login.store') }}" method="POST" class="flex flex-col gap-5">
                 @csrf
                 @if(session('error'))
-                    <div class="bg-[#0F1E36] border-2 border-[#15181B] text-[#A4D8FF] px-4 py-3 text-[13px] font-mono">
+                    <div class="bg-navy-dark border-2 border-gunmetal-dark text-icy px-4 py-3 text-[13px] font-mono">
                         {{ session('error') }}
                     </div>
                 @endif
 
-                <div class="bg-[#15181B] border-2 border-[#35393C] p-4 text-[12px] font-mono text-[#A4D8FF]/70 leading-relaxed shadow-brutal-sm">
-                    <p class="font-bold text-[#A4D8FF] uppercase mb-1">Cuentas de prueba</p>
-                    <p>Free: <span class="text-[#A4D8FF] font-bold">free@auditor-ia.test</span></p>
-                    <p>Pro: <span class="text-[#A4D8FF] font-bold">pro@auditor-ia.test</span></p>
-                    <p class="mt-1">Contraseña: <span class="text-[#A4D8FF] font-bold">password</span></p>
+                <div class="bg-gunmetal-dark border-2 border-gunmetal p-4 text-[12px] font-mono text-icy/70 leading-relaxed shadow-brutal-sm">
+                    <p class="font-bold text-icy uppercase mb-1">Cuentas de prueba</p>
+                    <p>Free: <span class="text-icy font-bold">free@auditor-ia.test</span></p>
+                    <p>Pro: <span class="text-icy font-bold">pro@auditor-ia.test</span></p>
+                    <p class="mt-1">Contraseña: <span class="text-icy font-bold">password</span></p>
                 </div>
                 <!-- Email Field -->
                 <div class="flex flex-col gap-2">
-                    <label for="email" class="text-[13px] font-mono font-bold text-[#A4D8FF]">Correo electrónico</label>
+                    <label for="email" class="text-[13px] font-mono font-bold text-icy">Correo electrónico</label>
                     <input type="email" id="email" name="email" required placeholder="pro@auditor-ia.test" value="{{ old('email') }}"
-                           class="w-full py-3 px-4 bg-[#15181B] border-2 border-[#35393C] focus:border-[#A4D8FF] text-[14px] font-mono text-[#A4D8FF] placeholder-[#A4D8FF]/40 outline-none transition-all" />
+                           class="w-full py-3 px-4 bg-gunmetal-dark border-2 border-gunmetal focus:border-icy text-[14px] font-mono text-icy placeholder-icy/40 outline-none transition-all" />
                 </div>
 
                 <!-- Password Field -->
                 <div class="flex flex-col gap-2">
-                    <label for="password" class="text-[13px] font-mono font-bold text-[#A4D8FF]">Contraseña</label>
+                    <label for="password" class="text-[13px] font-mono font-bold text-icy">Contraseña</label>
                     <input type="password" id="password" name="password" required placeholder="••••••••" 
-                           class="w-full py-3 px-4 bg-[#15181B] border-2 border-[#35393C] focus:border-[#A4D8FF] text-[14px] font-mono text-[#A4D8FF] placeholder-[#A4D8FF]/40 outline-none transition-all" />
+                           class="w-full py-3 px-4 bg-gunmetal-dark border-2 border-gunmetal focus:border-icy text-[14px] font-mono text-icy placeholder-icy/40 outline-none transition-all" />
                 </div>
 
                 <!-- Submit Button -->
                 <button type="submit" 
-                        class="w-full mt-2 py-3 px-4 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[14px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider text-center">
+                        class="w-full mt-2 py-3 px-4 bg-navy-dark hover:bg-navy-light border border-icy/40 text-[14px] font-mono font-bold text-icy shadow-brutal hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all cursor-pointer uppercase tracking-wider text-center">
                     Iniciar sesión
                 </button>
             </form>
         </div>
 
         <!-- Footer -->
-        <div class="flex flex-col gap-2 text-center text-[13px] font-mono text-[#A4D8FF]/70">
+        <div class="flex flex-col gap-2 text-center text-[13px] font-mono text-icy/70">
             <div>
-                ¿No tienes cuenta? <a href="#" class="text-[#A4D8FF] font-bold hover:underline transition-colors">Regístrate gratis</a>
+                ¿No tienes cuenta? <a href="#" class="text-icy font-bold hover:underline transition-colors">Regístrate gratis</a>
             </div>
-            <div class="text-[12px] text-[#A4D8FF]/50">
-                Al ingresar o registrarte, aceptas nuestros <a href="{{ route('terms') }}" class="text-[#A4D8FF]/80 hover:text-[#A4D8FF] underline">Términos y Condiciones</a>.
+            <div class="text-[12px] text-icy/50">
+                Al ingresar o registrarte, aceptas nuestros <a href="{{ route('terms') }}" class="text-icy/80 hover:text-icy underline">Términos y Condiciones</a>.
             </div>
         </div>
 
@@ -115,6 +118,3 @@
 
 </body>
 </html>
-
-
-

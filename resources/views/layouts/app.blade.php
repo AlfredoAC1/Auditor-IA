@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Auditor-IA - Analiza contratos con inteligencia artificial antes de firmar. Detecta cláusulas de riesgo, normativas aplicables y obtén resúmenes simplificados.">
     <title>@yield('title', 'Auditor-IA - Análisis de Contratos con IA')</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo.png') }}">
 
     <!-- Google Fonts: Plus Jakarta Sans, Space Grotesk, JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

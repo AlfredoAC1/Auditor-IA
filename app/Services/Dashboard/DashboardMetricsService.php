@@ -6,11 +6,11 @@ namespace App\Services\Dashboard;
 
 use App\Enums\AnalysisType;
 use App\Enums\DocumentStatus;
-use App\Models\AiCreditLedger;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Models\Organization;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -31,7 +31,7 @@ final class DashboardMetricsService
      *     creditsRemaining: int,
      *     creditsQuota: int,
      *     creditRefreshInterval: string,
-     *     periodExpiresAt: ?\Carbon\Carbon,
+     *     periodExpiresAt: ?Carbon,
      *     allowsModelSelection: bool,
      *     analysisTypeCounts: array<string, int>,
      *     pendingDocumentIds: list<string>,
@@ -53,27 +53,28 @@ final class DashboardMetricsService
         $totalTimeMs = 0;
         $timeCount = 0;
 
-        foreach ($documents as $doc) {
-            $latestAnalysis = DocumentAnalysis::query()
-                ->where('document_id', $doc->id)
+        if ($documents->isNotEmpty()) {
+            $documentIds = $documents->pluck('id')->all();
+
+            $latestAnalyses = DocumentAnalysis::query()
+                ->whereIn('document_id', $documentIds)
                 ->where('status', DocumentStatus::Processed)
                 ->orderByDesc('created_at')
-                ->first();
+                ->get()
+                ->unique('document_id');
 
-            if ($latestAnalysis === null) {
-                continue;
-            }
+            foreach ($latestAnalyses as $latestAnalysis) {
+                $content = $latestAnalysis->content;
+                if (isset($content['riesgos_identificados']) && is_array($content['riesgos_identificados'])) {
+                    $riskCount += count($content['riesgos_identificados']);
+                } elseif (isset($content['riesgos']) && is_array($content['riesgos'])) {
+                    $riskCount += count($content['riesgos']);
+                }
 
-            $content = $latestAnalysis->content;
-            if (isset($content['riesgos_identificados']) && is_array($content['riesgos_identificados'])) {
-                $riskCount += count($content['riesgos_identificados']);
-            } elseif (isset($content['riesgos']) && is_array($content['riesgos'])) {
-                $riskCount += count($content['riesgos']);
-            }
-
-            if ($latestAnalysis->processing_time_ms > 0) {
-                $totalTimeMs += $latestAnalysis->processing_time_ms;
-                $timeCount++;
+                if ($latestAnalysis->processing_time_ms > 0) {
+                    $totalTimeMs += $latestAnalysis->processing_time_ms;
+                    $timeCount++;
+                }
             }
         }
 

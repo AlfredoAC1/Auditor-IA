@@ -1,6 +1,6 @@
 {{-- First Entry Terms & Requirements Pop-Up Modal Component --}}
 <div id="terms-popup-container" class="relative z-[99999] hidden">
-    {{-- Dark Backdrop Blur Overlay --}}
+    {{-- Dark Backdrop Overlay --}}
     <div id="terms-popup-backdrop" 
          class="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-auto"
          style="z-index: 99998;"></div>
@@ -10,28 +10,25 @@
          class="fixed inset-0 flex items-center justify-center p-4 sm:p-6"
          style="z-index: 99999;">
         
-        <div class="relative w-full max-w-2xl bg-[#141414] border border-zinc-800/90 rounded-3xl shadow-2xl shadow-violet-950/20 backdrop-blur-xl flex flex-col max-h-[90vh] overflow-hidden transform transition-all duration-300 scale-95 opacity-0">
+        <div class="relative w-full max-w-2xl bg-[#222629] border-2 border-[#35393C] shadow-brutal flex flex-col max-h-[90vh] overflow-hidden transform transition-all duration-300 scale-95 opacity-0">
             
-            {{-- Top Decorative Glow --}}
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-violet-600/15 rounded-full blur-3xl pointer-events-none"></div>
-
             {{-- Header --}}
-            <div class="relative p-6 sm:p-8 border-b border-zinc-800/80 flex items-start justify-between gap-4 bg-zinc-950/40">
+            <div class="relative p-6 sm:p-8 border-b-2 border-[#35393C] flex items-start justify-between gap-4 bg-[#15181B]">
                 <div class="flex items-start gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center shrink-0 shadow-lg shadow-violet-500/20 mt-1">
-                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <div class="w-12 h-12 bg-[#0F1E36] border border-[#A4D8FF]/40 flex items-center justify-center shrink-0 shadow-brutal-sm mt-1">
+                        <svg class="w-6 h-6 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
                     </div>
                     <div class="space-y-1">
-                        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-[11px] font-semibold text-violet-300 uppercase tracking-wider">
-                            <span class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse"></span>
+                        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-[#0F1E36] border border-[#A4D8FF]/40 text-[11px] font-mono font-bold text-[#A4D8FF] uppercase tracking-wider">
+                            <span class="w-1.5 h-1.5 bg-[#A4D8FF]"></span>
                             Aviso de Entrada · Términos & Requisitos
                         </div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                        <h2 class="text-xl sm:text-2xl font-serif font-bold text-[#A4D8FF] tracking-tight">
                             Antes de comenzar en Auditor-IA
                         </h2>
-                        <p class="text-xs sm:text-sm text-zinc-400">
+                        <p class="text-xs sm:text-sm font-mono text-[#A4D8FF]/70">
                             Por favor lee y acepta las condiciones legales y requisitos esenciales de uso del servicio.
                         </p>
                     </div>
@@ -39,54 +36,54 @@
             </div>
 
             {{-- Body Content (Scrollable) --}}
-            <div class="p-6 sm:p-8 overflow-y-auto space-y-6 text-zinc-300 text-xs sm:text-sm leading-relaxed scrollbar-thin scrollbar-thumb-zinc-800">
+            <div class="p-6 sm:p-8 overflow-y-auto space-y-6 text-[#A4D8FF]/90 text-xs sm:text-sm leading-relaxed">
                 
                 {{-- Alert Banner --}}
-                <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 flex items-start gap-3 text-xs sm:text-[13px]">
-                    <svg class="w-5 h-5 shrink-0 text-amber-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <div class="p-4 bg-[#15181B] border-2 border-[#35393C] text-[#A4D8FF] flex items-start gap-3 text-xs sm:text-[13px] font-mono shadow-brutal-sm">
+                    <svg class="w-5 h-5 shrink-0 text-[#A4D8FF] mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                     <div>
-                        <span class="font-bold">Requisito Obligatorio:</span> Todo usuario que navegue o se registre en Auditor-IA declara comprender los alcances de la Inteligencia Artificial y la normativa legal aplicable en Chile.
+                        <span class="font-bold uppercase">Requisito Obligatorio:</span> Todo usuario que navegue o se registre en Auditor-IA declara comprender los alcances de la Inteligencia Artificial y la normativa legal aplicable en Chile.
                     </div>
                 </div>
 
                 {{-- Points Grid --}}
                 <div class="space-y-4">
                     {{-- Item 1 --}}
-                    <div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 space-y-1.5">
-                        <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                            <span class="text-violet-400">01.</span> Exclusión de Asesoría Legal Profesional
+                    <div class="p-4 bg-[#15181B] border-2 border-[#35393C] space-y-1.5 shadow-brutal-sm">
+                        <h3 class="text-xs font-serif font-bold text-[#A4D8FF] uppercase tracking-wider flex items-center gap-2">
+                            <span class="font-mono text-[#A4D8FF]">01.</span> Exclusión de Asesoría Legal Profesional
                         </h3>
-                        <p class="text-zinc-400 text-xs leading-relaxed">
+                        <p class="text-[#A4D8FF]/80 text-xs leading-relaxed font-sans">
                             Auditor-IA es una herramienta SaaS asistida por IA. No es una firma de abogados ni emite dictámenes jurídicos ni representación legal según el Código Orgánico de Tribunales de Chile. Los análisis deben ser validados por un abogado colegiado antes de tomar decisiones vinculantes.
                         </p>
                     </div>
 
                     {{-- Item 2 --}}
-                    <div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 space-y-1.5">
-                        <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                            <span class="text-violet-400">02.</span> Carácter Probabilístico y Exoneración
+                    <div class="p-4 bg-[#15181B] border-2 border-[#35393C] space-y-1.5 shadow-brutal-sm">
+                        <h3 class="text-xs font-serif font-bold text-[#A4D8FF] uppercase tracking-wider flex items-center gap-2">
+                            <span class="font-mono text-[#A4D8FF]">02.</span> Carácter Probabilístico y Exoneración
                         </h3>
-                        <p class="text-zinc-400 text-xs leading-relaxed">
+                        <p class="text-[#A4D8FF]/80 text-xs leading-relaxed font-sans">
                             Los reportes generados son análisis estadísticos basados en modelos LLM. El usuario exonera a Auditor-IA de cualquier responsabilidad por pérdidas o decisiones comerciales derivadas de la suscripción o firma de contratos (Ley N° 19.496).
                         </p>
                     </div>
 
                     {{-- Item 3 --}}
-                    <div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 space-y-1.5">
-                        <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                            <span class="text-violet-400">03.</span> Privacidad y Aislamiento Multi-Tenant
+                    <div class="p-4 bg-[#15181B] border-2 border-[#35393C] space-y-1.5 shadow-brutal-sm">
+                        <h3 class="text-xs font-serif font-bold text-[#A4D8FF] uppercase tracking-wider flex items-center gap-2">
+                            <span class="font-mono text-[#A4D8FF]">03.</span> Privacidad y Aislamiento Multi-Tenant
                         </h3>
-                        <p class="text-zinc-400 text-xs leading-relaxed">
+                        <p class="text-[#A4D8FF]/80 text-xs leading-relaxed font-sans">
                             Tus documentos se cifran y aíslan bajo la Ley N° 19.628 sobre Protección de la Vida Privada. Tus contratos nunca son comercializados ni utilizados para reentrenar modelos públicos.
                         </p>
                     </div>
                 </div>
 
-                <div class="pt-2 flex items-center justify-between border-t border-zinc-800/60 text-xs text-zinc-400">
+                <div class="pt-2 flex items-center justify-between border-t border-[#35393C] text-xs font-mono text-[#A4D8FF]/70">
                     <span>¿Deseas revisar el documento legal completo?</span>
-                    <a href="{{ route('terms') }}" target="_blank" class="text-violet-400 hover:text-violet-300 font-semibold underline transition-colors flex items-center gap-1">
+                    <a href="{{ route('terms') }}" target="_blank" class="text-[#A4D8FF] font-bold underline hover:underline transition-colors flex items-center gap-1">
                         Leer Términos y Condiciones
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -97,30 +94,30 @@
             </div>
 
             {{-- Footer / Action Area --}}
-            <div class="p-6 sm:p-8 bg-zinc-950/80 border-t border-zinc-800/80 flex flex-col gap-4">
+            <div class="p-6 sm:p-8 bg-[#15181B] border-t-2 border-[#35393C] flex flex-col gap-4">
                 
                 {{-- Mandatory Checkbox --}}
                 <label class="flex items-start gap-3 cursor-pointer select-none group">
-                    <input type="checkbox" id="terms-popup-checkbox" class="mt-0.5 w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500 focus:ring-offset-zinc-950 cursor-pointer">
-                    <span class="text-xs text-zinc-300 group-hover:text-white transition-colors leading-normal">
+                    <input type="checkbox" id="terms-popup-checkbox" class="mt-0.5 w-4 h-4 rounded-none border-2 border-[#35393C] bg-[#15181B] accent-[#0F1E36] cursor-pointer">
+                    <span class="text-xs font-mono text-[#A4D8FF]/80 group-hover:text-[#A4D8FF] transition-colors leading-normal">
                         Entiendo y acepto los <strong>Términos de Uso, Requisitos y la Exclusión de Responsabilidad Legal</strong> para navegar y registrarme en Auditor-IA.
                     </span>
                 </label>
 
-                <div id="terms-popup-warning" class="hidden text-xs text-rose-400 font-medium">
+                <div id="terms-popup-warning" class="hidden text-xs font-mono text-[#A4D8FF] font-bold">
                     * Debes marcar la casilla para confirmar que has leído los términos antes de continuar.
                 </div>
 
                 {{-- Action Buttons --}}
                 <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
-                    <a href="{{ route('terms') }}" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-transparent border border-zinc-700/60 hover:bg-zinc-800/30 text-xs font-semibold text-zinc-300 transition-all text-center">
+                    <a href="{{ route('terms') }}" class="w-full sm:w-auto px-5 py-3 bg-[#15181B] border-2 border-[#35393C] hover:bg-[#162A45] text-xs font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all text-center uppercase tracking-wider">
                         Ver Términos Completos
                     </a>
 
                     <button type="button" 
                             id="terms-popup-accept-btn" 
                             onclick="handleAcceptTermsPopup()"
-                            class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-xs sm:text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition-all cursor-pointer text-center">
+                            class="w-full sm:w-auto px-6 py-3 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-xs sm:text-sm font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer text-center uppercase tracking-wider">
                         Aceptar y Continuar
                     </button>
                 </div>
@@ -228,3 +225,5 @@
         });
     });
 </script>
+
+

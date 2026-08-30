@@ -3,34 +3,36 @@
     'currentProvider' => 'groq',
 ])
 
-<form id="upload-zone" action="{{ route('dashboard.upload') }}" method="POST" enctype="multipart/form-data" class="bg-[#161616]/40 border-2 border-dashed {{ $isPro ? 'border-violet-500/30 hover:border-violet-500/50' : 'border-zinc-850 hover:border-zinc-750' }} rounded-2xl p-8 md:p-12 flex flex-col items-center justify-center gap-6 transition-colors duration-300">
+<form id="upload-zone" action="{{ route('dashboard.upload') }}" method="POST" enctype="multipart/form-data" class="bg-[#222629] border-2 border-dashed border-[#35393C] hover:border-[#A4D8FF]/80 p-8 md:p-12 flex flex-col items-center justify-center gap-6 shadow-brutal transition-colors">
     @csrf
     <input type="hidden" name="llm_provider" value="{{ $currentProvider }}">
     <input type="file" name="file" id="file-input" class="hidden" accept=".pdf,.docx" onchange="this.form.submit()">
 
-    <div onclick="document.getElementById('file-input').click()" class="w-14 h-14 rounded-2xl {{ $isPro ? 'bg-violet-600/20 border-violet-500/30' : 'bg-violet-600/10 border-violet-500/20' }} border flex items-center justify-center text-violet-400 shadow-inner cursor-pointer hover:bg-violet-600/20 transition-colors">
+    <div onclick="document.getElementById('file-input').click()" class="w-14 h-14 bg-[#0F1E36] border-2 border-[#15181B] flex items-center justify-center text-[#A4D8FF] shadow-brutal-sm cursor-pointer hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all">
         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
     </div>
 
     <div class="flex flex-col gap-2 text-center">
-        <h2 class="text-lg font-bold text-white tracking-tight">Arrastra tu documento aquí</h2>
-        <p class="text-[13px] text-zinc-400 leading-relaxed">
+        <h2 class="text-xl font-serif font-bold text-[#A4D8FF] tracking-tight">Arrastra tu documento aquí</h2>
+        <p class="text-[13px] font-mono text-[#A4D8FF]/70 leading-relaxed">
             PDF o DOCX · hasta 50MB · en español <br>
-            <span class="text-xs text-zinc-400">Procesando con proveedor: <strong class="{{ $currentProvider === 'nvidia_nim' ? 'text-emerald-400' : 'text-violet-400' }}">{{ $currentProvider === 'nvidia_nim' ? 'NVIDIA NIM (40 RPM)' : 'Groq Cloud' }}</strong></span>
+            <span class="text-xs font-mono text-[#A4D8FF]/80">Procesando con proveedor: <strong class="text-[#A4D8FF] font-bold underline">{{ $currentProvider === 'nvidia_nim' ? 'NVIDIA NIM (40 RPM)' : 'Groq Cloud' }}</strong></span>
         </p>
     </div>
 
     <div class="flex flex-col sm:flex-row items-center gap-3">
-        <button type="button" onclick="document.getElementById('file-input').click()" class="px-5 py-2.5 rounded-xl border border-zinc-700/60 hover:bg-zinc-800/30 text-[13px] font-semibold text-zinc-300 flex items-center gap-2 transition-colors cursor-pointer">
+        <button type="button" onclick="document.getElementById('file-input').click()" class="px-5 py-2.5 bg-[#15181B] border border-[#35393C] text-[13px] font-mono font-bold text-[#A4D8FF] shadow-brutal-sm hover:bg-[#162A45] transition-colors cursor-pointer uppercase tracking-wider">
             Explorar archivos
         </button>
-        <button type="button" onclick="document.getElementById('file-input').click()" class="px-5 py-2.5 rounded-xl {{ $isPro ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500' : 'bg-violet-600 hover:bg-violet-500' }} text-[13px] font-bold text-white flex items-center gap-2 shadow-lg shadow-violet-500/10 transition-all duration-200 cursor-pointer">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <button type="button" onclick="document.getElementById('file-input').click()" class="px-5 py-2.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[13px] font-mono font-bold text-[#A4D8FF] flex items-center gap-2 shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider">
+            <svg class="w-4 h-4 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
             Subir y analizar
         </button>
     </div>
 </form>
+
+

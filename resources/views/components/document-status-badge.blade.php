@@ -1,23 +1,25 @@
 @props(['status'])
 
 @if($status === 'processed')
-    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10.5px] font-mono font-bold bg-[#1B4332] text-[#A4D8FF] border border-[#15181B] shadow-brutal-sm uppercase tracking-wider">
+        <span class="w-1.5 h-1.5 bg-[#A4D8FF]"></span>
         Listo
     </span>
 @elseif($status === 'processing')
-    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse">
-        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10.5px] font-mono font-bold bg-[#162A45] text-[#A4D8FF] border border-[#15181B] shadow-brutal-sm uppercase tracking-wider animate-pulse">
+        <span class="w-1.5 h-1.5 bg-[#A4D8FF]"></span>
         Analizando...
     </span>
 @elseif($status === 'failed')
-    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-        <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10.5px] font-mono font-bold bg-[#0F1E36] text-[#A4D8FF] border border-[#15181B] shadow-brutal-sm uppercase tracking-wider">
+        <span class="w-1.5 h-1.5 bg-[#A4D8FF]"></span>
         Falló
     </span>
 @else
-    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">
-        <span class="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse"></span>
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10.5px] font-mono font-bold bg-[#15181B] text-[#A4D8FF]/80 border border-[#35393C] shadow-brutal-sm uppercase tracking-wider">
+        <span class="w-1.5 h-1.5 bg-[#A4D8FF]/60 animate-pulse"></span>
         Pendiente
     </span>
 @endif
+
+

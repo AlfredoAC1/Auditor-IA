@@ -102,6 +102,7 @@
     }
 
     let currentStepIndex = 0;
+    let isDismissSaved = false;
 
     function initTutorial() {
         const container = document.getElementById('tutorial-container');
@@ -208,13 +209,16 @@
             }, 300);
         }
 
-        // Only save state to DB if the "Don't show again" checkbox is checked
-        if (dontShowAgain) {
+        // Only save state to DB if the "Don't show again" checkbox is checked or completed
+        if (dontShowAgain || completed) {
             saveDismissState();
         }
     }
 
     function saveDismissState() {
+        if (isDismissSaved) return;
+        isDismissSaved = true;
+
         fetch("{{ route('user.dismiss-tutorial') }}", {
             method: "POST",
             headers: {
@@ -226,15 +230,26 @@
         .then(response => {
             if (!response.ok) {
                 console.error("Error saving tutorial dismissal state.");
+                isDismissSaved = false;
             }
         })
         .catch(error => {
             console.error("AJAX Error:", error);
+            isDismissSaved = false;
         });
     }
 
     // Auto-initialize tutorial when page loads
     document.addEventListener("DOMContentLoaded", function() {
+        const dontShowAgainCheckbox = document.getElementById('tutorial-dont-show-again');
+        if (dontShowAgainCheckbox) {
+            dontShowAgainCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    saveDismissState();
+                }
+            });
+        }
+
         // Only launch tutorial if we are on the main dashboard view
         const path = window.location.pathname;
         if (path.endsWith('/dashboard') || path.includes('/dashboard')) {

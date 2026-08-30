@@ -6,6 +6,8 @@
     <meta name="description" content="@yield('meta_description', 'Auditor-IA — Analiza contratos legales con inteligencia artificial antes de firmar.')">
     <title>@yield('title', 'Auditor-IA')</title>
 
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -29,14 +31,10 @@
 <body class="bg-[#15181B] text-[#E2F1FF] antialiased min-h-screen flex flex-col selection:bg-[#0F1E36] selection:text-[#A4D8FF]">
 
     <header class="w-full border-b-2 border-[#35393C] bg-[#15181B] sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
             <a href="{{ route('landing') }}" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 bg-[#0F1E36] border border-[#A4D8FF]/40 flex items-center justify-center shadow-brutal-sm rounded-none">
-                    <svg class="w-5 h-5 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
-                <span class="text-lg font-serif font-bold tracking-tight text-[#A4D8FF] group-hover:text-white transition-colors">Auditor-IA</span>
+                <img src="{{ asset('images/logo.png') }}" alt="Auditor-IA Logo" class="h-9 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_8px_rgba(164,216,255,0.2)]">
+                <img src="{{ asset('images/text-logo.png') }}" alt="Auditor-IA" class="h-6 w-auto object-contain group-hover:brightness-110 transition-all">
             </a>
 
             <nav class="flex items-center gap-3">

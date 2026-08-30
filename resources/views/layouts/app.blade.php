@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Auditor-IA - Analiza contratos con inteligencia artificial antes de firmar. Detecta cláusulas de riesgo, normativas aplicables y obtén resúmenes simplificados.">
     <title>@yield('title', 'Auditor-IA - Análisis de Contratos con IA')</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
 
     <!-- Google Fonts: Plus Jakarta Sans, Space Grotesk, JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,13 +29,13 @@
         }
     </style>
 </head>
-<body class="bg-[#15181B] text-[#E2F1FF] antialiased min-h-screen md:h-screen flex flex-col md:flex-row overflow-x-hidden md:overflow-y-hidden selection:bg-[#0F1E36] selection:text-[#A4D8FF]">
+<body class="bg-gunmetal-dark text-[#E2F1FF] antialiased min-h-screen md:h-screen flex flex-col md:flex-row overflow-x-hidden md:overflow-y-hidden selection:bg-navy-dark selection:text-icy">
 
     <!-- Sidebar component -->
     <x-sidebar />
 
     <!-- Main Content Area -->
-    <main class="flex-1 flex flex-col md:h-screen overflow-y-auto bg-[#15181B] border-t md:border-t-0 md:border-l border-[#35393C]">
+    <main class="flex-1 flex flex-col md:h-screen overflow-y-auto bg-gunmetal-dark border-t md:border-t-0 md:border-l border-gunmetal">
         @yield('content')
     </main>
 

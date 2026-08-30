@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Inicia sesión en Auditor-IA para comenzar a analizar tus contratos legales.">
     <title>Iniciar Sesión - Auditor-IA</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,15 +29,10 @@
         
         <!-- Header & Logo -->
         <div class="flex flex-col gap-6">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-[#0F1E36] border border-[#A4D8FF]/40 flex items-center justify-center shadow-brutal-sm">
-                    <!-- Sleek Document/AI SVG Icon -->
-                    <svg class="w-5.5 h-5.5 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
-                <span class="text-xl font-serif font-bold tracking-tight text-[#A4D8FF]">Auditor-IA</span>
-            </div>
+            <a href="{{ route('landing') }}" class="flex items-center gap-3 group">
+                <img src="{{ asset('images/logo.png') }}" alt="Auditor-IA Logo" class="h-10 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_8px_rgba(164,216,255,0.25)]">
+                <img src="{{ asset('images/text-logo.png') }}" alt="Auditor-IA" class="h-7 w-auto object-contain group-hover:brightness-110 transition-all">
+            </a>
             
             <div class="flex flex-col gap-2">
                 <h1 id="login-title" class="text-[32px] font-serif font-bold text-[#A4D8FF] tracking-tight leading-none">Bienvenido</h1>

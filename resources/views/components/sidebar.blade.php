@@ -1,15 +1,9 @@
 <aside class="w-full md:w-64 md:h-screen md:sticky md:top-0 bg-[#15181B] flex flex-col justify-between border-b-2 md:border-b-0 md:border-r-2 border-[#35393C] px-4 py-6 shrink-0">
     <div class="flex flex-col gap-8 overflow-y-auto flex-1 min-h-0">
         <!-- Logo and Brand -->
-        <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 px-2 group">
-            <div class="w-10 h-10 bg-[#0F1E36] border border-[#A4D8FF]/40 flex items-center justify-center shadow-brutal-sm group-hover:translate-x-[-1px] group-hover:translate-y-[-1px] transition-all">
-                <svg class="w-5.5 h-5.5 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            </div>
-            <span class="text-xl font-serif font-bold tracking-tight text-[#A4D8FF]">
-                Auditor-IA
-            </span>
+        <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 px-2 py-1 group">
+            <img src="{{ asset('images/logo.png') }}" alt="Auditor-IA Logo" class="h-9 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_8px_rgba(164,216,255,0.25)] shrink-0">
+            <img src="{{ asset('images/text-logo.png') }}" alt="Auditor-IA" class="h-6 w-auto object-contain group-hover:brightness-110 transition-all">
         </a>
 
         <!-- Main Navigation Links -->

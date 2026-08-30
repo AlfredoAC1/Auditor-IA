@@ -9,45 +9,45 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 
     <!-- Tailwind / Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         body {
-            font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
-            background-color: #151311;
+            font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+            background-color: #15181B;
         }
     </style>
 </head>
-<body class="bg-[#151311] text-[#EED3BA] antialiased min-h-screen flex items-center justify-center p-4">
+<body class="bg-[#15181B] text-[#A4D8FF] antialiased min-h-screen flex items-center justify-center p-4">
 
     <!-- Login Card Container -->
-    <div class="w-full max-w-[460px] bg-[#2A171B] border-2 border-[#4B262F] p-8 md:p-10 shadow-brutal flex flex-col gap-8">
+    <div class="w-full max-w-[460px] bg-[#222629] border-2 border-[#35393C] p-8 md:p-10 shadow-brutal flex flex-col gap-8">
         
         <!-- Header & Logo -->
         <div class="flex flex-col gap-6">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-[#4B262F] border border-[#EED3BA]/40 flex items-center justify-center shadow-brutal-sm">
+                <div class="w-10 h-10 bg-[#0F1E36] border border-[#A4D8FF]/40 flex items-center justify-center shadow-brutal-sm">
                     <!-- Sleek Document/AI SVG Icon -->
-                    <svg class="w-5.5 h-5.5 text-[#EED3BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg class="w-5.5 h-5.5 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                 </div>
-                <span class="text-xl font-serif font-bold tracking-tight text-[#EED3BA]">Auditor-IA</span>
+                <span class="text-xl font-serif font-bold tracking-tight text-[#A4D8FF]">Auditor-IA</span>
             </div>
             
             <div class="flex flex-col gap-2">
-                <h1 id="login-title" class="text-[32px] font-serif font-bold text-[#EED3BA] tracking-tight leading-none">Bienvenido</h1>
-                <p class="text-[14px] font-mono text-[#EED3BA]/70">Analiza contratos con IA antes de firmar.</p>
+                <h1 id="login-title" class="text-[32px] font-serif font-bold text-[#A4D8FF] tracking-tight leading-none">Bienvenido</h1>
+                <p class="text-[14px] font-mono text-[#A4D8FF]/70">Analiza contratos con IA antes de firmar.</p>
             </div>
         </div>
 
         <!-- Action Area -->
         <div class="flex flex-col gap-6">
             <!-- Google Sign-In Button -->
-            <button class="w-full py-3 px-4 bg-[#151311] border-2 border-[#4B262F] hover:bg-[#2A171B] text-[13px] font-mono font-bold text-[#EED3BA] flex items-center justify-center gap-3 shadow-brutal-sm transition-all cursor-pointer uppercase tracking-wider">
+            <button class="w-full py-3 px-4 bg-[#15181B] border-2 border-[#35393C] hover:bg-[#162A45] text-[13px] font-mono font-bold text-[#A4D8FF] flex items-center justify-center gap-3 shadow-brutal-sm transition-all cursor-pointer uppercase tracking-wider">
                 <!-- SVG Google Icon -->
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -61,55 +61,55 @@
             <!-- Divider -->
             <div class="relative flex items-center justify-center">
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div class="w-full border-t border-[#4B262F]"></div>
+                    <div class="w-full border-t border-[#35393C]"></div>
                 </div>
-                <div class="relative bg-[#2A171B] px-3 text-[12px] font-mono font-bold text-[#EED3BA]/60 uppercase tracking-widest">o</div>
+                <div class="relative bg-[#222629] px-3 text-[12px] font-mono font-bold text-[#A4D8FF]/60 uppercase tracking-widest">o</div>
             </div>
 
             <!-- Form -->
             <form action="{{ route('login.store') }}" method="POST" class="flex flex-col gap-5">
                 @csrf
                 @if(session('error'))
-                    <div class="bg-[#4B262F] border-2 border-[#151311] text-[#F8CECC] px-4 py-3 text-[13px] font-mono">
+                    <div class="bg-[#0F1E36] border-2 border-[#15181B] text-[#A4D8FF] px-4 py-3 text-[13px] font-mono">
                         {{ session('error') }}
                     </div>
                 @endif
 
-                <div class="bg-[#151311] border-2 border-[#4B262F] p-4 text-[12px] font-mono text-[#EED3BA]/70 leading-relaxed shadow-brutal-sm">
-                    <p class="font-bold text-[#EED3BA] uppercase mb-1">Cuentas de prueba</p>
-                    <p>Free: <span class="text-[#EED3BA] font-bold">free@auditor-ia.test</span></p>
-                    <p>Pro: <span class="text-[#EED3BA] font-bold">pro@auditor-ia.test</span></p>
-                    <p class="mt-1">Contraseña: <span class="text-[#EED3BA] font-bold">password</span></p>
+                <div class="bg-[#15181B] border-2 border-[#35393C] p-4 text-[12px] font-mono text-[#A4D8FF]/70 leading-relaxed shadow-brutal-sm">
+                    <p class="font-bold text-[#A4D8FF] uppercase mb-1">Cuentas de prueba</p>
+                    <p>Free: <span class="text-[#A4D8FF] font-bold">free@auditor-ia.test</span></p>
+                    <p>Pro: <span class="text-[#A4D8FF] font-bold">pro@auditor-ia.test</span></p>
+                    <p class="mt-1">Contraseña: <span class="text-[#A4D8FF] font-bold">password</span></p>
                 </div>
                 <!-- Email Field -->
                 <div class="flex flex-col gap-2">
-                    <label for="email" class="text-[13px] font-mono font-bold text-[#EED3BA]">Correo electrónico</label>
+                    <label for="email" class="text-[13px] font-mono font-bold text-[#A4D8FF]">Correo electrónico</label>
                     <input type="email" id="email" name="email" required placeholder="pro@auditor-ia.test" value="{{ old('email') }}"
-                           class="w-full py-3 px-4 bg-[#151311] border-2 border-[#4B262F] focus:border-[#EED3BA] text-[14px] font-mono text-[#EED3BA] placeholder-[#EED3BA]/40 outline-none transition-all" />
+                           class="w-full py-3 px-4 bg-[#15181B] border-2 border-[#35393C] focus:border-[#A4D8FF] text-[14px] font-mono text-[#A4D8FF] placeholder-[#A4D8FF]/40 outline-none transition-all" />
                 </div>
 
                 <!-- Password Field -->
                 <div class="flex flex-col gap-2">
-                    <label for="password" class="text-[13px] font-mono font-bold text-[#EED3BA]">Contraseña</label>
+                    <label for="password" class="text-[13px] font-mono font-bold text-[#A4D8FF]">Contraseña</label>
                     <input type="password" id="password" name="password" required placeholder="••••••••" 
-                           class="w-full py-3 px-4 bg-[#151311] border-2 border-[#4B262F] focus:border-[#EED3BA] text-[14px] font-mono text-[#EED3BA] placeholder-[#EED3BA]/40 outline-none transition-all" />
+                           class="w-full py-3 px-4 bg-[#15181B] border-2 border-[#35393C] focus:border-[#A4D8FF] text-[14px] font-mono text-[#A4D8FF] placeholder-[#A4D8FF]/40 outline-none transition-all" />
                 </div>
 
                 <!-- Submit Button -->
                 <button type="submit" 
-                        class="w-full mt-2 py-3 px-4 bg-[#4B262F] hover:bg-[#5C2F3A] border border-[#EED3BA]/40 text-[14px] font-mono font-bold text-[#EED3BA] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider text-center">
+                        class="w-full mt-2 py-3 px-4 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[14px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider text-center">
                     Iniciar sesión
                 </button>
             </form>
         </div>
 
         <!-- Footer -->
-        <div class="flex flex-col gap-2 text-center text-[13px] font-mono text-[#EED3BA]/70">
+        <div class="flex flex-col gap-2 text-center text-[13px] font-mono text-[#A4D8FF]/70">
             <div>
-                ¿No tienes cuenta? <a href="#" class="text-[#EED3BA] font-bold hover:underline transition-colors">Regístrate gratis</a>
+                ¿No tienes cuenta? <a href="#" class="text-[#A4D8FF] font-bold hover:underline transition-colors">Regístrate gratis</a>
             </div>
-            <div class="text-[12px] text-[#EED3BA]/50">
-                Al ingresar o registrarte, aceptas nuestros <a href="{{ route('terms') }}" class="text-[#EED3BA]/80 hover:text-[#EED3BA] underline">Términos y Condiciones</a>.
+            <div class="text-[12px] text-[#A4D8FF]/50">
+                Al ingresar o registrarte, aceptas nuestros <a href="{{ route('terms') }}" class="text-[#A4D8FF]/80 hover:text-[#A4D8FF] underline">Términos y Condiciones</a>.
             </div>
         </div>
 
@@ -119,5 +119,6 @@
 
 </body>
 </html>
+
 
 

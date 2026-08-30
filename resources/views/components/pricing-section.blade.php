@@ -16,31 +16,31 @@
 
 <section id="planes" class="relative max-w-6xl mx-auto px-6 pb-24 scroll-mt-24">
     <div class="text-center mb-10">
-        <h2 class="text-2xl md:text-3xl font-serif font-bold text-[#EED3BA] tracking-tight mb-3">Planes y precios</h2>
-        <p class="font-mono text-[#EED3BA]/70 text-[15px] max-w-xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-serif font-bold text-[#A4D8FF] tracking-tight mb-3">Planes y precios</h2>
+        <p class="font-mono text-[#A4D8FF]/70 text-[15px] max-w-xl mx-auto">
             Elige el plan que se adapte a tu volumen de contratos. Cambia o cancela cuando quieras.
         </p>
     </div>
 
     {{-- Billing toggle --}}
     <div class="flex flex-col items-center gap-3 mb-10" data-pricing-root>
-        <div class="inline-flex items-center gap-1 p-1 bg-[#151311] border-2 border-[#4B262F] shadow-brutal-sm">
+        <div class="inline-flex items-center gap-1 p-1 bg-[#15181B] border-2 border-[#35393C] shadow-brutal-sm">
             <button
                 type="button"
                 data-billing-toggle="monthly"
-                class="pricing-toggle px-5 py-2 text-[13px] font-mono font-bold transition-all bg-[#4B262F] text-[#EED3BA] border border-[#EED3BA]/40"
+                class="pricing-toggle px-5 py-2 text-[13px] font-mono font-bold transition-all bg-[#0F1E36] text-[#A4D8FF] border border-[#A4D8FF]/40"
             >
                 Mensual
             </button>
             <button
                 type="button"
                 data-billing-toggle="yearly"
-                class="pricing-toggle px-5 py-2 text-[13px] font-mono font-bold transition-all text-[#EED3BA]/60 hover:text-[#EED3BA]"
+                class="pricing-toggle px-5 py-2 text-[13px] font-mono font-bold transition-all text-[#A4D8FF]/60 hover:text-[#A4D8FF]"
             >
                 Anual
             </button>
         </div>
-        <p class="text-[12px] font-mono text-[#D5E8D4]">
+        <p class="text-[12px] font-mono text-[#A4D8FF]">
             <span data-yearly-badge class="hidden">Ahorra 2 meses con facturación anual en Pro</span>
             <span data-monthly-badge>Facturación flexible mes a mes</span>
         </p>
@@ -55,72 +55,72 @@
             @endphp
 
             <div @class([
-                'relative flex flex-col p-8 gap-6 transition-all bg-[#2A171B] border-2 border-[#4B262F] shadow-brutal',
-                'border-[#EED3BA]/60' => $isPopular,
+                'relative flex flex-col p-8 gap-6 transition-all bg-[#222629] border-2 border-[#35393C] shadow-brutal',
+                'border-[#A4D8FF]/60' => $isPopular,
             ])>
                 @if ($isPopular)
-                    <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#4B262F] text-[11px] font-mono font-bold text-[#EED3BA] tracking-wider uppercase border border-[#EED3BA]/40 shadow-brutal-sm">
+                    <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#0F1E36] text-[11px] font-mono font-bold text-[#A4D8FF] tracking-wider uppercase border border-[#A4D8FF]/40 shadow-brutal-sm">
                         Más popular
                     </span>
                 @endif
 
                 <div class="flex flex-col gap-2">
-                    <h3 class="text-xl font-serif font-bold text-[#EED3BA]">{{ $plan['name'] }}</h3>
-                    <p class="text-[13px] font-sans text-[#EED3BA]/80 leading-relaxed min-h-[40px]">{{ $plan['description'] }}</p>
+                    <h3 class="text-xl font-serif font-bold text-[#A4D8FF]">{{ $plan['name'] }}</h3>
+                    <p class="text-[13px] font-sans text-[#A4D8FF]/80 leading-relaxed min-h-[40px]">{{ $plan['description'] }}</p>
                 </div>
 
                 {{-- Price display --}}
                 <div class="flex flex-col gap-1 min-h-[72px]">
                     @if ($isFree)
                         <div class="flex items-baseline gap-1">
-                            <span class="text-4xl font-serif font-extrabold text-[#EED3BA] tracking-tight">$0</span>
-                            <span class="text-[13px] font-mono text-[#EED3BA]/70">/ siempre</span>
+                            <span class="text-4xl font-serif font-extrabold text-[#A4D8FF] tracking-tight">$0</span>
+                            <span class="text-[13px] font-mono text-[#A4D8FF]/70">/ siempre</span>
                         </div>
-                        <span class="text-[12px] font-mono text-[#EED3BA]/60">Sin tarjeta de crédito</span>
+                        <span class="text-[12px] font-mono text-[#A4D8FF]/60">Sin tarjeta de crédito</span>
                     @elseif ($isLifetime)
                         <div class="flex items-baseline gap-1">
-                            <span class="text-4xl font-serif font-extrabold text-[#EED3BA] tracking-tight">{{ $formatPrice($plan['price_lifetime_clp'] ?? null) }}</span>
+                            <span class="text-4xl font-serif font-extrabold text-[#A4D8FF] tracking-tight">{{ $formatPrice($plan['price_lifetime_clp'] ?? null) }}</span>
                         </div>
-                        <span class="text-[12px] font-mono text-[#EED3BA]/60">Pago único · acceso de por vida</span>
+                        <span class="text-[12px] font-mono text-[#A4D8FF]/60">Pago único · acceso de por vida</span>
                     @else
                         <div class="flex items-baseline gap-1">
                             <span
-                                class="text-4xl font-serif font-extrabold text-[#EED3BA] tracking-tight"
+                                class="text-4xl font-serif font-extrabold text-[#A4D8FF] tracking-tight"
                                 data-plan-price="{{ $slug }}"
                                 data-monthly="{{ $plan['price_monthly_clp'] ?? 0 }}"
                                 data-yearly="{{ $plan['price_yearly_clp'] ?? 0 }}"
                             >
                                 {{ $formatPrice($plan['price_monthly_clp'] ?? 0) }}
                             </span>
-                            <span class="text-[13px] font-mono text-[#EED3BA]/70" data-plan-period="{{ $slug }}">/ mes</span>
+                            <span class="text-[13px] font-mono text-[#A4D8FF]/70" data-plan-period="{{ $slug }}">/ mes</span>
                         </div>
-                        <span class="text-[12px] font-mono text-[#EED3BA]/60" data-plan-note="{{ $slug }}">Facturación mensual</span>
+                        <span class="text-[12px] font-mono text-[#A4D8FF]/60" data-plan-note="{{ $slug }}">Facturación mensual</span>
                     @endif
                 </div>
 
                 {{-- Limits summary --}}
                 <ul class="flex flex-col gap-2.5 flex-1 font-mono text-[13px]">
-                    <li class="flex items-center gap-2.5 text-[#EED3BA]">
-                        <svg class="w-4 h-4 text-[#EED3BA] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <li class="flex items-center gap-2.5 text-[#A4D8FF]">
+                        <svg class="w-4 h-4 text-[#A4D8FF] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                         {{ $formatLimit($plan['max_documents_per_month'] ?? null) }} documentos/mes
                     </li>
-                    <li class="flex items-center gap-2.5 text-[#EED3BA]">
-                        <svg class="w-4 h-4 text-[#EED3BA] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <li class="flex items-center gap-2.5 text-[#A4D8FF]">
+                        <svg class="w-4 h-4 text-[#A4D8FF] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                         {{ $formatLimit($plan['max_analyses_per_month'] ?? null) }} análisis/mes
                     </li>
-                    <li class="flex items-center gap-2.5 text-[#EED3BA]">
-                        <svg class="w-4 h-4 text-[#EED3BA] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <li class="flex items-center gap-2.5 text-[#A4D8FF]">
+                        <svg class="w-4 h-4 text-[#A4D8FF] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                         {{ $formatStorage($plan['max_storage_bytes'] ?? null) }} de almacenamiento
                     </li>
                     @foreach ($plan['highlights'] ?? [] as $highlight)
-                        <li class="flex items-center gap-2.5 text-[#EED3BA]/70">
-                            <svg class="w-4 h-4 text-[#EED3BA]/50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <li class="flex items-center gap-2.5 text-[#A4D8FF]/70">
+                            <svg class="w-4 h-4 text-[#A4D8FF]/50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
                             {{ $highlight }}
@@ -129,17 +129,17 @@
                 </ul>
 
                 @if ($isFree)
-                    <a href="{{ route('login') }}" class="w-full text-center px-6 py-3.5 bg-[#151311] border-2 border-[#4B262F] hover:bg-[#2A171B] text-[14px] font-mono font-bold text-[#EED3BA] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider">
+                    <a href="{{ route('login') }}" class="w-full text-center px-6 py-3.5 bg-[#15181B] border-2 border-[#35393C] hover:bg-[#162A45] text-[14px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider">
                         Comenzar gratis
                     </a>
                 @elseif ($isLifetime)
-                    <a href="{{ route('login') }}" class="w-full text-center px-6 py-3.5 bg-[#4B262F] hover:bg-[#5C2F3A] border border-[#EED3BA]/40 text-[14px] font-mono font-bold text-[#EED3BA] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider">
+                    <a href="{{ route('login') }}" class="w-full text-center px-6 py-3.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[14px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider">
                         Obtener acceso Lifetime
                     </a>
                 @else
                     <a
                         href="{{ route('login') }}"
-                        class="w-full text-center px-6 py-3.5 bg-[#4B262F] hover:bg-[#5C2F3A] border border-[#EED3BA]/40 text-[14px] font-mono font-bold text-[#EED3BA] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider"
+                        class="w-full text-center px-6 py-3.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[14px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider"
                     >
                         Elegir Pro
                     </a>
@@ -165,12 +165,12 @@
 
             toggles.forEach((btn) => {
                 const active = btn.dataset.billingToggle === interval;
-                btn.classList.toggle('bg-[#4B262F]', active);
-                btn.classList.toggle('text-[#EED3BA]', active);
+                btn.classList.toggle('bg-[#0F1E36]', active);
+                btn.classList.toggle('text-[#A4D8FF]', active);
                 btn.classList.toggle('border', active);
-                btn.classList.toggle('border-[#EED3BA]/40', active);
-                btn.classList.toggle('text-[#EED3BA]/60', !active);
-                btn.classList.toggle('hover:text-[#EED3BA]', !active);
+                btn.classList.toggle('border-[#A4D8FF]/40', active);
+                btn.classList.toggle('text-[#A4D8FF]/60', !active);
+                btn.classList.toggle('hover:text-[#A4D8FF]', !active);
             });
 
             priceEls.forEach((el) => {
@@ -195,4 +195,5 @@
         });
     });
 </script>
+
 

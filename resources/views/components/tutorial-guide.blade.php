@@ -11,50 +11,50 @@
             </mask>
         </defs>
         <!-- Dark backdrop -->
-        <rect width="100%" height="100%" fill="rgba(21, 19, 17, 0.85)" mask="url(#tutorial-mask)" />
+        <rect width="100%" height="100%" fill="rgba(21, 24, 27, 0.85)" mask="url(#tutorial-mask)" />
     </svg>
 
     <!-- Tutorial Dialog Card -->
-    <div id="tutorial-card" class="fixed bottom-6 right-6 w-[360px] max-w-[calc(100vw-32px)] bg-[#2A171B] border-2 border-[#4B262F] shadow-brutal p-5 flex flex-col gap-4 transform transition-all duration-300 scale-95 opacity-0 translate-y-4 hidden" style="z-index: 9999;">
+    <div id="tutorial-card" class="fixed bottom-6 right-6 w-[360px] max-w-[calc(100vw-32px)] bg-[#222629] border-2 border-[#35393C] shadow-brutal p-5 flex flex-col gap-4 transform transition-all duration-300 scale-95 opacity-0 translate-y-4 hidden" style="z-index: 9999;">
         <!-- Header -->
         <div class="flex items-center justify-between gap-3">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#4B262F] border border-[#EED3BA]/40 text-[10px] font-mono font-bold uppercase tracking-wider text-[#EED3BA]">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#0F1E36] border border-[#A4D8FF]/40 text-[10px] font-mono font-bold uppercase tracking-wider text-[#A4D8FF]">
                 Guía de Ayuda
             </span>
-            <button onclick="dismissTutorial(false)" class="font-mono text-[#EED3BA]/60 hover:text-[#EED3BA] transition-colors cursor-pointer text-xs uppercase tracking-wider">
+            <button onclick="dismissTutorial(false)" class="font-mono text-[#A4D8FF]/60 hover:text-[#A4D8FF] transition-colors cursor-pointer text-xs uppercase tracking-wider">
                 Omitir
             </button>
         </div>
 
         <!-- Content -->
         <div class="flex flex-col gap-2">
-            <h3 id="tutorial-title" class="text-[15px] font-serif font-bold text-[#EED3BA] tracking-tight"></h3>
-            <p id="tutorial-description" class="text-[12px] font-mono text-[#EED3BA]/80 leading-relaxed"></p>
+            <h3 id="tutorial-title" class="text-[15px] font-serif font-bold text-[#A4D8FF] tracking-tight"></h3>
+            <p id="tutorial-description" class="text-[12px] font-mono text-[#A4D8FF]/80 leading-relaxed"></p>
         </div>
 
         <!-- Footer / Navigation -->
         <div class="flex items-center justify-between gap-4 mt-2">
             <!-- Steps Indicator -->
             <div class="flex items-center gap-1">
-                <span class="text-[11px] font-mono font-bold text-[#EED3BA]/70" id="tutorial-progress"></span>
+                <span class="text-[11px] font-mono font-bold text-[#A4D8FF]/70" id="tutorial-progress"></span>
             </div>
 
             <!-- Controls -->
             <div class="flex items-center gap-2">
-                <button id="tutorial-prev-btn" onclick="prevStep()" class="px-3 py-1.5 bg-[#151311] border-2 border-[#4B262F] hover:bg-[#2A171B] text-[11px] font-mono font-bold text-[#EED3BA] shadow-brutal-sm hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer hidden uppercase tracking-wider">
+                <button id="tutorial-prev-btn" onclick="prevStep()" class="px-3 py-1.5 bg-[#15181B] border-2 border-[#35393C] hover:bg-[#222629] text-[11px] font-mono font-bold text-[#A4D8FF] shadow-brutal-sm hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer hidden uppercase tracking-wider">
                     Atrás
                 </button>
-                <button id="tutorial-next-btn" onclick="nextStep()" class="px-4 py-1.5 bg-[#4B262F] hover:bg-[#5C2F3A] border border-[#EED3BA]/40 text-[11px] font-mono font-bold text-[#EED3BA] shadow-brutal-sm hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider">
+                <button id="tutorial-next-btn" onclick="nextStep()" class="px-4 py-1.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[11px] font-mono font-bold text-[#A4D8FF] shadow-brutal-sm hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider">
                     Siguiente
                 </button>
             </div>
         </div>
 
         <!-- Dismiss Option -->
-        <div class="border-t-2 border-[#4B262F] pt-3 mt-1 flex items-center justify-between">
+        <div class="border-t-2 border-[#35393C] pt-3 mt-1 flex items-center justify-between">
             <label class="flex items-center gap-2 cursor-pointer select-none">
-                <input type="checkbox" id="tutorial-dont-show-again" class="w-3.5 h-3.5 rounded-none border-2 border-[#4B262F] bg-[#151311] accent-[#4B262F]">
-                <span class="text-[11px] font-mono text-[#EED3BA]/70 font-medium hover:text-[#EED3BA] transition-colors">No volver a mostrar este tutorial</span>
+                <input type="checkbox" id="tutorial-dont-show-again" class="w-3.5 h-3.5 rounded-none border-2 border-[#35393C] bg-[#15181B] accent-[#0F1E36]">
+                <span class="text-[11px] font-mono text-[#A4D8FF]/70 font-medium hover:text-[#A4D8FF] transition-colors">No volver a mostrar este tutorial</span>
             </label>
         </div>
     </div>

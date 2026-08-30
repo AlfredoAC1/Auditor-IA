@@ -6,6 +6,11 @@
     <meta name="description" content="@yield('meta_description', 'Auditor-IA — Analiza contratos legales con inteligencia artificial antes de firmar.')">
     <title>@yield('title', 'Auditor-IA')</title>
 
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo.png') }}">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -26,27 +31,22 @@
         }
     </style>
 </head>
-<body class="bg-[#15181B] text-[#E2F1FF] antialiased min-h-screen flex flex-col selection:bg-[#0F1E36] selection:text-[#A4D8FF]">
+<body class="bg-gunmetal-dark text-[#E2F1FF] antialiased min-h-screen flex flex-col selection:bg-navy-dark selection:text-icy">
 
-    <header class="w-full border-b-2 border-[#35393C] bg-[#15181B] sticky top-0 z-50">
+    <header class="w-full border-b-2 border-gunmetal bg-gunmetal-dark sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{{ route('landing') }}" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 bg-[#0F1E36] border border-[#A4D8FF]/40 flex items-center justify-center shadow-brutal-sm rounded-none">
-                    <svg class="w-5 h-5 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
-                <span class="text-lg font-serif font-bold tracking-tight text-[#A4D8FF] group-hover:text-white transition-colors">Auditor-IA</span>
+            <a href="{{ route('landing') }}" class="flex items-center group">
+                <img src="{{ asset('images/text-logo.png') }}" alt="Auditor-IA" class="h-14 md:h-16 w-auto object-contain group-hover:brightness-110 transition-all">
             </a>
 
             <nav class="flex items-center gap-3">
-                <a href="{{ route('landing') }}#planes" class="hidden sm:inline-flex px-4 py-2 text-[13px] font-mono font-medium text-[#A4D8FF]/80 hover:text-[#A4D8FF] hover:underline transition-colors uppercase tracking-wider">
+                <a href="{{ route('landing') }}#planes" class="hidden sm:inline-flex px-4 py-2 text-[13px] font-mono font-medium text-icy/80 hover:text-icy hover:underline transition-colors uppercase tracking-wider">
                     Planes
                 </a>
-                <a href="{{ route('login') }}" class="px-4 py-2 text-[13px] font-mono font-medium text-[#A4D8FF]/80 hover:text-[#A4D8FF] hover:underline transition-colors uppercase tracking-wider">
+                <a href="{{ route('login') }}" class="px-4 py-2 text-[13px] font-mono font-medium text-icy/80 hover:text-icy hover:underline transition-colors uppercase tracking-wider">
                     Iniciar sesión
                 </a>
-                <a href="{{ route('login') }}" class="px-4 py-2.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[13px] font-mono font-bold text-[#A4D8FF] shadow-brutal-sm hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider">
+                <a href="{{ route('login') }}" class="px-4 py-2.5 bg-navy-dark hover:bg-navy-light border border-icy/40 text-[13px] font-mono font-bold text-icy shadow-brutal-sm hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
                     Comenzar gratis
                 </a>
             </nav>
@@ -57,13 +57,18 @@
         @yield('content')
     </main>
 
-    <footer class="border-t-2 border-[#35393C] bg-[#15181B] py-8">
-        <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px] text-[#A4D8FF]/70">
-            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-                <p class="font-mono">&copy; {{ date('Y') }} Auditor-IA. Todos los derechos reservados.</p>
-                <a href="{{ route('terms') }}" class="hover:text-[#A4D8FF] underline underline-offset-2 transition-colors">Términos y Condiciones</a>
+    <footer class="border-t-2 border-gunmetal bg-gunmetal-dark py-10">
+        <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-[13px] text-icy/70">
+            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
+                <a href="{{ route('landing') }}" class="group inline-flex items-center">
+                    <img src="{{ asset('images/logo.png') }}" alt="Auditor-IA Logo" class="h-12 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_8px_rgba(164,216,255,0.25)]">
+                </a>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+                    <p class="font-mono">&copy; {{ date('Y') }} Auditor-IA. Todos los derechos reservados.</p>
+                    <a href="{{ route('terms') }}" class="hover:text-icy underline underline-offset-2 transition-colors">Términos y Condiciones</a>
+                </div>
             </div>
-            <p class="font-mono text-[12px] text-[#A4D8FF]/60">No constituye asesoría legal. Consulta siempre con un abogado.</p>
+            <p class="font-mono text-[12px] text-icy/60 text-center md:text-right">No constituye asesoría legal. Consulta siempre con un abogado.</p>
         </div>
     </footer>
 
@@ -71,5 +76,3 @@
 
 </body>
 </html>
-
-

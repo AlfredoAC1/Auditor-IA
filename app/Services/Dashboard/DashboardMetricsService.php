@@ -43,7 +43,7 @@ final class DashboardMetricsService
 
         $documents = Document::query()
             ->where('organization_id', $organizationId)
-            ->with('uploader:id,name')
+            ->with(['uploader:id,name', 'latestAnalysis'])
             ->orderByDesc('created_at')
             ->get();
 
@@ -53,17 +53,9 @@ final class DashboardMetricsService
         $totalTimeMs = 0;
         $timeCount = 0;
 
-        if ($documents->isNotEmpty()) {
-            $documentIds = $documents->pluck('id')->all();
-
-            $latestAnalyses = DocumentAnalysis::query()
-                ->whereIn('document_id', $documentIds)
-                ->where('status', DocumentStatus::Processed)
-                ->orderByDesc('created_at')
-                ->get()
-                ->unique('document_id');
-
-            foreach ($latestAnalyses as $latestAnalysis) {
+        foreach ($documents as $doc) {
+            $latestAnalysis = $doc->latestAnalysis;
+            if ($latestAnalysis !== null) {
                 $content = $latestAnalysis->content;
                 if (isset($content['riesgos_identificados']) && is_array($content['riesgos_identificados'])) {
                     $riskCount += count($content['riesgos_identificados']);
@@ -86,9 +78,8 @@ final class DashboardMetricsService
 
         $periodStart = now()->startOfMonth();
 
-        $documentsThisMonth = Document::query()
-            ->where('organization_id', $organizationId)
-            ->where('created_at', '>=', $periodStart)
+        $documentsThisMonth = $documents
+            ->filter(fn (Document $doc): bool => $doc->created_at !== null && $doc->created_at->gte($periodStart))
             ->count();
 
         $analysesThisMonth = DocumentAnalysis::query()
@@ -96,26 +87,25 @@ final class DashboardMetricsService
             ->where('created_at', '>=', $periodStart)
             ->count();
 
-        $storageUsedBytes = (int) Document::query()
-            ->where('organization_id', $organizationId)
-            ->sum('file_size_bytes');
+        $storageUsedBytes = (int) $documents->sum('file_size_bytes');
 
         $tokensThisMonth = (int) DocumentAnalysis::query()
             ->where('organization_id', $organizationId)
             ->where('created_at', '>=', $periodStart)
             ->sum(DB::raw('COALESCE(input_tokens, 0) + COALESCE(output_tokens, 0)'));
 
-        $analysisTypeCounts = DocumentAnalysis::query()
+        $typeCountsFromDb = DocumentAnalysis::query()
             ->where('organization_id', $organizationId)
             ->where('status', DocumentStatus::Processed)
             ->where('created_at', '>=', $periodStart)
-            ->get()
-            ->groupBy(fn (DocumentAnalysis $analysis): string => $analysis->analysis_type->value)
-            ->map(fn ($group): int => $group->count())
+            ->selectRaw('analysis_type, count(*) as aggregate')
+            ->groupBy('analysis_type')
+            ->pluck('aggregate', 'analysis_type')
             ->all();
 
+        $analysisTypeCounts = [];
         foreach (AnalysisType::cases() as $type) {
-            $analysisTypeCounts[$type->value] ??= 0;
+            $analysisTypeCounts[$type->value] = (int) ($typeCountsFromDb[$type->value] ?? 0);
         }
 
         $pendingDocumentIds = $documents

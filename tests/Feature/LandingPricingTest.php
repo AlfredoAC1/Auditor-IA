@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Plan;
+use Database\Seeders\PlanSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class LandingPricingTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Test that landing page renders updated prices, AI credits explanations, and limited offer disclaimer.
      */
@@ -28,6 +33,15 @@ class LandingPricingTest extends TestCase
         $response->assertSee('25 créditos IA / semana');
         $response->assertSee('500 créditos IA / mes');
         $response->assertSee('Créditos IA ilimitados');
+
+        // Verify database seeder populates correct prices in plans table
+        $this->seed(PlanSeeder::class);
+
+        $proPlan = Plan::where('slug', 'pro')->firstOrFail();
+        $this->assertEquals(19990, $proPlan->price_clp);
+
+        $lifetimePlan = Plan::where('slug', 'lifetime')->firstOrFail();
+        $this->assertEquals(199990, $lifetimePlan->features['price_lifetime_clp'] ?? null);
 
         // AI Credits explanation card
         $response->assertSee('¿Cómo funcionan los Créditos IA en Auditor-IA?');

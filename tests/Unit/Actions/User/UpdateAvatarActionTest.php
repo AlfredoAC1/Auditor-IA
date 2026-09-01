@@ -34,7 +34,7 @@ class UpdateAvatarActionTest extends TestCase
             'avatar_path' => null,
         ]);
 
-        $file = UploadedFile::fake()->image('avatar.png');
+        $file = UploadedFile::fake()->create('avatar.png', 100, 'image/png');
 
         $path = $this->action->execute($user, $file);
 
@@ -63,7 +63,7 @@ class UpdateAvatarActionTest extends TestCase
             'avatar_path' => $oldAvatarPath,
         ]);
 
-        $file = UploadedFile::fake()->image('avatar.jpg');
+        $file = UploadedFile::fake()->create('avatar.jpg', 100, 'image/jpeg');
 
         $path = $this->action->execute($user, $file);
 

@@ -8,6 +8,7 @@ use App\Contracts\LLM\LLMAnalysisServiceInterface;
 use App\Enums\AnalysisType;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
+use App\Services\LLM\Providers\CerebrasAdapter;
 use App\Services\LLM\Providers\LlmProviderAdapterInterface;
 use App\Services\LLM\Providers\LlmProviderConfig;
 use App\Services\LLM\Providers\OpenAiCompatibleAdapter;
@@ -292,6 +293,11 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
             return new RateLimitedAdapter();
         }
 
+        // Cerebras requires `max_completion_tokens` instead of `max_tokens`
+        if ($config->provider === 'cerebras') {
+            return new CerebrasAdapter();
+        }
+
         // All other OpenAI-compatible providers
         return new OpenAiCompatibleAdapter();
     }
@@ -340,12 +346,25 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
      */
     private function decodeJsonResponse(string $raw, string $provider): array
     {
-        // Strip common markdown code fences that some models accidentally include
+        // Strip common markdown code fences that some models include
         $cleaned = preg_replace('/^```(?:json)?\s*/m', '', $raw);
         $cleaned = preg_replace('/\s*```$/m', '', (string) $cleaned);
         $cleaned = trim((string) $cleaned);
 
         $decoded = json_decode($cleaned, true);
+
+        // If direct decode failed, try extracting JSON substring between first { and last }
+        if (! is_array($decoded)) {
+            $firstBrace = strpos($raw, '{');
+            $lastBrace = strrpos($raw, '}');
+            if ($firstBrace !== false && $lastBrace !== false && $lastBrace > $firstBrace) {
+                $subJson = substr($raw, $firstBrace, $lastBrace - $firstBrace + 1);
+                $subDecoded = json_decode($subJson, true);
+                if (is_array($subDecoded)) {
+                    $decoded = $subDecoded;
+                }
+            }
+        }
 
         if (! is_array($decoded)) {
             Log::warning("LLM [{$provider}] response was not valid JSON; storing raw text.", [

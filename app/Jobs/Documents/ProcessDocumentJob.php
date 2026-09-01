@@ -6,6 +6,7 @@ namespace App\Jobs\Documents;
 
 use App\Enums\AnalysisType;
 use App\Enums\DocumentStatus;
+use App\Models\AiModel;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Services\Documents\DocumentParsingService;
@@ -76,22 +77,53 @@ class ProcessDocumentJob implements ShouldQueue
             $document->beginProcessing();
 
             // 1. Parsing & Content Extraction
-            $parseResult = $parsingService->parse($document);
-            $compactContent = $parsingService->toCompactString($parseResult);
+            $compactContent = $document->metadata['parsed_compact_content'] ?? null;
 
-            $document->update([
-                'metadata' => array_merge($document->metadata ?? [], [
-                    'parsed_elements' => $parseResult['elements'],
-                    'parsed_element_count' => $parseResult['element_count'],
-                    'parsed_estimated_tokens' => $parseResult['estimated_tokens'],
-                    'parsed_compact_content' => $compactContent,
-                    'parsed_at' => now()->toIso8601String(),
-                ]),
-            ]);
+            if ($compactContent === null || $compactContent === '') {
+                $parseResult = $parsingService->parse($document);
+                $compactContent = $parsingService->toCompactString($parseResult);
 
-            // 2. AI Analysis (Dynamic Provider: Groq vs NVIDIA NIM)
-            $requestedProvider = (string) ($document->metadata['llm_provider'] ?? config('llm.default_provider', 'groq'));
-            $requestedModel    = (string) config("llm.providers.{$requestedProvider}.model", '');
+                $document->update([
+                    'metadata' => array_merge($document->metadata ?? [], [
+                        'parsed_elements' => $parseResult['elements'],
+                        'parsed_element_count' => $parseResult['element_count'],
+                        'parsed_estimated_tokens' => $parseResult['estimated_tokens'],
+                        'parsed_compact_content' => $compactContent,
+                        'parsed_at' => now()->toIso8601String(),
+                    ]),
+                ]);
+            }
+
+            // 2. AI Analysis (Resolve AiModel from metadata or fallback to provider)
+            $modelSlug = $document->metadata['model_slug'] ?? null;
+            $aiModel = null;
+
+            if ($modelSlug !== null && is_string($modelSlug)) {
+                $aiModel = AiModel::query()
+                    ->where('slug', $modelSlug)
+                    ->where('is_active', true)
+                    ->first();
+            }
+
+            if ($aiModel === null && isset($document->metadata['llm_provider'])) {
+                $requestedProvider = (string) $document->metadata['llm_provider'];
+                $aiModel = AiModel::query()
+                    ->where('provider', $requestedProvider)
+                    ->where('is_active', true)
+                    ->ordered()
+                    ->first();
+            }
+
+            if ($aiModel !== null) {
+                $provider = $aiModel->provider;
+                $modelIdentifier = "{$aiModel->provider}::{$aiModel->provider_model_id}";
+                $modelSlugForRecord = $aiModel->slug;
+            } else {
+                $provider = (string) ($document->metadata['llm_provider'] ?? config('llm.default_provider', 'cerebras'));
+                $configModel = (string) config("llm.providers.{$provider}.model", '');
+                $modelIdentifier = $configModel !== '' ? "{$provider}::{$configModel}" : null;
+                $modelSlugForRecord = $configModel !== '' ? $configModel : $provider;
+            }
 
             /** @var LlmAnalysisService $llmService */
             $llmService = app(LlmAnalysisService::class);
@@ -101,7 +133,7 @@ class ProcessDocumentJob implements ShouldQueue
                     documentContent: $compactContent,
                     analysisType: AnalysisType::FullSummary,
                     document: $document,
-                    overrideModel: $requestedModel !== '' ? "{$requestedProvider}::{$requestedModel}" : null,
+                    overrideModel: $modelIdentifier,
                 );
 
                 DocumentAnalysis::create([
@@ -110,7 +142,7 @@ class ProcessDocumentJob implements ShouldQueue
                     'requested_by' => $document->uploaded_by,
                     'analysis_type' => AnalysisType::FullSummary,
                     'llm_provider' => $analysisResult['llm_provider'],
-                    'llm_model' => $analysisResult['llm_model'],
+                    'llm_model' => $modelSlugForRecord,
                     'content' => $analysisResult['content'],
                     'confidence_score' => match ($analysisResult['content']['nivel_confianza'] ?? null) {
                         'alto' => 0.85,
@@ -128,7 +160,8 @@ class ProcessDocumentJob implements ShouldQueue
             } catch (\Throwable $llmException) {
                 Log::warning('Automatic document analysis failed, but document was parsed successfully.', [
                     'document_id' => $document->id,
-                    'provider' => $requestedProvider,
+                    'provider' => $provider,
+                    'model' => $modelSlugForRecord,
                     'error' => $llmException->getMessage(),
                 ]);
                 // Create failed analysis entry to let the user retry manually
@@ -137,8 +170,8 @@ class ProcessDocumentJob implements ShouldQueue
                     'organization_id' => $document->organization_id,
                     'requested_by' => $document->uploaded_by,
                     'analysis_type' => AnalysisType::FullSummary,
-                    'llm_provider' => $requestedProvider,
-                    'llm_model' => (string) config("llm.providers.{$requestedProvider}.model", 'unknown'),
+                    'llm_provider' => $provider,
+                    'llm_model' => $modelSlugForRecord,
                     'content' => ['error' => $llmException->getMessage()],
                     'status' => \App\Enums\DocumentStatus::Failed,
                     'version' => 1,

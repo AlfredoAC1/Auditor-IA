@@ -58,8 +58,25 @@
                     <span class="text-[12px] text-icy/70">
                         Auditado {{ $analysis->created_at->diffForHumans() }}
                     </span>
-                    <span class="px-2.5 py-0.5 text-[11px] font-bold {{ str_contains(strtolower($analysis->llm_provider), 'nvidia') ? 'bg-[#2D4F3B] text-[#D5E8D4] border border-gunmetal-dark' : 'bg-navy-dark text-icy border border-icy/40' }} shadow-brutal-sm uppercase">
-                        Motor IA: {{ str_contains(strtolower($analysis->llm_provider), 'nvidia') ? 'NVIDIA NIM' : 'Groq Cloud' }}
+                    @php
+                        $providerSlug = strtolower($analysis->llm_provider ?? '');
+                        [$providerLabel, $providerBadgeClass] = match(true) {
+                            str_contains($providerSlug, 'cerebras')
+                                => ['Cerebras AI', 'bg-[#3B2D1A] text-[#F5C87A] border border-[#7A5C2E]'],
+                            str_contains($providerSlug, 'nvidia')
+                                => ['NVIDIA NIM', 'bg-[#2D4F3B] text-[#D5E8D4] border border-gunmetal-dark'],
+                            str_contains($providerSlug, 'qwen')
+                                => ['Qwen Cloud', 'bg-[#2D2050] text-[#C4B5F4] border border-[#5B4A9E]'],
+                            str_contains($providerSlug, 'deepseek')
+                                => ['DeepSeek', 'bg-[#1A2D4F] text-[#93C5FD] border border-[#2E4A7A]'],
+                            str_contains($providerSlug, 'azure')
+                                => ['Azure OpenAI', 'bg-[#1B3A4B] text-[#7DD3FC] border border-[#2C5F7A]'],
+                            default
+                                => ['Groq Cloud', 'bg-navy-dark text-icy border border-icy/40'],
+                        };
+                    @endphp
+                    <span class="px-2.5 py-0.5 text-[11px] font-bold {{ $providerBadgeClass }} shadow-brutal-sm uppercase">
+                        Motor IA: {{ $providerLabel }}
                     </span>
                 </div>
             </div>

@@ -7,6 +7,7 @@ namespace App\Services\Dashboard;
 use App\Enums\AnalysisType;
 use App\Enums\DocumentStatus;
 use App\Models\AiCreditLedger;
+use App\Models\AiModel;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Models\Organization;
@@ -35,6 +36,7 @@ final class DashboardMetricsService
      *     allowsModelSelection: bool,
      *     analysisTypeCounts: array<string, int>,
      *     pendingDocumentIds: list<string>,
+     *     availableModels: Collection<int, AiModel>,
      * }
      */
     public function forOrganization(User $user): array
@@ -133,6 +135,11 @@ final class DashboardMetricsService
         $periodExpiresAt = $creditLedger?->period_expires_at;
         $allowsModelSelection = $plan?->allowsModelSelection() ?? false;
 
+        $availableModels = AiModel::query()
+            ->active()
+            ->ordered()
+            ->get();
+
         return compact(
             'documents',
             'analyzedCount',
@@ -151,6 +158,7 @@ final class DashboardMetricsService
             'allowsModelSelection',
             'analysisTypeCounts',
             'pendingDocumentIds',
+            'availableModels',
         );
     }
 }

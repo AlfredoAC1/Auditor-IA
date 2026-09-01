@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Actions\Documents\StoreDocumentAction;
 use App\DTOs\Documents\StoreDocumentDTO;
 use App\Enums\DocumentStatus;
+use App\Models\AiModel;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Models\User;
@@ -25,15 +26,26 @@ class DashboardController extends Controller
         private readonly DashboardMetricsService $metricsService,
     ) {}
 
-    /**
-     * Show the dashboard with document list and metrics.
-     */
     public function index(): View
     {
         /** @var User $user */
         $user = Auth::user();
         $metrics = $this->metricsService->forOrganization($user);
-        $metrics['currentProvider'] = (string) session('llm_provider', config('llm.default_provider', 'groq'));
+
+        $selectedModelSlug = (string) session('selected_model_slug', '');
+        if ($selectedModelSlug === '' || ! AiModel::query()->where('slug', $selectedModelSlug)->where('is_active', true)->exists()) {
+            $defaultSlug = $user->hasProAccess() ? 'cerebras-gemma4' : 'llama-8b-instant';
+            $selectedModelSlug = AiModel::query()->where('slug', $defaultSlug)->where('is_active', true)->exists()
+                ? $defaultSlug
+                : (AiModel::query()->active()->ordered()->first()?->slug ?? 'cerebras-gemma4');
+
+            session(['selected_model_slug' => $selectedModelSlug]);
+        }
+
+        $selectedModel = AiModel::query()->where('slug', $selectedModelSlug)->first();
+        $metrics['selectedModel'] = $selectedModel;
+        $metrics['selectedModelSlug'] = $selectedModelSlug;
+        $metrics['currentProvider'] = $selectedModel?->provider ?? (string) session('llm_provider', config('llm.default_provider', 'cerebras'));
 
         $view = $user->hasProAccess() ? 'dashboard-pro' : 'dashboard';
 
@@ -113,17 +125,51 @@ class DashboardController extends Controller
     }
 
     /**
-     * Switch active LLM provider for the current session.
+     * Switch active AI Model for the current session.
+     */
+    public function setModel(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'model_slug' => ['required', 'string', 'exists:ai_models,slug'],
+        ]);
+
+        $aiModel = AiModel::findBySlug($validated['model_slug']);
+        session([
+            'selected_model_slug' => $aiModel->slug,
+            'llm_provider' => $aiModel->provider,
+        ]);
+
+        return redirect()
+            ->route('dashboard')
+            ->with('success', "Modelo de Inteligencia Artificial seleccionado: {$aiModel->display_name}.");
+    }
+
+    /**
+     * Switch active LLM provider for the current session (legacy support).
      */
     public function setProvider(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'provider' => ['required', 'string', 'in:groq,nvidia_nim'],
+            'provider' => ['required', 'string', 'in:groq,nvidia_nim,cerebras,qwen_cloud'],
         ]);
 
-        session(['llm_provider' => $validated['provider']]);
+        $aiModel = AiModel::query()
+            ->where('provider', $validated['provider'])
+            ->where('is_active', true)
+            ->ordered()
+            ->first();
 
-        $label = $validated['provider'] === 'nvidia_nim' ? 'NVIDIA NIM' : 'Groq Cloud';
+        session([
+            'llm_provider' => $validated['provider'],
+            'selected_model_slug' => $aiModel?->slug,
+        ]);
+
+        $label = match ($validated['provider']) {
+            'cerebras' => 'Cerebras AI',
+            'nvidia_nim' => 'NVIDIA NIM',
+            'qwen_cloud' => 'Qwen Cloud',
+            default => 'Groq Cloud',
+        };
 
         return redirect()
             ->route('dashboard')
@@ -145,24 +191,49 @@ class DashboardController extends Controller
                 'max:51200',
                 'mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ],
-            'llm_provider' => ['nullable', 'string', 'in:groq,nvidia_nim'],
+            'model_slug' => ['nullable', 'string', 'exists:ai_models,slug'],
+            'llm_provider' => ['nullable', 'string'],
         ], [
             'file.required' => 'Debe adjuntar un archivo.',
             'file.mimetypes' => 'Solo se permiten archivos PDF y DOCX.',
             'file.max' => 'El archivo excede el tamaño máximo permitido (50 MB).',
         ]);
 
-        $selectedProvider = $validated['llm_provider']
-            ?? session('llm_provider', config('llm.default_provider', 'groq'));
+        $requestedModelSlug = $validated['model_slug'] ?? session('selected_model_slug');
+        $aiModel = null;
 
-        session(['llm_provider' => $selectedProvider]);
+        if ($requestedModelSlug) {
+            $aiModel = AiModel::query()->where('slug', $requestedModelSlug)->where('is_active', true)->first();
+        }
+
+        if ($aiModel === null && ! empty($validated['llm_provider'])) {
+            $aiModel = AiModel::query()->where('provider', $validated['llm_provider'])->where('is_active', true)->ordered()->first();
+        }
+
+        if ($aiModel === null) {
+            $defaultSlug = $user->hasProAccess() ? 'cerebras-gemma4' : 'llama-8b-instant';
+            $aiModel = AiModel::query()->where('slug', $defaultSlug)->where('is_active', true)->first()
+                ?? AiModel::query()->where('is_active', true)->ordered()->first();
+        }
+
+        $selectedProvider = $aiModel?->provider ?? $validated['llm_provider'] ?? session('llm_provider', config('llm.default_provider', 'cerebras'));
+        $selectedModelSlug = $aiModel?->slug;
+
+        session([
+            'selected_model_slug' => $selectedModelSlug,
+            'llm_provider' => $selectedProvider,
+        ]);
 
         try {
             $dto = new StoreDocumentDTO(
                 file: $request->file('file'),
                 organizationId: (int) $user->organization_id,
                 uploadedBy: (int) $user->id,
-                metadata: ['llm_provider' => $selectedProvider],
+                metadata: [
+                    'llm_provider' => $selectedProvider,
+                    'model_slug' => $selectedModelSlug,
+                    'provider_model_id' => $aiModel?->provider_model_id,
+                ],
             );
 
             $this->storeAction->execute(
@@ -171,10 +242,10 @@ class DashboardController extends Controller
                 processImmediately: true,
             );
 
-            $providerName = $selectedProvider === 'nvidia_nim' ? 'NVIDIA NIM' : 'Groq';
+            $modelDisplayName = $aiModel?->display_name ?? ($selectedProvider === 'cerebras' ? 'Cerebras AI' : $selectedProvider);
             $message = $user->hasProAccess()
-                ? "Documento subido. Procesamiento prioritario iniciado con {$providerName}."
-                : "Documento subido correctamente. El análisis comenzará en unos segundos con {$providerName}.";
+                ? "Documento subido. Procesamiento prioritario iniciado con {$modelDisplayName}."
+                : "Documento subido correctamente. El análisis comenzará en unos segundos con {$modelDisplayName}.";
 
             return redirect()
                 ->route('dashboard')

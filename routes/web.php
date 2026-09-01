@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/model', [DashboardController::class, 'setModel'])->name('dashboard.model');
     Route::post('/dashboard/provider', [DashboardController::class, 'setProvider'])->name('dashboard.provider');
     Route::post('/dashboard/upload', [DashboardController::class, 'upload'])->name('dashboard.upload');
     Route::get('/dashboard/documents/{document}/status', [DashboardController::class, 'documentStatus'])

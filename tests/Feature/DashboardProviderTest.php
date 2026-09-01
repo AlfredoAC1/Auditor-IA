@@ -45,14 +45,14 @@ class DashboardProviderTest extends TestCase
         $this->assertEquals('nvidia_nim', session('llm_provider'));
     }
 
-    public function test_dashboard_renders_provider_selector_for_free_and_pro_users(): void
+    public function test_dashboard_renders_cleanly_without_deprecated_provider_selector(): void
     {
         $response = $this->actingAs($this->user)
             ->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertSee('Proveedor de Inteligencia Artificial');
-        $response->assertSee('Groq Cloud');
-        $response->assertSee('NVIDIA NIM');
+        $response->assertDontSee('Proveedor de Inteligencia Artificial');
+        $response->assertSee('Motor IA');
+        $response->assertSee('Créditos IA');
     }
 }

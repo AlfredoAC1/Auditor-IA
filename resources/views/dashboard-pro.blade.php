@@ -6,23 +6,23 @@
 <div class="p-6 md:p-8 lg:p-10 flex flex-col gap-8 max-w-7xl mx-auto w-full">
 
     <!-- Pro Header -->
-    <header class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b-2 border-[#35393C]">
+    <header class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b-2 border-gunmetal">
         <div class="flex flex-col gap-2">
             <div class="flex items-center gap-3 flex-wrap">
-                <h1 class="text-2xl md:text-3xl font-serif font-bold text-[#A4D8FF] tracking-tight">Dashboard Pro</h1>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono font-bold uppercase tracking-wide bg-[#0F1E36] text-[#A4D8FF] border border-[#A4D8FF]/40 shadow-brutal-sm">
-                    <svg class="w-3.5 h-3.5 text-[#A4D8FF]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                <h1 class="text-2xl md:text-3xl font-serif font-bold text-icy tracking-tight">Dashboard Pro</h1>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono font-bold uppercase tracking-wide bg-navy-dark text-icy border border-icy/40 shadow-brutal-sm">
+                    <svg class="w-3.5 h-3.5 text-icy" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                     Pro
                 </span>
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono font-bold bg-[#1B4332] text-[#A4D8FF] border border-[#15181B] shadow-brutal-sm uppercase">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#A4D8FF] animate-pulse"></span>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono font-bold bg-[#1B4332] text-icy border border-gunmetal-dark shadow-brutal-sm uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-icy animate-pulse"></span>
                     Procesamiento integrado activo
                 </span>
             </div>
-            <p class="text-[13px] font-mono text-[#A4D8FF]/70">Bienvenido, {{ auth()->user()->name }} · acceso a todos los tipos de informe</p>
+            <p class="text-[13px] font-mono text-icy/70">Bienvenido, {{ auth()->user()->name }} · acceso a todos los tipos de informe</p>
         </div>
-        <button onclick="document.getElementById('file-input').click()" class="flex items-center gap-2 px-5 py-2.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[13px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer shrink-0 uppercase tracking-wider">
-            <svg class="w-4 h-4 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <button onclick="document.getElementById('file-input').click()" class="flex items-center gap-2 px-5 py-2.5 bg-navy-dark hover:bg-navy-light border border-icy/40 text-[13px] font-mono font-bold text-icy shadow-brutal hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all cursor-pointer shrink-0 uppercase tracking-wider">
+            <svg class="w-4 h-4 text-icy" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
             </svg>
             Subir documento
@@ -30,10 +30,10 @@
     </header>
 
     @if(session('success'))
-        <div class="bg-[#1B4332] border-2 border-[#15181B] text-[#A4D8FF] px-4 py-3.5 shadow-brutal-sm text-[13px] font-mono font-medium">{{ session('success') }}</div>
+        <div class="bg-[#1B4332] border-2 border-gunmetal-dark text-icy px-4 py-3.5 shadow-brutal-sm text-[13px] font-mono font-medium">{{ session('success') }}</div>
     @endif
     @if(session('error'))
-        <div class="bg-[#0F1E36] border-2 border-[#15181B] text-[#A4D8FF] px-4 py-3.5 shadow-brutal-sm text-[13px] font-mono font-medium">{{ session('error') }}</div>
+        <div class="bg-navy-dark border-2 border-gunmetal-dark text-icy px-4 py-3.5 shadow-brutal-sm text-[13px] font-mono font-medium">{{ session('error') }}</div>
     @endif
 
     {{-- AI Credits card --}}
@@ -49,62 +49,183 @@
 
     <!-- Pro metrics -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div class="bg-[#222629] border-2 border-[#35393C] p-5 flex flex-col gap-2 shadow-brutal">
-            <span class="text-[12px] font-mono font-bold text-[#A4D8FF] uppercase tracking-wide">Documentos analizados</span>
-            <span class="text-4xl font-serif font-extrabold text-[#A4D8FF]">{{ $analyzedCount }}</span>
-            <span class="text-[11px] font-mono text-[#A4D8FF]/60">{{ $documents->count() }} subidos en total</span>
+        <div class="bg-gunmetal-card border-2 border-gunmetal p-5 flex flex-col gap-2 shadow-brutal">
+            <span class="text-[12px] font-mono font-bold text-icy uppercase tracking-wide">Documentos analizados</span>
+            <span class="text-4xl font-serif font-extrabold text-icy">{{ $analyzedCount }}</span>
+            <span class="text-[11px] font-mono text-icy/60">{{ $documents->count() }} subidos en total</span>
         </div>
-        <div class="bg-[#222629] border-2 border-[#35393C] p-5 flex flex-col gap-2 shadow-brutal">
-            <span class="text-[12px] font-mono font-bold text-[#A4D8FF]/80 uppercase tracking-wide">Riesgos detectados</span>
-            <span class="text-4xl font-serif font-extrabold text-[#A4D8FF]">{{ $riskCount }}</span>
-            <span class="text-[11px] font-mono text-[#A4D8FF]/60">En todos tus documentos</span>
+        <div class="bg-gunmetal-card border-2 border-gunmetal p-5 flex flex-col gap-2 shadow-brutal">
+            <span class="text-[12px] font-mono font-bold text-icy/80 uppercase tracking-wide">Riesgos detectados</span>
+            <span class="text-4xl font-serif font-extrabold text-icy">{{ $riskCount }}</span>
+            <span class="text-[11px] font-mono text-icy/60">En todos tus documentos</span>
         </div>
-        <div class="bg-[#222629] border-2 border-[#35393C] p-5 flex flex-col gap-2 shadow-brutal">
-            <span class="text-[12px] font-mono font-bold text-[#A4D8FF]/80 uppercase tracking-wide">Tiempo prom. análisis</span>
-            <span class="text-4xl font-serif font-extrabold text-[#A4D8FF]">{{ $avgTime }}{{ $avgTime !== '--' ? 's' : '' }}</span>
-            <span class="text-[11px] font-mono text-[#A4D8FF]/60">Procesamiento prioritario</span>
+        <div class="bg-gunmetal-card border-2 border-gunmetal p-5 flex flex-col gap-2 shadow-brutal">
+            <span class="text-[12px] font-mono font-bold text-icy/80 uppercase tracking-wide">Tiempo prom. análisis</span>
+            <span class="text-4xl font-serif font-extrabold text-icy">{{ $avgTime }}{{ $avgTime !== '--' ? 's' : '' }}</span>
+            <span class="text-[11px] font-mono text-icy/60">Procesamiento prioritario</span>
         </div>
     </div>
 
     <!-- Analysis types panel (Pro exclusive) -->
-    <section id="analysis-types-panel" class="bg-[#222629] border-2 border-[#35393C] p-6 flex flex-col gap-5 shadow-brutal">
+    <section id="analysis-types-panel" class="bg-gunmetal-card border-2 border-gunmetal p-6 flex flex-col gap-5 shadow-brutal">
         <div class="flex flex-col gap-1">
-            <h2 class="text-xl font-serif font-bold text-[#A4D8FF]">Tipos de análisis disponibles</h2>
-            <p class="text-[13px] font-mono text-[#A4D8FF]/70">Como usuario Pro tienes acceso a todos los informes especializados.</p>
+            <h2 class="text-xl font-serif font-bold text-icy">Tipos de análisis disponibles</h2>
+            <p class="text-[13px] font-mono text-icy/70">Como usuario Pro tienes acceso a todos los informes especializados.</p>
         </div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             @foreach(\App\Enums\AnalysisType::cases() as $type)
-                <div class="flex items-start gap-3 p-4 bg-[#15181B] border-2 border-[#35393C] shadow-brutal-sm">
-                    <div class="w-8 h-8 bg-[#0F1E36] border border-[#A4D8FF]/30 flex items-center justify-center shrink-0">
-                        <svg class="w-4 h-4 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div class="flex items-start gap-3 p-4 bg-gunmetal-dark border-2 border-gunmetal shadow-brutal-sm">
+                    <div class="w-8 h-8 bg-navy-dark border border-icy/30 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4 text-icy" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div class="flex flex-col gap-0.5 min-w-0">
-                        <span class="text-[13.5px] font-bold text-[#A4D8FF]">{{ $type->label() }}</span>
-                        <span class="text-[11px] text-[#A4D8FF]/70 leading-relaxed">{{ $type->description() }}</span>
-                        <span class="text-[11px] font-mono font-bold text-[#A4D8FF] mt-1">{{ $analysisTypeCounts[$type->value] ?? 0 }} este mes</span>
+                        <span class="text-[13.5px] font-bold text-icy">{{ $type->label() }}</span>
+                        <span class="text-[11px] text-icy/70 leading-relaxed">{{ $type->description() }}</span>
+                        <span class="text-[11px] font-mono font-bold text-icy mt-1">{{ $analysisTypeCounts[$type->value] ?? 0 }} este mes</span>
                     </div>
                 </div>
             @endforeach
         </div>
     </section>
 
-    <x-provider-selector :current-provider="$currentProvider" :is-pro="true" />
+    <!-- Pro AI Model Ecosystem Showcase -->
+    <section id="ai-models-panel" class="bg-gunmetal-card border-2 border-gunmetal p-6 flex flex-col gap-5 shadow-brutal">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gunmetal pb-3">
+            <div class="flex flex-col gap-0.5">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-xl font-serif font-bold text-icy">Ecosistema de Modelos IA</h2>
+                    <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#3B2D1A] text-[#F5C87A] border border-[#7A5C2E] shadow-brutal-sm">
+                        Cerebras Habilitado
+                    </span>
+                </div>
+                <p class="text-[13px] font-mono text-icy/70">Haz clic en cualquier modelo para seleccionarlo como motor activo de tus análisis.</p>
+            </div>
+            <span class="text-[11px] font-mono text-icy/60 bg-navy-dark px-3 py-1 border border-icy/30 shadow-brutal-sm self-start sm:self-auto">
+                Selección por análisis disponible
+            </span>
+        </div>
 
-    <x-dashboard-upload-zone :is-pro="true" :current-provider="$currentProvider" />
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <!-- Gemma 4 (31B) Preview - Cerebras -->
+            @php $isGemmaSelected = ($selectedModelSlug ?? 'cerebras-gemma4') === 'cerebras-gemma4'; @endphp
+            <form action="{{ route('dashboard.model') }}" method="POST" class="h-full">
+                @csrf
+                <input type="hidden" name="model_slug" value="cerebras-gemma4">
+                <button type="submit" class="w-full text-left p-4 h-full border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden {{ $isGemmaSelected ? 'bg-[#2A2012] border-[#F5C87A] shadow-brutal text-icy' : 'bg-gunmetal-dark border-[#7A5C2E]/60 hover:border-[#F5C87A]/80 shadow-brutal-sm' }}">
+                    <div class="absolute top-0 right-0 bg-[#7A5C2E] text-[#F5C87A] text-[9px] font-mono font-black uppercase px-2 py-0.5 tracking-wider">
+                        40k Tokens
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#F5C87A] {{ $isGemmaSelected ? 'animate-pulse' : '' }}"></span>
+                            <span class="text-[13px] font-bold text-[#F5C87A]">Gemma 4 31B</span>
+                        </div>
+                        <span class="text-[10px] font-mono font-bold text-icy/60 uppercase">Cerebras AI · Standard (2x)</span>
+                        <p class="text-[11.5px] text-icy/80 leading-relaxed mt-1">
+                            Capacidad de hasta 40.000 tokens de salida para análisis legal exhaustivo y cláusulas detalladas.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between text-[10.5px] font-mono pt-2 border-t border-gunmetal w-full">
+                        <span class="text-icy/60">Inferencia ultra veloz</span>
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider {{ $isGemmaSelected ? 'bg-[#F5C87A] text-[#15181B]' : 'bg-navy-dark text-[#F5C87A] border border-[#7A5C2E]' }}">
+                            {{ $isGemmaSelected ? 'Seleccionado' : 'Activar' }}
+                        </span>
+                    </div>
+                </button>
+            </form>
+
+            <!-- Llama 3.3 (70B) - Groq -->
+            @php $isLlama70Selected = ($selectedModelSlug ?? '') === 'llama-70b-versatile'; @endphp
+            <form action="{{ route('dashboard.model') }}" method="POST" class="h-full">
+                @csrf
+                <input type="hidden" name="model_slug" value="llama-70b-versatile">
+                <button type="submit" class="w-full text-left p-4 h-full border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden {{ $isLlama70Selected ? 'bg-[#0F1E36] border-[#A4D8FF] shadow-brutal text-icy' : 'bg-gunmetal-dark border-gunmetal hover:border-[#A4D8FF]/60 shadow-brutal-sm' }}">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#A4D8FF] {{ $isLlama70Selected ? 'animate-pulse' : '' }}"></span>
+                            <span class="text-[13px] font-bold text-icy">Llama 3.3 70B</span>
+                        </div>
+                        <span class="text-[10px] font-mono font-bold text-icy/60 uppercase">Groq Cloud · Standard (2x)</span>
+                        <p class="text-[11.5px] text-icy/80 leading-relaxed mt-1">
+                            Razonamiento jurídico equilibrado y alta precisión en detección de riesgos legales.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between text-[10.5px] font-mono pt-2 border-t border-gunmetal w-full">
+                        <span class="text-icy/60">Respuesta instantánea</span>
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider {{ $isLlama70Selected ? 'bg-[#A4D8FF] text-[#0F1E36]' : 'bg-navy-dark text-[#A4D8FF] border border-[#A4D8FF]/40' }}">
+                            {{ $isLlama70Selected ? 'Seleccionado' : 'Activar' }}
+                        </span>
+                    </div>
+                </button>
+            </form>
+
+            <!-- Llama 3.3 70B - NVIDIA NIM -->
+            @php $isNimSelected = ($selectedModelSlug ?? '') === 'nvidia-llama-70b'; @endphp
+            <form action="{{ route('dashboard.model') }}" method="POST" class="h-full">
+                @csrf
+                <input type="hidden" name="model_slug" value="nvidia-llama-70b">
+                <button type="submit" class="w-full text-left p-4 h-full border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden {{ $isNimSelected ? 'bg-[#152B1E] border-[#D5E8D4] shadow-brutal text-icy' : 'bg-gunmetal-dark border-gunmetal hover:border-[#D5E8D4]/60 shadow-brutal-sm' }}">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#D5E8D4] {{ $isNimSelected ? 'animate-pulse' : '' }}"></span>
+                            <span class="text-[13px] font-bold text-icy">Llama 70B (NIM)</span>
+                        </div>
+                        <span class="text-[10px] font-mono font-bold text-icy/60 uppercase">NVIDIA NIM · Avanzado (3x)</span>
+                        <p class="text-[11.5px] text-icy/80 leading-relaxed mt-1">
+                            Inferencia corporativa en infraestructura NVIDIA para auditorías críticas.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between text-[10.5px] font-mono pt-2 border-t border-gunmetal w-full">
+                        <span class="text-icy/60">Fidelidad máxima</span>
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider {{ $isNimSelected ? 'bg-[#D5E8D4] text-[#152B1E]' : 'bg-navy-dark text-[#D5E8D4] border border-gunmetal-dark' }}">
+                            {{ $isNimSelected ? 'Seleccionado' : 'Activar' }}
+                        </span>
+                    </div>
+                </button>
+            </form>
+
+            <!-- Llama 3.1 8B - Groq -->
+            @php $isLlama8Selected = ($selectedModelSlug ?? '') === 'llama-8b-instant'; @endphp
+            <form action="{{ route('dashboard.model') }}" method="POST" class="h-full">
+                @csrf
+                <input type="hidden" name="model_slug" value="llama-8b-instant">
+                <button type="submit" class="w-full text-left p-4 h-full border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden {{ $isLlama8Selected ? 'bg-[#0F1E36] border-[#A4D8FF] shadow-brutal text-icy' : 'bg-gunmetal-dark border-gunmetal hover:border-[#A4D8FF]/60 shadow-brutal-sm' }}">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-icy/50 {{ $isLlama8Selected ? 'animate-pulse' : '' }}"></span>
+                            <span class="text-[13px] font-bold text-icy">Llama 3.1 8B</span>
+                        </div>
+                        <span class="text-[10px] font-mono font-bold text-icy/60 uppercase">Groq Cloud · Ligero (1x)</span>
+                        <p class="text-[11.5px] text-icy/80 leading-relaxed mt-1">
+                            Ideal para revisiones preliminares y resúmenes ejecutivos económicos.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between text-[10.5px] font-mono pt-2 border-t border-gunmetal w-full">
+                        <span class="text-icy/60">1 Crédito / análisis</span>
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider {{ $isLlama8Selected ? 'bg-[#A4D8FF] text-[#0F1E36]' : 'bg-navy-dark text-icy/70 border border-icy/30' }}">
+                            {{ $isLlama8Selected ? 'Seleccionado' : 'Activar' }}
+                        </span>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <x-dashboard-upload-zone :is-pro="true" :selected-model="$selectedModel" :selected-model-slug="$selectedModelSlug" />
 
     <!-- Documents table -->
     <section id="recent-analyses-container" class="flex flex-col gap-4">
         <div class="flex items-center justify-between gap-4">
-            <h2 class="text-xl font-serif font-bold text-[#A4D8FF] tracking-tight">Análisis recientes</h2>
+            <h2 class="text-xl font-serif font-bold text-icy tracking-tight">Análisis recientes</h2>
             @if(count($pendingDocumentIds) > 0)
-                <span class="text-[12px] font-mono text-[#A4D8FF] bg-[#0F1E36] px-2.5 py-1 border border-[#A4D8FF]/40 shadow-brutal-sm font-medium animate-pulse">{{ count($pendingDocumentIds) }} en procesamiento...</span>
+                <span class="text-[12px] font-mono text-icy bg-navy-dark px-2.5 py-1 border border-icy/40 shadow-brutal-sm font-medium animate-pulse">{{ count($pendingDocumentIds) }} en procesamiento...</span>
             @endif
         </div>
 
         @if($documents->isEmpty())
-            <div class="flex flex-col items-center justify-center p-10 bg-[#222629]/50 border-2 border-dashed border-[#35393C] text-center gap-4">
-                <h3 class="text-[14px] font-serif font-bold text-[#A4D8FF]">No hay análisis disponibles</h3>
-                <p class="text-[12px] font-mono text-[#A4D8FF]/60">Sube tu primer contrato para comenzar.</p>
+            <div class="flex flex-col items-center justify-center p-10 bg-gunmetal-card/50 border-2 border-dashed border-gunmetal text-center gap-4">
+                <h3 class="text-[14px] font-serif font-bold text-icy">No hay análisis disponibles</h3>
+                <p class="text-[12px] font-mono text-icy/60">Sube tu primer contrato para comenzar.</p>
             </div>
         @else
             <x-documents-table :documents="$documents" />

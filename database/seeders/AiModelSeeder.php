@@ -115,11 +115,13 @@ class AiModelSeeder extends Seeder
             ],
             [
                 'slug'              => 'cerebras-gemma4',
-                'display_name'      => 'Gemma 4 31B',
+                'display_name'      => 'Gemma 4 31B (Preview)',
                 'provider'          => 'cerebras',
                 'provider_model_id' => 'gemma-4-31b',
                 'tier'              => AiModelTier::Standard,
-                'max_tokens'        => 8192,
+                // gemma-4-31b Preview hard cap: 40,960 tokens.
+                // 32,768 is the configured operational ceiling.
+                'max_tokens'        => 32768,
                 'is_active'         => true, // CEREBRAS_API_KEY is set
             ],
             [

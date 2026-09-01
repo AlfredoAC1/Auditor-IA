@@ -55,9 +55,12 @@ return [
             'api_key'         => env('CEREBRAS_API_KEY'),
             'model'           => env('CEREBRAS_MODEL', 'gemma-4-31b'),
             'base_url'        => env('CEREBRAS_BASE_URL', 'https://api.cerebras.ai/v1'),
-            'max_tokens'      => (int) env('CEREBRAS_MAX_TOKENS', 16384),
+            // gemma-4-31b Preview supports up to 40,960 completion tokens.
+            // 32,768 is the safe operational ceiling (leaves ~8k headroom).
+            'max_tokens'      => (int) env('CEREBRAS_MAX_TOKENS', 32768),
             'temperature'     => (float) env('CEREBRAS_TEMPERATURE', 0.3),
-            'timeout_seconds' => (int) env('CEREBRAS_TIMEOUT', 120),
+            // Larger responses need more time — raised from 120s to 180s.
+            'timeout_seconds' => (int) env('CEREBRAS_TIMEOUT', 180),
             'rate_limit_rpm'  => 0,
             'extra_headers'   => [],
         ],
@@ -67,12 +70,14 @@ return [
         // Docs: https://www.alibabacloud.com/help/en/model-studio
         // ---------------------------------------------------------------
         'qwen_cloud' => [
-            'api_key'         => env('QWEN_API_KEY'),
+            // Bridge: supports both QWEN_API_KEY and legacy QWEN_CLOUD_API_KEY naming.
+            'api_key'         => env('QWEN_API_KEY', env('QWEN_CLOUD_API_KEY')),
             'model'           => env('QWEN_MODEL', 'qwen-plus'),
+            // DashScope international endpoint (OpenAI-compatible mode).
             'base_url'        => env('QWEN_BASE_URL', 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1'),
-            'max_tokens'      => (int) env('QWEN_MAX_TOKENS', 8192),
+            'max_tokens'      => (int) env('QWEN_MAX_TOKENS', 16384),
             'temperature'     => (float) env('QWEN_TEMPERATURE', 0.3),
-            'timeout_seconds' => (int) env('QWEN_TIMEOUT', 120),
+            'timeout_seconds' => (int) env('QWEN_TIMEOUT', 150),
             'rate_limit_rpm'  => 0,
             'extra_headers'   => [],
         ],

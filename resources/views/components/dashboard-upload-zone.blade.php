@@ -1,11 +1,20 @@
 @props([
     'isPro' => false,
-    'currentProvider' => 'groq',
+    'selectedModel' => null,
+    'selectedModelSlug' => null,
+    'currentProvider' => null,
 ])
+
+@php
+    $modelSlug = $selectedModelSlug ?? $selectedModel?->slug ?? 'cerebras-gemma4';
+    $provider = $selectedModel?->provider ?? $currentProvider ?? 'cerebras';
+    $isCerebras = $provider === 'cerebras' || str_contains($modelSlug, 'gemma4') || str_contains($modelSlug, 'cerebras');
+@endphp
 
 <form id="upload-zone" action="{{ route('dashboard.upload') }}" method="POST" enctype="multipart/form-data" class="bg-[#222629] border-2 border-dashed border-[#35393C] hover:border-[#A4D8FF]/80 p-8 md:p-12 flex flex-col items-center justify-center gap-6 shadow-brutal transition-colors">
     @csrf
-    <input type="hidden" name="llm_provider" value="{{ $currentProvider }}">
+    <input type="hidden" name="model_slug" id="selected-model-input" value="{{ $modelSlug }}">
+    <input type="hidden" name="llm_provider" value="{{ $provider }}">
     <input type="file" name="file" id="file-input" class="hidden" accept=".pdf,.docx" onchange="this.form.submit()">
 
     <div onclick="document.getElementById('file-input').click()" class="w-14 h-14 bg-[#0F1E36] border-2 border-[#15181B] flex items-center justify-center text-[#A4D8FF] shadow-brutal-sm cursor-pointer hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all">
@@ -17,8 +26,13 @@
     <div class="flex flex-col gap-2 text-center">
         <h2 class="text-xl font-serif font-bold text-[#A4D8FF] tracking-tight">Arrastra tu documento aquí</h2>
         <p class="text-[13px] font-mono text-[#A4D8FF]/70 leading-relaxed">
-            PDF o DOCX · hasta 50MB · en español <br>
-            <span class="text-xs font-mono text-[#A4D8FF]/80">Procesando con proveedor: <strong class="text-[#A4D8FF] font-bold underline">{{ $currentProvider === 'nvidia_nim' ? 'NVIDIA NIM (40 RPM)' : 'Groq Cloud' }}</strong></span>
+            PDF o DOCX · hasta 50MB · marco legal chileno vigente <br>
+            <span class="inline-flex items-center gap-2 mt-2 text-xs font-mono text-[#A4D8FF] bg-[#15181B] px-3.5 py-1.5 border border-[#35393C] shadow-brutal-sm">
+                <span class="w-2 h-2 rounded-full {{ $isCerebras ? 'bg-[#F5C87A]' : 'bg-[#A4D8FF]' }} animate-pulse"></span>
+                Modelo activo: <strong class="font-bold {{ $isCerebras ? 'text-[#F5C87A]' : 'text-[#A4D8FF]' }}">{{ $selectedModel?->display_name ?? 'Gemma 4 31B (Preview)' }}</strong>
+                <span class="text-icy/40">·</span>
+                <span class="text-icy/70">{{ $isCerebras ? 'Cerebras AI (40k Tokens)' : ($provider === 'nvidia_nim' ? 'NVIDIA NIM' : 'Inferencia Acelerada') }}</span>
+            </span>
         </p>
     </div>
 

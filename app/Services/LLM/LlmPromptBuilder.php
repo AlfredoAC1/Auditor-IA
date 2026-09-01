@@ -156,8 +156,8 @@ REGLAS DE RESPUESTA:
 - Usa lenguaje simple y claro, evitando jerga legal innecesaria.
 - Cuando uses términos legales, explícalos brevemente entre paréntesis.
 - Estructura tu respuesta estrictamente en el formato JSON especificado.
-- Sé conciso y directo en cada valor del JSON. Limita los arreglos a un máximo de 10 ítems significativos.
-- Mantén las explicaciones breves (1-2 oraciones por campo) para asegurar que el JSON se genere completo sin alcanzar el límite de tokens.
+- Proporciona análisis completos y detallados; no trunces información relevante.
+- Limita los arreglos a un máximo razonable de 10-15 ítems por campo para mantener el foco.
 - NO inventes leyes ni artículos que no existan.
 - Si no tienes certeza sobre un punto legal, indícalo explícitamente.
 - NUNCA des asesoría legal definitiva — siempre recomienda consultar con un abogado para decisiones importantes.

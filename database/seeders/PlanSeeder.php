@@ -23,9 +23,10 @@ class PlanSeeder extends Seeder
         $sortOrder = 0;
 
         foreach ($plans as $slug => $planData) {
-            $monthlyPrice = $planData['price_monthly_clp']
+            $priceClp = $planData['price_monthly_clp']
+                ?? $planData['price_lifetime_clp']
                 ?? $planData['price_clp']
-                ?? ($planData['price_lifetime_clp'] ?? 0);
+                ?? 0;
 
             Plan::updateOrCreate(
                 ['slug' => $slug],
@@ -33,7 +34,7 @@ class PlanSeeder extends Seeder
                     'name' => $planData['name'],
                     'slug' => $slug,
                     'description' => $planData['description'] ?? null,
-                    'price_clp' => $monthlyPrice ?? 0,
+                    'price_clp' => $priceClp,
                     'is_free' => $planData['is_free'] ?? false,
                     'max_documents_per_month' => $planData['max_documents_per_month'] ?? null,
                     'max_storage_bytes' => $planData['max_storage_bytes'] ?? null,
@@ -53,6 +54,6 @@ class PlanSeeder extends Seeder
             );
         }
 
-        $this->command->info('Plans seeded: ' . count($plans) . ' plans created/updated.');
+        $this->command->info('Plans seeded: '.count($plans).' plans created/updated.');
     }
 }

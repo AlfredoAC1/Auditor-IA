@@ -46,12 +46,75 @@
         </p>
     </div>
 
+    {{-- Explanation Card: How AI Credits work --}}
+    <div class="bg-[#222629] border-2 border-[#35393C] p-6 md:p-8 shadow-brutal mb-12">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#35393C] pb-5 mb-6">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-[#0F1E36] border border-[#A4D8FF]/40 text-[#A4D8FF] shrink-0">
+                    <svg class="w-6 h-6 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-xl font-serif font-bold text-[#A4D8FF] tracking-tight">¿Cómo funcionan los Créditos IA en Auditor-IA?</h3>
+                    <p class="text-[13px] font-mono text-[#A4D8FF]/70">Cada análisis consume créditos según la complejidad del modelo de IA que elijas para auditar tu documento.</p>
+                </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#0F1E36] border border-[#A4D8FF]/40 text-[11px] font-mono font-bold text-[#A4D8FF] uppercase tracking-wider shrink-0 self-start md:self-auto">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Sistema de Créditos Flexibles
+            </span>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-[#15181B] border border-[#35393C] p-4 flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[12px] font-mono font-bold text-[#A4D8FF]">Modelo Básico</span>
+                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">1 crédito</span>
+                </div>
+                <p class="text-[12px] font-sans text-[#A4D8FF]/70">Modelo liviano para revisiones rápidas y resúmenes generales de contratos.</p>
+            </div>
+            <div class="bg-[#15181B] border border-[#35393C] p-4 flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[12px] font-mono font-bold text-[#A4D8FF]">Modelo Estándar</span>
+                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">2 créditos</span>
+                </div>
+                <p class="text-[12px] font-sans text-[#A4D8FF]/70">Mayor detalle y precisión en análisis de cláusulas y obligaciones.</p>
+            </div>
+            <div class="bg-[#15181B] border border-[#35393C] p-4 flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[12px] font-mono font-bold text-[#A4D8FF]">Modelo Avanzado</span>
+                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">3 créditos</span>
+                </div>
+                <p class="text-[12px] font-sans text-[#A4D8FF]/70">Auditoría profunda de riesgos legales y detección de ambigüedades.</p>
+            </div>
+            <div class="bg-[#15181B] border border-[#35393C] p-4 flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[12px] font-mono font-bold text-[#A4D8FF]">Modelo Premium</span>
+                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">4 créditos</span>
+                </div>
+                <p class="text-[12px] font-sans text-[#A4D8FF]/70">Máxima potencia de razonamiento jurídico para contratos complejos.</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[12px] font-mono text-[#A4D8FF]/80 pt-4 border-t border-[#35393C]">
+            <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#A4D8FF]/60 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span><strong>Renovación automática:</strong> Semanal en Free, mensual en Pro e ilimitada en Lifetime.</span>
+            </div>
+            <span class="text-[11px] text-[#A4D8FF]/60">Elige el modelo según la complejidad de cada contrato.</span>
+        </div>
+    </div>
+
     <div class="grid md:grid-cols-3 gap-6 items-stretch">
         @foreach ($plans as $slug => $plan)
             @php
                 $isPopular = ! empty($plan['popular']);
                 $isLifetime = ($plan['billing_type'] ?? '') === 'lifetime';
                 $isFree = ! empty($plan['is_free']);
+                $isLimitedOffer = ! empty($plan['limited_offer']);
             @endphp
 
             <div @class([
@@ -78,10 +141,17 @@
                         </div>
                         <span class="text-[12px] font-mono text-[#A4D8FF]/60">Sin tarjeta de crédito</span>
                     @elseif ($isLifetime)
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-4xl font-serif font-extrabold text-[#A4D8FF] tracking-tight">{{ $formatPrice($plan['price_lifetime_clp'] ?? null) }}</span>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-baseline gap-2 flex-wrap">
+                                <span class="text-4xl font-serif font-extrabold text-[#A4D8FF] tracking-tight">{{ $formatPrice($plan['price_lifetime_clp'] ?? null) }}</span>
+                                @if ($isLimitedOffer)
+                                    <span class="inline-block px-2 py-0.5 bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-mono font-bold uppercase tracking-wider animate-pulse">
+                                        Oferta Limitada
+                                    </span>
+                                @endif
+                            </div>
+                            <span class="text-[12px] font-mono text-[#A4D8FF]/60">Pago único · acceso de por vida</span>
                         </div>
-                        <span class="text-[12px] font-mono text-[#A4D8FF]/60">Pago único · acceso de por vida</span>
                     @else
                         <div class="flex items-baseline gap-1">
                             <span
@@ -108,9 +178,13 @@
                     </li>
                     <li class="flex items-center gap-2.5 text-[#A4D8FF]">
                         <svg class="w-4 h-4 text-[#A4D8FF] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
-                        {{ $formatLimit($plan['max_analyses_per_month'] ?? null) }} análisis/mes
+                        @if (($plan['ai_credits_quota'] ?? null) === null)
+                            Créditos IA ilimitados
+                        @else
+                            {{ number_format($plan['ai_credits_quota'], 0, ',', '.') }} créditos IA / {{ ($plan['credit_refresh_interval'] ?? '') === 'weekly' ? 'semana' : 'mes' }}
+                        @endif
                     </li>
                     <li class="flex items-center gap-2.5 text-[#A4D8FF]">
                         <svg class="w-4 h-4 text-[#A4D8FF] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">

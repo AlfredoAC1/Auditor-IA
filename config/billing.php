@@ -51,7 +51,6 @@ return [
             'highlights' => [
                 'Resumen y detección de riesgos',
                 'Análisis según legislación chilena',
-                '25 créditos IA semanales',
                 'Soporte por email',
             ],
         ],
@@ -61,8 +60,8 @@ return [
             'description' => 'Para profesionales que revisan contratos con frecuencia',
             'is_free' => false,
             'billing_type' => 'recurring',
-            'price_monthly_clp' => 14990,
-            'price_yearly_clp' => 149900,
+            'price_monthly_clp' => 19990,
+            'price_yearly_clp' => 199900,
             'price_lifetime_clp' => null,
             'max_documents_per_month' => 50,
             'max_storage_bytes' => 5368709120, // 5 GB
@@ -73,7 +72,6 @@ return [
             'highlights' => [
                 'Todos los tipos de análisis',
                 'Selección de modelo IA',
-                '500 créditos IA mensuales',
                 'Prioridad en procesamiento',
                 'Exportación de informes',
                 'Soporte prioritario',
@@ -87,7 +85,8 @@ return [
             'billing_type' => 'lifetime',
             'price_monthly_clp' => null,
             'price_yearly_clp' => null,
-            'price_lifetime_clp' => 399900,
+            'price_lifetime_clp' => 199990,
+            'limited_offer' => true,
             'max_documents_per_month' => null,
             'max_storage_bytes' => null,
             'ai_credits_quota' => null, // Unlimited
@@ -95,7 +94,6 @@ return [
             'allowed_model_tiers' => ['lightweight', 'standard', 'advanced', 'premium'],
             'highlights' => [
                 'Todas las funciones actuales y futuras',
-                'Créditos IA ilimitados',
                 'Selección de modelo IA',
                 'Sin renovaciones ni sorpresas',
                 'Soporte prioritario de por vida',

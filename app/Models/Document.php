@@ -6,11 +6,13 @@ namespace App\Models;
 
 use App\Enums\DocumentStatus;
 use App\Enums\DocumentType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Document extends Model
@@ -87,6 +89,21 @@ class Document extends Model
     }
 
     /**
+     * Get the latest processed analysis for this document.
+     *
+     * @return HasOne<DocumentAnalysis, $this>
+     */
+    public function latestAnalysis(): HasOne
+    {
+        return $this->hasOne(DocumentAnalysis::class)->ofMany([
+            'created_at' => 'max',
+            'id' => 'max',
+        ], function ($query) {
+            $query->where('status', DocumentStatus::Processed);
+        });
+    }
+
+    /**
      * Get records where this document acts as a supporting document for other analyses.
      *
      * @return HasMany<AnalysisSupportingDocument, $this>
@@ -103,26 +120,26 @@ class Document extends Model
     /**
      * Scope to documents belonging to a specific organization.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeForOrganization(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         int $organizationId,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('organization_id', $organizationId);
     }
 
     /**
      * Scope to documents with a specific status.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeWithStatus(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         DocumentStatus $status,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('status', $status);
     }
 
@@ -177,6 +194,6 @@ class Document extends Model
      */
     public function fullStoragePath(): string
     {
-        return $this->storage_path . '/' . $this->stored_filename;
+        return $this->storage_path.'/'.$this->stored_filename;
     }
 }

@@ -7,7 +7,6 @@ namespace App\Services\LLM;
 use App\Enums\AnalysisType;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
-use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Builds analysis prompts for all LLM providers.
@@ -28,7 +27,7 @@ final class LlmPromptBuilder
      */
     public function buildSystemPrompt(AnalysisType $analysisType): string
     {
-        return $this->baseContext() . $this->analysisInstructions($analysisType);
+        return $this->baseContext().$this->analysisInstructions($analysisType);
     }
 
     /**
@@ -50,7 +49,7 @@ final class LlmPromptBuilder
         }
 
         $contextHeader = $contextParts !== []
-            ? "CONTEXTO:\n" . implode("\n", $contextParts) . "\n\n"
+            ? "CONTEXTO:\n".implode("\n", $contextParts)."\n\n"
             : '';
 
         return <<<PROMPT
@@ -101,8 +100,8 @@ PROMPT;
         // Supporting documents block
         $supportingBlock = '';
         if ($supportingParts !== []) {
-            $supportingBlock  = "\n\n" . str_repeat('=', 60);
-            $supportingBlock .= "\nDOCUMENTOS DE APOYO (" . count($supportingParts) . ")\n";
+            $supportingBlock = "\n\n".str_repeat('=', 60);
+            $supportingBlock .= "\nDOCUMENTOS DE APOYO (".count($supportingParts).")\n";
             $supportingBlock .= str_repeat('=', 60);
             foreach ($supportingParts as $i => $part) {
                 $num = $i + 1;
@@ -110,7 +109,7 @@ PROMPT;
             }
         }
 
-        $sep  = str_repeat('=', 60);
+        $sep = str_repeat('=', 60);
         $type = $analysisType->label();
 
         return <<<PROMPT

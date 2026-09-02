@@ -60,19 +60,19 @@
     </div>
 
     {{-- AI Engine Information Banner --}}
-    <div class="bg-[#15181B] border-2 border-[#35393C] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-brutal">
+    <div class="bg-gunmetal-dark border-2 border-gunmetal p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-brutal">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-[#0F1E36] border border-[#A4D8FF]/40 flex items-center justify-center text-[#A4D8FF] shrink-0">
+            <div class="w-8 h-8 bg-navy-dark border border-icy/40 flex items-center justify-center text-icy shrink-0">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
             </div>
             <div class="flex flex-col">
-                <span class="text-[13px] font-mono font-bold text-[#A4D8FF]">Motor IA: Inferencia Legal Ultrarrápida</span>
-                <span class="text-[11px] font-mono text-[#A4D8FF]/60">Análisis automático con modelos optimizados para legislación chilena.</span>
+                <span class="text-[13px] font-mono font-bold text-icy">Motor IA: Inferencia Legal Ultrarrápida</span>
+                <span class="text-[11px] font-mono text-icy/60">Análisis automático con modelos optimizados para legislación chilena.</span>
             </div>
         </div>
-        <a href="{{ route('landing') }}#planes" class="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#A4D8FF] hover:underline uppercase tracking-wider self-start sm:self-auto">
+        <a href="{{ route('landing') }}#planes" class="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold text-icy hover:underline uppercase tracking-wider self-start sm:self-auto">
             Desbloquear Gemma 4 (31B) & Modelos Pro &rarr;
         </a>
     </div>

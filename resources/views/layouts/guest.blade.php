@@ -46,7 +46,7 @@
                 <a href="{{ route('login') }}" class="px-4 py-2 text-[13px] font-mono font-medium text-icy/80 hover:text-icy hover:underline transition-colors uppercase tracking-wider">
                     Iniciar sesión
                 </a>
-                <a href="{{ route('login') }}" class="px-4 py-2.5 bg-navy-dark hover:bg-navy-light border border-icy/40 text-[13px] font-mono font-bold text-icy shadow-brutal-sm hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
+                <a href="{{ route('register') }}" class="px-4 py-2.5 bg-navy-dark hover:bg-navy-light border border-icy/40 text-[13px] font-mono font-bold text-icy shadow-brutal-sm hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
                     Comenzar gratis
                 </a>
             </nav>

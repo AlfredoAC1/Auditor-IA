@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,6 +19,9 @@ Route::get('/terminos-y-condiciones', function () {
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+
+    Route::get('/register', [RegisterController::class, 'create'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 });
 
 Route::middleware('auth')->group(function (): void {
@@ -34,14 +39,14 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/analisis/{document}', [DashboardController::class, 'show'])->name('analysis.show');
     Route::get('/analisis/{document}/clausulas', [DashboardController::class, 'showClauses'])->name('analysis.clauses');
 
-    Route::post('/user/dismiss-tutorial', [\App\Http\Controllers\UserController::class, 'dismissTutorial'])
+    Route::post('/user/dismiss-tutorial', [UserController::class, 'dismissTutorial'])
         ->name('user.dismiss-tutorial');
 
     // Account settings
-    Route::get('/configuracion', [\App\Http\Controllers\UserController::class, 'showSettings'])->name('settings');
-    Route::post('/configuracion/profile', [\App\Http\Controllers\UserController::class, 'updateProfile'])->name('settings.profile');
-    Route::post('/configuracion/avatar', [\App\Http\Controllers\UserController::class, 'updateAvatar'])->name('settings.avatar');
-    Route::get('/configuracion/avatar/{user}', [\App\Http\Controllers\UserController::class, 'serveAvatar'])->name('settings.avatar.serve');
-    Route::post('/configuracion/password', [\App\Http\Controllers\UserController::class, 'updatePassword'])->name('settings.password');
-    Route::delete('/configuracion/account', [\App\Http\Controllers\UserController::class, 'deleteAccount'])->name('settings.delete');
+    Route::get('/configuracion', [UserController::class, 'showSettings'])->name('settings');
+    Route::post('/configuracion/profile', [UserController::class, 'updateProfile'])->name('settings.profile');
+    Route::post('/configuracion/avatar', [UserController::class, 'updateAvatar'])->name('settings.avatar');
+    Route::get('/configuracion/avatar/{user}', [UserController::class, 'serveAvatar'])->name('settings.avatar.serve');
+    Route::post('/configuracion/password', [UserController::class, 'updatePassword'])->name('settings.password');
+    Route::delete('/configuracion/account', [UserController::class, 'deleteAccount'])->name('settings.delete');
 });

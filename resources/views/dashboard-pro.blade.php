@@ -127,7 +127,7 @@
                     </div>
                     <div class="flex items-center justify-between text-[10.5px] font-mono pt-2 border-t border-gunmetal w-full">
                         <span class="text-icy/60">Inferencia ultra veloz</span>
-                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider {{ $isGemmaSelected ? 'bg-[#F5C87A] text-[#15181B]' : 'bg-navy-dark text-[#F5C87A] border border-[#7A5C2E]' }}">
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider {{ $isGemmaSelected ? 'bg-[#F5C87A] text-gunmetal-dark' : 'bg-navy-dark text-[#F5C87A] border border-[#7A5C2E]' }}">
                             {{ $isGemmaSelected ? 'Seleccionado' : 'Activar' }}
                         </span>
                     </div>
@@ -139,10 +139,10 @@
             <form action="{{ route('dashboard.model') }}" method="POST" class="h-full">
                 @csrf
                 <input type="hidden" name="model_slug" value="llama-70b-versatile">
-                <button type="submit" class="w-full text-left p-4 h-full border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden {{ $isLlama70Selected ? 'bg-[#0F1E36] border-[#A4D8FF] shadow-brutal text-icy' : 'bg-gunmetal-dark border-gunmetal hover:border-[#A4D8FF]/60 shadow-brutal-sm' }}">
+                <button type="submit" class="w-full text-left p-4 h-full border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden {{ $isLlama70Selected ? 'bg-navy-dark border-icy shadow-brutal text-icy' : 'bg-gunmetal-dark border-gunmetal hover:border-icy/60 shadow-brutal-sm' }}">
                     <div class="flex flex-col gap-1">
                         <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-[#A4D8FF] {{ $isLlama70Selected ? 'animate-pulse' : '' }}"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-icy {{ $isLlama70Selected ? 'animate-pulse' : '' }}"></span>
                             <span class="text-[13px] font-bold text-icy">Llama 3.3 70B</span>
                         </div>
                         <span class="text-[10px] font-mono font-bold text-icy/60 uppercase">Groq Cloud · Standard (2x)</span>
@@ -152,7 +152,7 @@
                     </div>
                     <div class="flex items-center justify-between text-[10.5px] font-mono pt-2 border-t border-gunmetal w-full">
                         <span class="text-icy/60">Respuesta instantánea</span>
-                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider {{ $isLlama70Selected ? 'bg-[#A4D8FF] text-[#0F1E36]' : 'bg-navy-dark text-[#A4D8FF] border border-[#A4D8FF]/40' }}">
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider {{ $isLlama70Selected ? 'bg-icy text-navy-dark' : 'bg-navy-dark text-icy border border-icy/40' }}">
                             {{ $isLlama70Selected ? 'Seleccionado' : 'Activar' }}
                         </span>
                     </div>
@@ -189,7 +189,7 @@
             <form action="{{ route('dashboard.model') }}" method="POST" class="h-full">
                 @csrf
                 <input type="hidden" name="model_slug" value="llama-8b-instant">
-                <button type="submit" class="w-full text-left p-4 h-full border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden {{ $isLlama8Selected ? 'bg-[#0F1E36] border-[#A4D8FF] shadow-brutal text-icy' : 'bg-gunmetal-dark border-gunmetal hover:border-[#A4D8FF]/60 shadow-brutal-sm' }}">
+                <button type="submit" class="w-full text-left p-4 h-full border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden {{ $isLlama8Selected ? 'bg-navy-dark border-icy shadow-brutal text-icy' : 'bg-gunmetal-dark border-gunmetal hover:border-icy/60 shadow-brutal-sm' }}">
                     <div class="flex flex-col gap-1">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-icy/50 {{ $isLlama8Selected ? 'animate-pulse' : '' }}"></span>
@@ -202,7 +202,7 @@
                     </div>
                     <div class="flex items-center justify-between text-[10.5px] font-mono pt-2 border-t border-gunmetal w-full">
                         <span class="text-icy/60">1 Crédito / análisis</span>
-                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider {{ $isLlama8Selected ? 'bg-[#A4D8FF] text-[#0F1E36]' : 'bg-navy-dark text-icy/70 border border-icy/30' }}">
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider {{ $isLlama8Selected ? 'bg-icy text-navy-dark' : 'bg-navy-dark text-icy/70 border border-icy/30' }}">
                             {{ $isLlama8Selected ? 'Seleccionado' : 'Activar' }}
                         </span>
                     </div>

@@ -105,7 +105,7 @@
         <!-- Footer -->
         <div class="flex flex-col gap-2 text-center text-[13px] font-mono text-icy/70">
             <div>
-                ¿No tienes cuenta? <a href="#" class="text-icy font-bold hover:underline transition-colors">Regístrate gratis</a>
+                ¿No tienes cuenta? <a href="{{ route('register') }}" class="text-icy font-bold hover:underline transition-colors">Regístrate gratis</a>
             </div>
             <div class="text-[12px] text-icy/50">
                 Al ingresar o registrarte, aceptas nuestros <a href="{{ route('terms') }}" class="text-icy/80 hover:text-icy underline">Términos y Condiciones</a>.

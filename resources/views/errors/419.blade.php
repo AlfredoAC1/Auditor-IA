@@ -15,14 +15,14 @@
         </div>
 
         {{-- Main Visual 419 Graphic --}}
-        <div class="relative flex items-center justify-center">
-            <div class="text-[120px] sm:text-[160px] font-serif font-extrabold tracking-tighter text-[#A4D8FF] leading-none select-none">
+        <div class="flex flex-col items-center justify-center gap-4">
+            <div class="text-[110px] sm:text-[140px] font-serif font-extrabold tracking-tighter text-[#A4D8FF] leading-none select-none">
                 419
             </div>
 
-            {{-- Floating Clock / Lock Badge --}}
-            <div class="absolute -bottom-2 sm:-bottom-4 p-4 bg-[#15181B] border-2 border-[#35393C] shadow-brutal flex items-center gap-3">
-                <div class="w-10 h-10 bg-[#0F1E36] border border-[#A4D8FF]/40 flex items-center justify-center text-[#A4D8FF]">
+            {{-- Clock / Lock Badge --}}
+            <div class="p-4 bg-[#15181B] border-2 border-[#35393C] shadow-brutal flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#0F1E36] border border-[#A4D8FF]/40 flex items-center justify-center text-[#A4D8FF] shrink-0">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>

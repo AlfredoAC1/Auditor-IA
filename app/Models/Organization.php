@@ -168,7 +168,8 @@ class Organization extends Model
         }
 
         return Plan::freePlan()
-            ?? Plan::query()->where('slug', config('billing.default_plan', 'free'))->firstOrFail();
+            ?? Plan::query()->where('slug', config('billing.default_plan', 'free'))->first()
+            ?? new Plan(['slug' => 'free', 'name' => 'Free']);
     }
 
     /**

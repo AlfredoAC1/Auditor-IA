@@ -49,4 +49,31 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/configuracion/avatar/{user}', [UserController::class, 'serveAvatar'])->name('settings.avatar.serve');
     Route::post('/configuracion/password', [UserController::class, 'updatePassword'])->name('settings.password');
     Route::delete('/configuracion/account', [UserController::class, 'deleteAccount'])->name('settings.delete');
+
+    // Bug ticket submission
+    Route::post('/tickets', [\App\Http\Controllers\BugTicketController::class, 'store'])->name('tickets.store');
+});
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function (): void {
+    Route::get('/', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // User management
+    Route::get('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [\App\Http\Controllers\Admin\AdminUserController::class, 'create'])->name('users.create');
+    Route::post('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [\App\Http\Controllers\Admin\AdminUserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    // Organizations management
+    Route::get('/organizations', [\App\Http\Controllers\Admin\AdminOrganizationController::class, 'index'])->name('organizations.index');
+    Route::post('/organizations/{organization}/toggle', [\App\Http\Controllers\Admin\AdminOrganizationController::class, 'toggleStatus'])->name('organizations.toggle');
+
+    // Analysis auditing
+    Route::get('/analyses', [\App\Http\Controllers\Admin\AdminAnalysisController::class, 'index'])->name('analyses.index');
+    Route::get('/analyses/{analysis}', [\App\Http\Controllers\Admin\AdminAnalysisController::class, 'show'])->name('analyses.show');
+
+    // Bug tickets
+    Route::get('/tickets', [\App\Http\Controllers\Admin\AdminBugTicketController::class, 'index'])->name('tickets.index');
+    Route::post('/tickets/{ticket}/resolve', [\App\Http\Controllers\Admin\AdminBugTicketController::class, 'resolve'])->name('tickets.resolve');
 });

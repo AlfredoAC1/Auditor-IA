@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +28,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
         'organization_id',
         'dismissed_tutorial',
         'avatar_path',
@@ -53,6 +55,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'dismissed_tutorial' => 'boolean',
+            'role' => UserRole::class,
         ];
     }
 
@@ -76,9 +79,41 @@ class User extends Authenticatable
         return $this->hasMany(Document::class, 'uploaded_by');
     }
 
+    /**
+     * @return HasMany<DocumentAnalysis, $this>
+     */
+    public function analyses(): HasMany
+    {
+        return $this->hasMany(DocumentAnalysis::class, 'requested_by');
+    }
+
+    /**
+     * @return HasMany<BugTicket, $this>
+     */
+    public function bugTickets(): HasMany
+    {
+        return $this->hasMany(BugTicket::class);
+    }
+
     // ---------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------
+
+    /**
+     * Determine if the user has administrator privileges.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin;
+    }
+
+    /**
+     * Determine if the user is a regular user.
+     */
+    public function isUser(): bool
+    {
+        return $this->role === UserRole::User;
+    }
 
     /**
      * Determine if the user belongs to any organization.

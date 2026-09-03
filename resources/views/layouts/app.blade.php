@@ -46,6 +46,9 @@
     <!-- Interactive onboarding guide -->
     <x-tutorial-guide />
 
+    <!-- Bug report modal -->
+    <x-bug-ticket-modal />
+
     <!-- Stacked scripts from child views -->
     @stack('scripts')
 

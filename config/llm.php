@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default_provider' => env('LLM_PROVIDER', 'groq'),
+    'default_provider' => env('LLM_PROVIDER', 'cerebras'),
 
     /*
     |--------------------------------------------------------------------------

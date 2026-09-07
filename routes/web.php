@@ -38,6 +38,12 @@ Route::middleware('auth')->group(function (): void {
 
     Route::get('/analisis/{document}', [DashboardController::class, 'show'])->name('analysis.show');
     Route::get('/analisis/{document}/clausulas', [DashboardController::class, 'showClauses'])->name('analysis.clauses');
+    Route::post('/analisis/{analysis}/ancillary', [\App\Http\Controllers\AncillaryAnalysisController::class, 'upload'])
+        ->name('analysis.ancillary.upload');
+    Route::get('/analisis/{analysis}/ancillary/{ancillaryDocument}/status', [\App\Http\Controllers\AncillaryAnalysisController::class, 'status'])
+        ->name('analysis.ancillary.status');
+    Route::get('/analisis/{document}/contextual/{analysis}', [\App\Http\Controllers\AncillaryAnalysisController::class, 'showContextual'])
+        ->name('analysis.contextual.show');
 
     Route::post('/user/dismiss-tutorial', [UserController::class, 'dismissTutorial'])
         ->name('user.dismiss-tutorial');

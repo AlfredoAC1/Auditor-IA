@@ -1,7 +1,7 @@
 @auth
 <div 
     id="bug-ticket-modal" 
-    class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-xs flex items-center justify-center p-4"
+    class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-xs items-center justify-center p-4"
     role="dialog" 
     aria-modal="true" 
     aria-labelledby="bug-modal-title"
@@ -88,6 +88,7 @@ function openBugTicketModal() {
     const modal = document.getElementById('bug-ticket-modal');
     if (modal) {
         modal.classList.remove('hidden');
+        modal.classList.add('flex');
         document.getElementById('bug-title')?.focus();
     }
 }
@@ -96,6 +97,7 @@ function closeBugTicketModal() {
     const modal = document.getElementById('bug-ticket-modal');
     if (modal) {
         modal.classList.add('hidden');
+        modal.classList.remove('flex');
     }
 }
 

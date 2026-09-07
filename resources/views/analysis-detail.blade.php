@@ -346,179 +346,266 @@
         </div>
 
         {{-- ================================================================ --}}
-        {{-- SUPPORTING DOCUMENTS SECTION (full width, below main grid) --}}
+        {{-- ANCILLARY / SUPPORTING DOCUMENTS SECTION --}}
         {{-- ================================================================ --}}
-        <section id="supporting-docs-section" class="bg-[#161616]/40 border border-violet-500/20 rounded-2xl p-6 flex flex-col gap-5">
-            <div class="flex items-center justify-between flex-wrap gap-4">
-                <h2 class="text-[15px] font-bold text-white tracking-tight flex items-center gap-2">
-                    <svg class="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    Documentos de Apoyo
-                    <span id="supporting-docs-count" class="ml-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-violet-600/10 text-violet-400 border border-violet-500/20">
-                        {{ $analysis ? $analysis->supportingDocuments()->count() : 0 }}
-                    </span>
-                </h2>
+        @php
+            $isPro = auth()->user()?->hasProAccess() ?? false;
+            $contextualAnalysis = \App\Models\DocumentAnalysis::query()
+                ->where('document_id', $document->id)
+                ->where('analysis_type', \App\Enums\AnalysisType::ContextualSummary)
+                ->where('status', \App\Enums\DocumentStatus::Processed)
+                ->orderByDesc('created_at')
+                ->first();
+            $supportingDocs = $analysis ? $analysis->supportingDocuments()->with('document')->get() : collect();
+        @endphp
+
+        <section id="supporting-docs-section" class="bg-[#161616]/60 border border-violet-500/30 rounded-2xl p-6 flex flex-col gap-6 shadow-xl">
+            <div class="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-zinc-800/80">
                 <div class="flex items-center gap-3">
-                    <button
-                        id="btn-analyze-context"
-                        type="button"
-                        class="hidden flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-[13px] font-bold text-white transition-all shadow-lg shadow-violet-500/20 cursor-pointer"
-                        onclick="triggerContextualAnalysis()"
-                    >
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.347.347a3.5 3.5 0 01-4.95 0l-.347-.347z" />
+                    <div class="w-10 h-10 rounded-xl bg-violet-600/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                         </svg>
-                        Analizar con Contexto
-                    </button>
-                    <button
-                        id="btn-attach-doc"
-                        type="button"
-                        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-750 border border-zinc-700 text-[13px] font-bold text-white transition-all cursor-pointer"
-                        onclick="openAttachModal()"
-                    >
-                        <svg class="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Adjuntar Documento
-                    </button>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-[16px] font-bold text-white tracking-tight">Documentos Anexos y Auditoría Contextual</h2>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-violet-600/20 text-violet-300 border border-violet-500/30 uppercase tracking-wider">PRO</span>
+                        </div>
+                        <p class="text-[12px] text-zinc-400">
+                            Audita adendas, contratos marco y anexos junto al documento principal sin volver a procesar el archivo original.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    @if($contextualAnalysis)
+                        <a
+                            href="{{ route('analysis.contextual.show', ['document' => $document->id, 'analysis' => $contextualAnalysis->id]) }}"
+                            class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-linear-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-[13px] font-bold text-white shadow-lg shadow-violet-500/20 transition-all cursor-pointer"
+                        >
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Ver Análisis Contextual con Bonus Insights
+                        </a>
+                    @endif
+
+                    @if($isPro)
+                        <button
+                            id="btn-attach-doc"
+                            type="button"
+                            class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-violet-500/30 text-[13px] font-bold text-white transition-all cursor-pointer shadow-md hover:border-violet-500/50"
+                            onclick="openAttachModal()"
+                        >
+                            <svg class="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Adjuntar Documento Anexo
+                        </button>
+                    @endif
                 </div>
             </div>
 
-            <p class="text-[12px] text-zinc-500 leading-relaxed">
-                Adjunta documentos relacionados, referenciados o complementarios a este análisis. La IA podrá acceder a todos ellos para generar un análisis contextual enriquecido.
-            </p>
-
-            {{-- Supporting Documents List --}}
-            <div id="supporting-docs-list" class="flex flex-col gap-3">
-                @php $supportingDocs = $analysis ? $analysis->supportingDocuments()->with('document')->get() : collect(); @endphp
-                @if($supportingDocs->isEmpty())
-                    <div id="empty-state" class="text-center py-8 text-zinc-600 text-[13px] italic flex flex-col items-center gap-2">
-                        <svg class="w-8 h-8 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                        Sin documentos de apoyo adjuntos aún.
+            @if(! $isPro)
+                {{-- Locked State for Non-PRO Users --}}
+                <div class="p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-5">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-violet-600/10 border border-violet-500/20 flex items-center justify-center text-violet-400 shrink-0">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-[14px] font-bold text-white">Función Exclusiva del Plan PRO</h3>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-violet-600/20 text-violet-300 border border-violet-500/30 uppercase tracking-wider">Bloqueado</span>
+                            </div>
+                            <p class="text-[12px] text-zinc-400 leading-relaxed max-w-xl">
+                                Agrega adendas, contratos marco, garantías o poderes notariales para realizar una auditoría jurídica cruzada con detección de discrepancias, cláusulas modificadas y bonus insights legales.
+                            </p>
+                        </div>
                     </div>
-                @else
-                    @foreach($supportingDocs as $pivot)
-                        <div class="supporting-doc-item flex items-center justify-between gap-3 p-4 rounded-xl bg-zinc-900/30 border border-zinc-800/60" data-pivot-id="{{ $pivot->id }}" data-document-id="{{ $pivot->document_id }}">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-8 h-8 rounded-lg bg-violet-600/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                </div>
-                                <div class="flex flex-col gap-0.5 min-w-0">
-                                    <span class="text-[13px] font-semibold text-white truncate">{{ $pivot->document?->original_filename ?? 'Documento' }}</span>
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        @if($pivot->relationship_type)
-                                            <span class="text-[10px] font-bold uppercase tracking-wider text-violet-400 bg-violet-600/10 border border-violet-500/10 px-1.5 py-0.5 rounded">
-                                                {{ $pivot->relationshipLabel() }}
-                                            </span>
-                                        @endif
-                                        @if(isset($pivot->document?->metadata['parsed_compact_content']))
-                                            <span class="text-[10px] font-bold text-emerald-400">✓ Procesado</span>
-                                        @else
-                                            <span class="text-[10px] font-bold text-amber-400">⚠ Sin procesar</span>
+                    <a href="{{ route('landing') }}#precios" class="px-5 py-2.5 rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-[13px] font-bold text-white shadow-lg shadow-violet-500/20 transition-all flex items-center gap-2 shrink-0">
+                        Actualizar a PRO
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </div>
+            @else
+                {{-- Supporting Documents List --}}
+                <div id="supporting-docs-list" class="flex flex-col gap-3">
+                    @if($supportingDocs->isEmpty())
+                        <div id="empty-state" class="text-center py-8 text-zinc-500 text-[13px] italic flex flex-col items-center gap-2 bg-zinc-900/20 rounded-xl border border-zinc-800/50">
+                            <svg class="w-8 h-8 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            Sin documentos anexos adjuntos aún. Haz clic en "Adjuntar Documento Anexo" para cargar una adenda o contrato relacionado.
+                        </div>
+                    @else
+                        @foreach($supportingDocs as $pivot)
+                            <div class="supporting-doc-item flex items-center justify-between gap-3 p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80" data-pivot-id="{{ $pivot->id }}" data-document-id="{{ $pivot->document_id }}">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-9 h-9 rounded-lg bg-violet-600/10 border border-violet-500/20 flex items-center justify-center shrink-0">
+                                        <svg class="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex flex-col gap-0.5 min-w-0">
+                                        <span class="text-[13px] font-semibold text-white truncate">{{ $pivot->document?->original_filename ?? 'Documento Anexo' }}</span>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            @if($pivot->relationship_type)
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-violet-400 bg-violet-600/10 border border-violet-500/10 px-1.5 py-0.5 rounded">
+                                                    {{ $pivot->relationshipLabel() }}
+                                                </span>
+                                            @endif
+                                            @if(isset($pivot->document?->metadata['parsed_compact_content']))
+                                                <span class="text-[10px] font-bold text-emerald-400">✓ OCR Procesado</span>
+                                            @else
+                                                <span class="text-[10px] font-bold text-amber-400">⏳ En procesamiento</span>
+                                            @endif
+                                        </div>
+                                        @if($pivot->notes)
+                                            <span class="text-[11px] text-zinc-500 italic truncate">{{ $pivot->notes }}</span>
                                         @endif
                                     </div>
-                                    @if($pivot->notes)
-                                        <span class="text-[11px] text-zinc-500 italic truncate">{{ $pivot->notes }}</span>
+                                </div>
+
+                                <div class="flex items-center gap-3">
+                                    @if($contextualAnalysis)
+                                        <a href="{{ route('analysis.contextual.show', ['document' => $document->id, 'analysis' => $contextualAnalysis->id]) }}" class="px-3 py-1.5 rounded-lg bg-violet-600/10 hover:bg-violet-600/20 text-violet-300 text-[11px] font-bold border border-violet-500/20 transition-colors">
+                                            Ver en Análisis Contextual
+                                        </a>
                                     @endif
                                 </div>
                             </div>
-                            <button
-                                type="button"
-                                class="flex-shrink-0 p-2 rounded-lg hover:bg-rose-500/10 text-zinc-600 hover:text-rose-400 transition-colors cursor-pointer"
-                                title="Desvincular documento"
-                                onclick="detachDocument('{{ $analysis->id }}', '{{ $pivot->document_id }}', this)"
-                            >
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                    @endforeach
-                @endif
-            </div>
-
-            {{-- Contextual Analysis Result --}}
-            <div id="contextual-result" class="hidden flex flex-col gap-4 pt-4 border-t border-zinc-800/60">
-                <h3 class="text-[14px] font-bold text-white">Resultado del Análisis Contextual</h3>
-                <div id="contextual-result-content" class="text-[12.5px] text-zinc-300 leading-relaxed bg-zinc-900/40 rounded-xl p-4 border border-zinc-800"></div>
-            </div>
+                        @endforeach
+                    @endif
+                </div>
+            @endif
         </section>
 
         {{-- ================================================================ --}}
-        {{-- ATTACH DOCUMENT MODAL --}}
+        {{-- ATTACH ANCILLARY DOCUMENT MODAL (Drag & Drop) --}}
         {{-- ================================================================ --}}
-        <div id="attach-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div class="w-full max-w-lg bg-[#111] border border-zinc-800 rounded-2xl p-6 flex flex-col gap-5 shadow-2xl">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-[16px] font-bold text-white">Adjuntar Documento de Apoyo</h3>
-                    <button type="button" onclick="closeAttachModal()" class="text-zinc-500 hover:text-white transition-colors cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-
-                <form id="attach-form" onsubmit="submitAttachForm(event)">
-                    @csrf
-                    <div class="flex flex-col gap-4">
-                        <div class="flex flex-col gap-2">
-                            <label for="attach-document-select" class="text-[13px] font-semibold text-zinc-300">Documento de apoyo <span class="text-rose-400">*</span></label>
-                            <select
-                                id="attach-document-select"
-                                name="document_id"
-                                required
-                                class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-[13px] text-white focus:border-violet-500 focus:outline-none transition-colors"
-                            >
-                                <option value="">Seleccionar documento...</option>
-                                @foreach(\App\Models\Document::query()->forOrganization(auth()->user()->organization_id)->where('id', '!=', $document->id)->orderByDesc('created_at')->limit(50)->get() as $doc)
-                                    <option value="{{ $doc->id }}" {{ !isset($doc->metadata['parsed_compact_content']) ? 'data-unparsed=true' : '' }}>
-                                        {{ $doc->original_filename }}{{ !isset($doc->metadata['parsed_compact_content']) ? ' ⚠ (sin procesar)' : '' }}
-                                    </option>
-                                @endforeach
-                            </select>
+        @if($isPro)
+            <div id="attach-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+                <div class="w-full max-w-xl bg-[#121212] border border-zinc-800 rounded-2xl p-6 flex flex-col gap-5 shadow-2xl">
+                    <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-[16px] font-bold text-white">Adjuntar Documento Anexo</h3>
                         </div>
-
-                        <div class="flex flex-col gap-2">
-                            <label for="attach-relationship" class="text-[13px] font-semibold text-zinc-300">Tipo de relación</label>
-                            <select id="attach-relationship" name="relationship_type" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-[13px] text-white focus:border-violet-500 focus:outline-none transition-colors">
-                                <option value="">Sin especificar</option>
-                                <option value="referenced">Referenciado — el documento principal lo menciona</option>
-                                <option value="related">Relacionado — misma operación o partes</option>
-                                <option value="clarification">Aclaración — explica o amplía el principal</option>
-                                <option value="complementary">Complementario — aporta contexto adicional</option>
-                            </select>
-                        </div>
-
-                        <div class="flex flex-col gap-2">
-                            <label for="attach-notes" class="text-[13px] font-semibold text-zinc-300">Notas <span class="text-zinc-600 font-normal">(opcional)</span></label>
-                            <textarea
-                                id="attach-notes"
-                                name="notes"
-                                rows="2"
-                                maxlength="1000"
-                                placeholder="¿Por qué este documento es relevante para el análisis?"
-                                class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-[13px] text-white placeholder-zinc-600 focus:border-violet-500 focus:outline-none transition-colors resize-none"
-                            ></textarea>
-                        </div>
-
-                        <div id="attach-error" class="hidden text-[12px] text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2"></div>
-
-                        <div class="flex items-center justify-end gap-3 pt-2">
-                            <button type="button" onclick="closeAttachModal()" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-[13px] font-semibold text-zinc-300 transition-colors cursor-pointer">
-                                Cancelar
-                            </button>
-                            <button type="submit" id="attach-submit-btn" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-[13px] font-bold text-white transition-all cursor-pointer">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                Adjuntar
-                            </button>
-                        </div>
+                        <button type="button" onclick="closeAttachModal()" class="text-zinc-500 hover:text-white transition-colors cursor-pointer p-1">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
                     </div>
-                </form>
+
+                    <form id="attach-form" onsubmit="submitAttachForm(event)" enctype="multipart/form-data">
+                        @csrf
+                        <div class="flex flex-col gap-4">
+                            {{-- Drag and Drop Upload Zone --}}
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[13px] font-semibold text-zinc-300">Archivo Anexo <span class="text-rose-400">*</span></label>
+                                
+                                <div
+                                    id="dropzone-container"
+                                    class="border-2 border-dashed border-zinc-700 hover:border-violet-500 rounded-2xl p-6 text-center transition-all bg-zinc-900/50 cursor-pointer flex flex-col items-center justify-center gap-3 group"
+                                    onclick="document.getElementById('ancillary-file-input').click()"
+                                    ondragover="handleDragOver(event)"
+                                    ondragleave="handleDragLeave(event)"
+                                    ondrop="handleDrop(event)"
+                                >
+                                    <input
+                                        type="file"
+                                        id="ancillary-file-input"
+                                        name="file"
+                                        class="hidden"
+                                        accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                        onchange="handleFileSelected(this)"
+                                        required
+                                    >
+
+                                    <div class="w-12 h-12 rounded-xl bg-violet-600/10 group-hover:bg-violet-600/20 border border-violet-500/20 flex items-center justify-center text-violet-400 transition-colors">
+                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                        </svg>
+                                    </div>
+
+                                    <div id="dropzone-prompt" class="flex flex-col gap-1">
+                                        <span class="text-[13px] font-bold text-white group-hover:text-violet-300 transition-colors">Arrastra tu documento anexo aquí o haz clic para explorar</span>
+                                        <span class="text-[11px] text-zinc-500 font-mono">Formatos admitidos: PDF o Word (.docx) — Máx. 50 MB</span>
+                                    </div>
+
+                                    <div id="file-info" class="hidden items-center gap-2 px-3 py-1.5 rounded-lg bg-violet-600/20 border border-violet-500/30 text-violet-300 text-[12px] font-semibold">
+                                        <span id="file-name" class="truncate max-w-xs">archivo.pdf</span>
+                                        <span id="file-size" class="text-zinc-400 font-mono text-[11px]">(0 MB)</span>
+                                        <button type="button" onclick="clearSelectedFile(event)" class="text-rose-400 hover:text-rose-300 ml-1 p-0.5">✕</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Relationship Type --}}
+                            <div class="flex flex-col gap-1.5">
+                                <label for="attach-relationship" class="text-[13px] font-semibold text-zinc-300">Tipo de Relación Contractual</label>
+                                <select id="attach-relationship" name="relationship_type" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-[13px] text-white focus:border-violet-500 focus:outline-none transition-colors">
+                                    <option value="amendment">Adenda / Modificación Contractual</option>
+                                    <option value="framework">Contrato Marco / Acuerdo Vinculante</option>
+                                    <option value="guarantee">Garantía / Fianza / Pagaré</option>
+                                    <option value="power_of_attorney">Poder Notarial / Mandato</option>
+                                    <option value="technical_annex">Anexo Técnico / Operativo</option>
+                                    <option value="settlement">Finiquito / Acta de Término</option>
+                                    <option value="complementary">Documento Complementario General</option>
+                                </select>
+                            </div>
+
+                            {{-- Notes --}}
+                            <div class="flex flex-col gap-1.5">
+                                <label for="attach-notes" class="text-[13px] font-semibold text-zinc-300">Notas u Observaciones <span class="text-zinc-500 font-normal">(opcional)</span></label>
+                                <textarea
+                                    id="attach-notes"
+                                    name="notes"
+                                    rows="2"
+                                    maxlength="1000"
+                                    placeholder="Indica aspectos clave a auditar en conjunto con este documento..."
+                                    class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-[13px] text-white placeholder-zinc-600 focus:border-violet-500 focus:outline-none transition-colors resize-none"
+                                ></textarea>
+                            </div>
+
+                            {{-- Progress Box --}}
+                            <div id="attach-progress" class="hidden flex-col gap-2.5 p-3.5 bg-violet-600/10 border border-violet-500/20 rounded-xl">
+                                <div class="flex items-center justify-between text-[12px] font-semibold text-violet-300">
+                                    <span id="attach-progress-text" class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 animate-spin text-violet-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+                                        Subiendo documento anexo...
+                                    </span>
+                                    <span id="attach-progress-pct" class="font-mono text-[11px] text-violet-400">Procesando</span>
+                                </div>
+                                <div class="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+                                    <div id="attach-progress-bar" class="bg-linear-to-r from-violet-600 to-fuchsia-500 h-1.5 rounded-full w-1/3 animate-pulse"></div>
+                                </div>
+                            </div>
+
+                            {{-- Error alert --}}
+                            <div id="attach-error" class="hidden text-[12px] text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3.5 py-2.5"></div>
+
+                            <div class="flex items-center justify-end gap-3 pt-2">
+                                <button type="button" onclick="closeAttachModal()" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-[13px] font-semibold text-zinc-300 transition-colors cursor-pointer">
+                                    Cancelar
+                                </button>
+                                <button type="submit" id="attach-submit-btn" class="flex items-center gap-2 px-5 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-[13px] font-bold text-white transition-all cursor-pointer shadow-lg shadow-violet-500/25">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                    Subir y Auditar Anexo
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
+        @endif
 
     @endif
 
@@ -527,231 +614,150 @@
 @push('scripts')
 <script>
     const ANALYSIS_ID = '{{ $analysis?->id }}';
-    const API_BASE    = '/api/v1';
+    const UPLOAD_URL  = '{{ route("analysis.ancillary.upload", $analysis ?? "0") }}';
 
-    // ---------------------------------------------------------------
-    // Modal helpers
-    // ---------------------------------------------------------------
     function openAttachModal() {
-        document.getElementById('attach-modal').classList.remove('hidden');
-        document.getElementById('attach-modal').classList.add('flex');
-        document.getElementById('attach-error').classList.add('hidden');
+        const modal = document.getElementById('attach-modal');
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.getElementById('attach-error')?.classList.add('hidden');
     }
 
     function closeAttachModal() {
-        document.getElementById('attach-modal').classList.add('hidden');
-        document.getElementById('attach-modal').classList.remove('flex');
+        const modal = document.getElementById('attach-modal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
     }
 
-    // ---------------------------------------------------------------
-    // Attach document
-    // ---------------------------------------------------------------
+    // Drag & Drop handlers
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('dropzone-container')?.classList.add('border-violet-500', 'bg-violet-950/20');
+    }
+
+    function handleDragLeave(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('dropzone-container')?.classList.remove('border-violet-500', 'bg-violet-950/20');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const dropzone = document.getElementById('dropzone-container');
+        dropzone?.classList.remove('border-violet-500', 'bg-violet-950/20');
+
+        if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
+            const input = document.getElementById('ancillary-file-input');
+            input.files = e.dataTransfer.files;
+            handleFileSelected(input);
+        }
+    }
+
+    function handleFileSelected(input) {
+        if (!input.files || input.files.length === 0) return;
+        const file = input.files[0];
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+
+        document.getElementById('dropzone-prompt')?.classList.add('hidden');
+        const fileInfo = document.getElementById('file-info');
+        if (fileInfo) {
+            fileInfo.classList.remove('hidden');
+            fileInfo.classList.add('flex');
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('file-size').textContent = `(${sizeMb} MB)`;
+        }
+    }
+
+    function clearSelectedFile(e) {
+        e.stopPropagation();
+        const input = document.getElementById('ancillary-file-input');
+        if (input) input.value = '';
+        const fileInfo = document.getElementById('file-info');
+        fileInfo?.classList.add('hidden');
+        fileInfo?.classList.remove('flex');
+        document.getElementById('dropzone-prompt')?.classList.remove('hidden');
+    }
+
+    // Submit upload form & poll status
     async function submitAttachForm(event) {
         event.preventDefault();
-        const btn  = document.getElementById('attach-submit-btn');
+        const btn = document.getElementById('attach-submit-btn');
         const errEl = document.getElementById('attach-error');
+        const progressBox = document.getElementById('attach-progress');
+        const progressText = document.getElementById('attach-progress-text');
         const form = document.getElementById('attach-form');
 
         btn.disabled = true;
-        btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Adjuntando...';
         errEl.classList.add('hidden');
+        progressBox.classList.remove('hidden');
+        progressBox.classList.add('flex');
 
         const formData = new FormData(form);
-        const body = {
-            document_id:       formData.get('document_id'),
-            relationship_type: formData.get('relationship_type') || null,
-            notes:             formData.get('notes') || null,
-        };
 
         try {
-            const res = await fetch(`${API_BASE}/analyses/${ANALYSIS_ID}/supporting-documents`, {
+            const res = await fetch(UPLOAD_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept':       'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
                 },
-                credentials: 'same-origin',
-                body: JSON.stringify(body),
+                body: formData,
             });
 
             const data = await res.json();
 
             if (!res.ok) {
-                errEl.textContent = data.message ?? 'Error al adjuntar el documento.';
+                progressBox.classList.add('hidden');
+                progressBox.classList.remove('flex');
+                errEl.textContent = data.message ?? 'Error al subir el documento anexo.';
                 errEl.classList.remove('hidden');
+                btn.disabled = false;
                 return;
             }
 
-            // Append new item to list UI
-            addDocumentToList(data.supporting_document);
-            updateCount(1);
-            closeAttachModal();
-            form.reset();
+            // Polling status
+            progressText.innerHTML = '<svg class="w-4 h-4 animate-spin text-violet-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Extrayendo texto y procesando auditoría contextual...';
+            pollStatus(data.status_url);
         } catch (e) {
+            progressBox.classList.add('hidden');
+            progressBox.classList.remove('flex');
             errEl.textContent = 'Error de conexión. Intente nuevamente.';
             errEl.classList.remove('hidden');
-        } finally {
             btn.disabled = false;
-            btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> Adjuntar';
         }
     }
 
-    function addDocumentToList(doc) {
-        const list = document.getElementById('supporting-docs-list');
-        const empty = document.getElementById('empty-state');
-        if (empty) empty.remove();
+    function pollStatus(statusUrl) {
+        const interval = setInterval(async () => {
+            try {
+                const res = await fetch(statusUrl, {
+                    headers: { 'Accept': 'application/json' },
+                });
+                const data = await res.json();
 
-        const isParsed = doc.is_parsed;
-        const relLabel = doc.relationship_label || 'Adjunto';
-
-        const div = document.createElement('div');
-        div.className = 'supporting-doc-item flex items-center justify-between gap-3 p-4 rounded-xl bg-zinc-900/30 border border-zinc-800/60';
-        div.setAttribute('data-pivot-id', doc.pivot_id ?? '');
-        div.setAttribute('data-document-id', doc.id ?? '');
-        div.innerHTML = `
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="w-8 h-8 rounded-lg bg-violet-600/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                </div>
-                <div class="flex flex-col gap-0.5 min-w-0">
-                    <span class="text-[13px] font-semibold text-white truncate">${escapeHtml(doc.original_filename ?? 'Documento')}</span>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        ${doc.relationship_type ? `<span class="text-[10px] font-bold uppercase tracking-wider text-violet-400 bg-violet-600/10 border border-violet-500/10 px-1.5 py-0.5 rounded">${escapeHtml(relLabel)}</span>` : ''}
-                        <span class="text-[10px] font-bold ${isParsed ? 'text-emerald-400' : 'text-amber-400'}">${isParsed ? '✓ Procesado' : '⚠ Sin procesar'}</span>
-                    </div>
-                    ${doc.notes ? `<span class="text-[11px] text-zinc-500 italic truncate">${escapeHtml(doc.notes)}</span>` : ''}
-                </div>
-            </div>
-            <button type="button" class="flex-shrink-0 p-2 rounded-lg hover:bg-rose-500/10 text-zinc-600 hover:text-rose-400 transition-colors cursor-pointer" title="Desvincular" onclick="detachDocument('${ANALYSIS_ID}', '${doc.id}', this)">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>`;
-        list.appendChild(div);
-        updateAnalyzeButton();
-    }
-
-    // ---------------------------------------------------------------
-    // Detach document
-    // ---------------------------------------------------------------
-    async function detachDocument(analysisId, documentId, btn) {
-        if (!confirm('¿Desvincular este documento de apoyo del análisis?')) return;
-
-        const row = btn.closest('.supporting-doc-item');
-        row.style.opacity = '0.4';
-
-        try {
-            const res = await fetch(`${API_BASE}/analyses/${analysisId}/supporting-documents/${documentId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Accept':       'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
-                },
-                credentials: 'same-origin',
-            });
-
-            if (!res.ok) {
-                row.style.opacity = '1';
-                alert('Error al desvincular. Intente nuevamente.');
-                return;
+                if (data.status === 'processed' && data.analysis_url) {
+                    clearInterval(interval);
+                    document.getElementById('attach-progress-text').textContent = '¡Auditoría completada! Redirigiendo...';
+                    window.location.href = data.analysis_url;
+                } else if (data.status === 'failed') {
+                    clearInterval(interval);
+                    document.getElementById('attach-progress').classList.add('hidden');
+                    const errEl = document.getElementById('attach-error');
+                    errEl.textContent = 'El procesamiento del anexo falló: ' + (data.error ?? 'Error desconocido.');
+                    errEl.classList.remove('hidden');
+                    document.getElementById('attach-submit-btn').disabled = false;
+                }
+            } catch (e) {
+                // Continue polling
             }
-
-            row.remove();
-            updateCount(-1);
-            updateAnalyzeButton();
-
-            const list = document.getElementById('supporting-docs-list');
-            if (list.querySelectorAll('.supporting-doc-item').length === 0) {
-                list.innerHTML = `<div id="empty-state" class="text-center py-8 text-zinc-600 text-[13px] italic flex flex-col items-center gap-2">
-                    <svg class="w-8 h-8 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                    </svg>
-                    Sin documentos de apoyo adjuntos aún.
-                </div>`;
-            }
-        } catch (e) {
-            row.style.opacity = '1';
-            alert('Error de conexión.');
-        }
+        }, 2500);
     }
-
-    // ---------------------------------------------------------------
-    // Contextual analysis
-    // ---------------------------------------------------------------
-    async function triggerContextualAnalysis() {
-        const btn = document.getElementById('btn-analyze-context');
-        btn.disabled = true;
-        btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Analizando...';
-
-        try {
-            const res = await fetch(`${API_BASE}/analyses/${ANALYSIS_ID}/analyze-with-context`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept':       'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify({ analysis_type: 'contextual_summary' }),
-            });
-
-            const data = await res.json();
-
-            const resultSection = document.getElementById('contextual-result');
-            const resultContent = document.getElementById('contextual-result-content');
-            resultSection.classList.remove('hidden');
-
-            if (!res.ok) {
-                resultContent.innerHTML = `<span class="text-rose-400">${escapeHtml(data.message ?? 'Error en el análisis.')}</span>`;
-            } else {
-                const c = data.content ?? {};
-                let html = '';
-                if (c.resumen_integrado) html += `<p class="font-semibold text-white mb-2">Resumen Integrado</p><p class="mb-4">${escapeHtml(c.resumen_integrado)}</p>`;
-                if (c.nivel_confianza)  html += `<p class="text-[11px] text-zinc-500">Nivel de confianza: <strong class="text-zinc-300">${escapeHtml(c.nivel_confianza)}</strong></p>`;
-                if (data.skipped_documents?.length) html += `<p class="text-[11px] text-amber-400 mt-2">⚠ Documentos omitidos (sin procesar): ${data.skipped_documents.map(escapeHtml).join(', ')}</p>`;
-                if (!html) html = `<pre class="text-[11px] overflow-auto max-h-64">${escapeHtml(JSON.stringify(c, null, 2))}</pre>`;
-                resultContent.innerHTML = html;
-            }
-        } catch (e) {
-            const resultSection = document.getElementById('contextual-result');
-            const resultContent = document.getElementById('contextual-result-content');
-            resultSection.classList.remove('hidden');
-            resultContent.innerHTML = '<span class="text-rose-400">Error de conexión. Intente nuevamente.</span>';
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.347.347a3.5 3.5 0 01-4.95 0l-.347-.347z"/></svg> Analizar con Contexto';
-        }
-    }
-
-    // ---------------------------------------------------------------
-    // UI helpers
-    // ---------------------------------------------------------------
-    function updateCount(delta) {
-        const el = document.getElementById('supporting-docs-count');
-        if (!el) return;
-        el.textContent = Math.max(0, parseInt(el.textContent) + delta);
-    }
-
-    function updateAnalyzeButton() {
-        const btn = document.getElementById('btn-analyze-context');
-        const count = document.querySelectorAll('.supporting-doc-item').length;
-        if (count > 0) {
-            btn.classList.remove('hidden');
-        } else {
-            btn.classList.add('hidden');
-        }
-    }
-
-    function escapeHtml(str) {
-        const d = document.createElement('div');
-        d.textContent = String(str ?? '');
-        return d.innerHTML;
-    }
-
-    // Init
-    document.addEventListener('DOMContentLoaded', updateAnalyzeButton);
 </script>
 @endpush
 
 @endsection
+

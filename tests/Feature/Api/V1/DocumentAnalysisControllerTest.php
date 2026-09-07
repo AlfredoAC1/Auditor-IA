@@ -66,6 +66,24 @@ class DocumentAnalysisControllerTest extends TestCase
         ]);
 
         Http::fake([
+            'https://api.cerebras.ai/*' => Http::response([
+                'choices' => [
+                    [
+                        'message' => [
+                            'content' => json_encode([
+                                'resumen_general' => 'Contrato de arrendamiento estándar de prueba.',
+                                'tipo_documento' => 'Contrato de Arrendamiento',
+                                'nivel_confianza' => 'alto',
+                                'leyes_aplicables' => ['Ley 18.101'],
+                            ]),
+                        ],
+                    ],
+                ],
+                'usage' => [
+                    'prompt_tokens' => 200,
+                    'completion_tokens' => 150,
+                ],
+            ], 200),
             'https://api.groq.com/*' => Http::response([
                 'choices' => [
                     [

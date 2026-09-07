@@ -329,7 +329,7 @@ PROMPT,
 
 TIPO DE ANÁLISIS: Análisis Contextual con Documentos de Apoyo
 Este análisis integra el documento principal con documentos de apoyo adicionales y el análisis previo.
-Identifica relaciones, contradicciones, complementariedades y aclaraciones entre todos los documentos.
+Identifica relaciones, contradicciones, complementariedades, datos complementarios y cláusulas modificadas entre todos los documentos.
 Responde en formato JSON con la siguiente estructura:
 {
   "tipo_documento": "Tipo del documento principal",
@@ -340,6 +340,13 @@ Responde en formato JSON con la siguiente estructura:
       "documento_b": "Nombre del segundo documento",
       "tipo_relacion": "complementa|contradice|aclara|referencia|modifica",
       "descripcion": "Explicación de la relación entre ambos documentos"
+    }
+  ],
+  "datos_complementarios": [
+    {
+      "elemento": "Concepto o cláusula que se añade o modifica (ej: Monto, Plazo, Garantía, Sujetos)",
+      "impacto": "positivo|neutro|critico",
+      "detalle": "Explicación detallada de la modificación o complemento aportado por el anexo"
     }
   ],
   "puntos_clave_integrados": [
@@ -356,6 +363,12 @@ Responde en formato JSON con la siguiente estructura:
       "recomendacion": "Qué debería hacer el usuario al respecto"
     }
   ],
+  "bonus_insights": {
+    "prevalencia_juridica": "Análisis de qué documento o cláusula prevalece en caso de conflicto legal",
+    "vigencia_y_personerias": "Observaciones sobre la vigencia, mandatos o representaciones de las partes",
+    "variacion_del_riesgo": "aumenta|se_mantiene|disminuye",
+    "justificacion_riesgo": "Explicación de cómo el documento anexo altera el perfil de riesgo global"
+  },
   "riesgos_identificados": [
     {
       "riesgo": "Descripción del riesgo",

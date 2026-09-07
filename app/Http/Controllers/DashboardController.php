@@ -33,11 +33,11 @@ class DashboardController extends Controller
         $metrics = $this->metricsService->forOrganization($user);
 
         $selectedModelSlug = (string) session('selected_model_slug', '');
-        if ($selectedModelSlug === '' || ! AiModel::query()->where('slug', $selectedModelSlug)->where('is_active', true)->exists()) {
-            $defaultSlug = $user->hasProAccess() ? 'cerebras-gemma4' : 'llama-8b-instant';
+        if ($selectedModelSlug === '' || str_contains(strtolower($selectedModelSlug), 'llama') || ! AiModel::query()->where('slug', $selectedModelSlug)->where('is_active', true)->exists()) {
+            $defaultSlug = 'cerebras-gemma4';
             $selectedModelSlug = AiModel::query()->where('slug', $defaultSlug)->where('is_active', true)->exists()
                 ? $defaultSlug
-                : (AiModel::query()->active()->ordered()->first()?->slug ?? 'cerebras-gemma4');
+                : (AiModel::query()->active()->where('slug', 'not like', '%llama%')->ordered()->first()?->slug ?? 'cerebras-gemma4');
 
             session(['selected_model_slug' => $selectedModelSlug]);
         }
@@ -202,18 +202,19 @@ class DashboardController extends Controller
         $requestedModelSlug = $validated['model_slug'] ?? session('selected_model_slug');
         $aiModel = null;
 
-        if ($requestedModelSlug) {
+        if ($requestedModelSlug && ! str_contains(strtolower($requestedModelSlug), 'llama')) {
             $aiModel = AiModel::query()->where('slug', $requestedModelSlug)->where('is_active', true)->first();
         }
 
-        if ($aiModel === null && ! empty($validated['llm_provider'])) {
+        if ($aiModel === null && ! empty($validated['llm_provider']) && ! str_contains(strtolower($validated['llm_provider']), 'llama')) {
             $aiModel = AiModel::query()->where('provider', $validated['llm_provider'])->where('is_active', true)->ordered()->first();
         }
 
         if ($aiModel === null) {
-            $defaultSlug = $user->hasProAccess() ? 'cerebras-gemma4' : 'llama-8b-instant';
+            $defaultSlug = 'cerebras-gemma4';
             $aiModel = AiModel::query()->where('slug', $defaultSlug)->where('is_active', true)->first()
-                ?? AiModel::query()->where('is_active', true)->ordered()->first();
+                ?? AiModel::query()->where('is_active', true)->where('slug', 'not like', '%llama%')->ordered()->first()
+                ?? AiModel::defaultModel();
         }
 
         $selectedProvider = $aiModel?->provider ?? $validated['llm_provider'] ?? session('llm_provider', config('llm.default_provider', 'cerebras'));

@@ -149,13 +149,16 @@ class AiModel extends Model
     }
 
     /**
-     * Get the default model (first active lightweight model).
+     * Get the default model (first active model, excluding llama during testing).
      */
     public static function defaultModel(): self
     {
         return static::query()
             ->active()
+            ->where('slug', 'not like', '%llama%')
+            ->where('provider_model_id', 'not like', '%llama%')
             ->ordered()
-            ->firstOrFail();
+            ->first()
+            ?? static::query()->active()->ordered()->firstOrFail();
     }
 }

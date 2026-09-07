@@ -73,13 +73,24 @@ class AiModelSeeder extends Seeder
             // Fast, efficient models for everyday document analysis
             // ---------------------------------------------------------------
             [
+                'slug'              => 'cerebras-gemma4',
+                'display_name'      => 'Gemma 4 31B (Preview)',
+                'provider'          => 'cerebras',
+                'provider_model_id' => 'gemma-4-31b',
+                'tier'              => AiModelTier::Lightweight,
+                // gemma-4-31b Preview hard cap: 40,960 tokens.
+                // 32,768 is the configured operational ceiling.
+                'max_tokens'        => 32768,
+                'is_active'         => true, // CEREBRAS_API_KEY is set
+            ],
+            [
                 'slug'              => 'llama-8b-instant',
                 'display_name'      => 'Llama 3.1 8B',
                 'provider'          => 'groq',
                 'provider_model_id' => 'llama-3.1-8b-instant',
                 'tier'              => AiModelTier::Lightweight,
                 'max_tokens'        => 4096,
-                'is_active'         => true,
+                'is_active'         => false, // Disabled during testing
             ],
             [
                 'slug'              => 'qwen3-8b',
@@ -111,18 +122,7 @@ class AiModelSeeder extends Seeder
                 'provider_model_id' => 'llama-3.3-70b-versatile',
                 'tier'              => AiModelTier::Standard,
                 'max_tokens'        => 8192,
-                'is_active'         => true,
-            ],
-            [
-                'slug'              => 'cerebras-gemma4',
-                'display_name'      => 'Gemma 4 31B (Preview)',
-                'provider'          => 'cerebras',
-                'provider_model_id' => 'gemma-4-31b',
-                'tier'              => AiModelTier::Standard,
-                // gemma-4-31b Preview hard cap: 40,960 tokens.
-                // 32,768 is the configured operational ceiling.
-                'max_tokens'        => 32768,
-                'is_active'         => true, // CEREBRAS_API_KEY is set
+                'is_active'         => false, // Disabled during testing
             ],
             [
                 'slug'              => 'qwen3-14b',

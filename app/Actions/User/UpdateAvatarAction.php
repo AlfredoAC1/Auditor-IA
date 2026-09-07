@@ -24,7 +24,7 @@ final class UpdateAvatarAction
         }
 
         $extension = $file->getClientOriginalExtension();
-        $path      = $file->storeAs(
+        $path = $file->storeAs(
             "avatars/{$user->id}",
             "avatar.{$extension}",
             self::DISK,
@@ -38,7 +38,7 @@ final class UpdateAvatarAction
 
         Log::info('User avatar updated.', [
             'user_id' => $user->id,
-            'path'    => $path,
+            'path' => $path,
         ]);
 
         return $path;

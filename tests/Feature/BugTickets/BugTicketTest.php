@@ -9,7 +9,9 @@ use App\Enums\UserRole;
 use App\Models\BugTicket;
 use App\Models\Organization;
 use App\Models\User;
+use Database\Seeders\PlanSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class BugTicketTest extends TestCase
@@ -17,17 +19,19 @@ class BugTicketTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private User $admin;
+
     private Organization $org;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->seed(\Database\Seeders\PlanSeeder::class);
+        $this->seed(PlanSeeder::class);
 
         $this->org = Organization::create([
-            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'uuid' => (string) Str::uuid(),
             'name' => 'Demo Law Firm',
             'slug' => 'demo-law-firm',
             'is_active' => true,

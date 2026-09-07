@@ -611,6 +611,8 @@
 
 </div>
 
+<x-ancillary-tutorial-guide />
+
 @push('scripts')
 <script>
     const ANALYSIS_ID = '{{ $analysis?->id }}';

@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Actions\Documents\DeleteDocumentAction;
 use App\Enums\AnalysisType;
 use App\Enums\DocumentStatus;
-
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Models\Organization;
@@ -24,6 +22,7 @@ class DocumentDeleteTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Organization $organization;
 
     protected function setUp(): void

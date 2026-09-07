@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreDocumentRequest;
 use App\Http\Resources\Api\V1\DocumentResource;
 use App\Models\Document;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -35,7 +36,7 @@ class DocumentController extends Controller
     {
         $this->authorize('viewAny', Document::class);
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $perPage = min(

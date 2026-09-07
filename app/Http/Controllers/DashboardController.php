@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Documents\DeleteDocumentAction;
 use App\Actions\Documents\StoreDocumentAction;
 use App\DTOs\Documents\StoreDocumentDTO;
 use App\Enums\DocumentStatus;
@@ -259,7 +260,7 @@ class DashboardController extends Controller
 
             return redirect()
                 ->route('dashboard')
-                ->with('error', 'Error al procesar el archivo: ' . $exception->getMessage());
+                ->with('error', 'Error al procesar el archivo: '.$exception->getMessage());
         }
     }
 
@@ -269,7 +270,7 @@ class DashboardController extends Controller
     public function destroy(
         Request $request,
         Document $document,
-        \App\Actions\Documents\DeleteDocumentAction $deleteAction
+        DeleteDocumentAction $deleteAction
     ): RedirectResponse {
         /** @var User $user */
         $user = Auth::user();
@@ -295,7 +296,7 @@ class DashboardController extends Controller
 
             return redirect()
                 ->route('dashboard')
-                ->with('error', 'Error al eliminar el documento: ' . $exception->getMessage());
+                ->with('error', 'Error al eliminar el documento: '.$exception->getMessage());
         }
     }
 }

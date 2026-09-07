@@ -15,11 +15,6 @@ final class AdminAnalysisService
     /**
      * Get paginated analyses across all tenants with eager relationships and filters.
      *
-     * @param string|null $search
-     * @param string|null $type
-     * @param string|null $status
-     * @param int|null $organizationId
-     * @param int $perPage
      * @return LengthAwarePaginator<DocumentAnalysis>
      */
     public function getPaginatedAnalyses(
@@ -41,7 +36,7 @@ final class AdminAnalysisService
                     $dq->where('original_filename', 'like', "%{$trimmed}%");
                 })->orWhereHas('requester', function (Builder $uq) use ($trimmed): void {
                     $uq->where('name', 'like', "%{$trimmed}%")
-                       ->orWhere('email', 'like', "%{$trimmed}%");
+                        ->orWhere('email', 'like', "%{$trimmed}%");
                 });
             })
             ->when($type && AnalysisType::tryFrom($type), function (Builder $query) use ($type): void {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\V1;
 
 use App\Enums\DocumentType;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,7 +16,7 @@ class StoreDocumentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        /** @var \App\Models\User|null $user */
+        /** @var User|null $user */
         $user = $this->user();
 
         // User must be authenticated and belong to an organization

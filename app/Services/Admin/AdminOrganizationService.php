@@ -13,8 +13,6 @@ final class AdminOrganizationService
     /**
      * Get paginated organizations with member/document/analysis statistics.
      *
-     * @param string|null $search
-     * @param int $perPage
      * @return LengthAwarePaginator<Organization>
      */
     public function getPaginatedOrganizations(?string $search = null, int $perPage = 15): LengthAwarePaginator
@@ -26,8 +24,8 @@ final class AdminOrganizationService
                 $trimmed = trim($term);
                 $query->where(function (Builder $q) use ($trimmed): void {
                     $q->where('name', 'like', "%{$trimmed}%")
-                      ->orWhere('slug', 'like', "%{$trimmed}%")
-                      ->orWhere('tax_id', 'like', "%{$trimmed}%");
+                        ->orWhere('slug', 'like', "%{$trimmed}%")
+                        ->orWhere('tax_id', 'like', "%{$trimmed}%");
                 });
             })
             ->orderByDesc('created_at')

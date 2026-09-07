@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\BugTickets\ResolveBugTicketAction;
-use App\Enums\BugTicketStatus;
 use App\Http\Controllers\Controller;
 use App\Models\BugTicket;
 use App\Models\User;
@@ -41,7 +40,7 @@ final class AdminBugTicketController extends Controller
                 $trimmed = trim($term);
                 $query->where(function (Builder $q) use ($trimmed): void {
                     $q->where('title', 'like', "%{$trimmed}%")
-                      ->orWhere('description', 'like', "%{$trimmed}%");
+                        ->orWhere('description', 'like', "%{$trimmed}%");
                 });
             })
             ->orderByDesc('created_at')

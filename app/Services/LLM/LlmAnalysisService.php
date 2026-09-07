@@ -84,28 +84,28 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
         $documentContent = $this->truncateContent($documentContent);
 
         $systemPrompt = $this->promptBuilder->buildSystemPrompt($analysisType);
-        $userPrompt   = $this->promptBuilder->buildUserPrompt($documentContent, $analysisType, $document);
+        $userPrompt = $this->promptBuilder->buildUserPrompt($documentContent, $analysisType, $document);
 
-        $adapter  = $this->resolveAdapter($config);
+        $adapter = $this->resolveAdapter($config);
         $response = $adapter->complete($systemPrompt, $userPrompt, $config, $document->id);
 
         $content = $this->decodeJsonResponse($response['raw_content'], $config->provider);
 
         return [
-            'content'            => $content,
-            'llm_provider'       => $config->provider,
-            'llm_model'          => $config->model,
-            'input_tokens'       => $response['input_tokens'],
-            'output_tokens'      => $response['output_tokens'],
+            'content' => $content,
+            'llm_provider' => $config->provider,
+            'llm_model' => $config->model,
+            'input_tokens' => $response['input_tokens'],
+            'output_tokens' => $response['output_tokens'],
             'processing_time_ms' => $response['processing_time_ms'],
-            'prompt_metadata'    => [
+            'prompt_metadata' => [
                 'system_prompt_hash' => hash('sha256', $systemPrompt),
-                'analysis_type'      => $analysisType->value,
-                'document_type'      => $document->document_type?->value,
-                'model'              => $config->model,
-                'provider'           => $config->provider,
-                'temperature'        => $config->temperature,
-                'max_tokens'         => $config->maxTokens,
+                'analysis_type' => $analysisType->value,
+                'document_type' => $document->document_type?->value,
+                'model' => $config->model,
+                'provider' => $config->provider,
+                'temperature' => $config->temperature,
+                'max_tokens' => $config->maxTokens,
             ],
         ];
     }
@@ -146,7 +146,7 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
         );
 
         // Supporting documents
-        $supportingParts  = [];
+        $supportingParts = [];
         $skippedDocuments = [];
 
         foreach ($supportingDocuments as $supportDoc) {
@@ -156,19 +156,20 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
                 $skippedDocuments[] = $supportDoc->original_filename;
                 Log::warning('Supporting document skipped — not yet parsed.', [
                     'document_id' => $supportDoc->id,
-                    'filename'    => $supportDoc->original_filename,
+                    'filename' => $supportDoc->original_filename,
                 ]);
+
                 continue;
             }
 
             $supportingParts[] = [
                 'filename' => $supportDoc->original_filename,
-                'content'  => $this->truncateContent($supportContent),
+                'content' => $this->truncateContent($supportContent),
             ];
         }
 
         $systemPrompt = $this->promptBuilder->buildSystemPrompt($analysisType);
-        $userPrompt   = $this->promptBuilder->buildContextualUserPrompt(
+        $userPrompt = $this->promptBuilder->buildContextualUserPrompt(
             primaryDocument: $primaryDocument,
             primaryContent: $primaryContent,
             existingAnalysis: $existingAnalysis,
@@ -177,38 +178,38 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
         );
 
         Log::info("LLM [{$config->provider}] contextual analysis started.", [
-            'document_id'               => $primaryDocument->id,
-            'analysis_id'               => $existingAnalysis->id,
-            'analysis_type'             => $analysisType->value,
+            'document_id' => $primaryDocument->id,
+            'analysis_id' => $existingAnalysis->id,
+            'analysis_type' => $analysisType->value,
             'supporting_document_count' => count($supportingParts),
-            'skipped_document_count'    => count($skippedDocuments),
-            'model'                     => $config->model,
+            'skipped_document_count' => count($skippedDocuments),
+            'model' => $config->model,
         ]);
 
-        $adapter  = $this->resolveAdapter($config);
+        $adapter = $this->resolveAdapter($config);
         $response = $adapter->complete($systemPrompt, $userPrompt, $config, $primaryDocument->id);
 
         $content = $this->decodeJsonResponse($response['raw_content'], $config->provider);
 
         return [
-            'content'            => $content,
-            'llm_provider'       => $config->provider,
-            'llm_model'          => $config->model,
-            'input_tokens'       => $response['input_tokens'],
-            'output_tokens'      => $response['output_tokens'],
+            'content' => $content,
+            'llm_provider' => $config->provider,
+            'llm_model' => $config->model,
+            'input_tokens' => $response['input_tokens'],
+            'output_tokens' => $response['output_tokens'],
             'processing_time_ms' => $response['processing_time_ms'],
-            'skipped_documents'  => $skippedDocuments,
-            'prompt_metadata'    => [
-                'system_prompt_hash'        => hash('sha256', $systemPrompt),
-                'analysis_type'             => $analysisType->value,
-                'document_type'             => $primaryDocument->document_type?->value,
-                'model'                     => $config->model,
-                'provider'                  => $config->provider,
-                'temperature'               => $config->temperature,
-                'max_tokens'                => $config->maxTokens,
-                'prior_analysis_id'         => $existingAnalysis->id,
+            'skipped_documents' => $skippedDocuments,
+            'prompt_metadata' => [
+                'system_prompt_hash' => hash('sha256', $systemPrompt),
+                'analysis_type' => $analysisType->value,
+                'document_type' => $primaryDocument->document_type?->value,
+                'model' => $config->model,
+                'provider' => $config->provider,
+                'temperature' => $config->temperature,
+                'max_tokens' => $config->maxTokens,
+                'prior_analysis_id' => $existingAnalysis->id,
                 'supporting_document_count' => count($supportingParts),
-                'skipped_documents'         => $skippedDocuments,
+                'skipped_documents' => $skippedDocuments,
             ],
         ];
     }
@@ -232,30 +233,30 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
             [$provider, $modelId] = explode('::', $overrideModel, 2);
         } else {
             $provider = $defaultProvider;
-            $modelId  = $overrideModel; // null means use config default
+            $modelId = $overrideModel; // null means use config default
         }
 
         $providerKey = $this->normaliseProviderKey($provider);
-        $cfg         = (array) config("llm.providers.{$providerKey}", []);
+        $cfg = (array) config("llm.providers.{$providerKey}", []);
 
         if ($cfg === []) {
             Log::warning("LLM provider [{$providerKey}] has no configuration. Falling back to [{$defaultProvider}].", [
                 'requested_provider' => $provider,
             ]);
             $providerKey = $this->normaliseProviderKey($defaultProvider);
-            $cfg         = (array) config("llm.providers.{$providerKey}", []);
+            $cfg = (array) config("llm.providers.{$providerKey}", []);
         }
 
         return new LlmProviderConfig(
-            provider:        $providerKey,
-            apiKey:          (string) ($cfg['api_key'] ?? ''),
-            model:           $modelId ?? (string) ($cfg['model'] ?? ''),
-            baseUrl:         (string) ($cfg['base_url'] ?? ''),
-            maxTokens:       (int)    ($cfg['max_tokens'] ?? 4096),
-            temperature:     (float)  ($cfg['temperature'] ?? 0.3),
-            timeoutSeconds:  (int)    ($cfg['timeout_seconds'] ?? 180),
-            rateLimitRpm:    (int)    ($cfg['rate_limit_rpm'] ?? 0),
-            extraHeaders:    (array)  ($cfg['extra_headers'] ?? []),
+            provider: $providerKey,
+            apiKey: (string) ($cfg['api_key'] ?? ''),
+            model: $modelId ?? (string) ($cfg['model'] ?? ''),
+            baseUrl: (string) ($cfg['base_url'] ?? ''),
+            maxTokens: (int) ($cfg['max_tokens'] ?? 4096),
+            temperature: (float) ($cfg['temperature'] ?? 0.3),
+            timeoutSeconds: (int) ($cfg['timeout_seconds'] ?? 180),
+            rateLimitRpm: (int) ($cfg['rate_limit_rpm'] ?? 0),
+            extraHeaders: (array) ($cfg['extra_headers'] ?? []),
         );
     }
 
@@ -268,8 +269,8 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
     {
         return match (strtolower($provider)) {
             'nvidia', 'nvidia_nim' => 'nvidia_nim',
-            'qwen', 'qwen_cloud'   => 'qwen_cloud',
-            default                => strtolower($provider),
+            'qwen', 'qwen_cloud' => 'qwen_cloud',
+            default => strtolower($provider),
         };
     }
 
@@ -290,16 +291,16 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
     {
         // Providers with enforced RPM caps get the rate-limited adapter
         if ($config->rateLimitRpm > 0) {
-            return new RateLimitedAdapter();
+            return new RateLimitedAdapter;
         }
 
         // Cerebras requires `max_completion_tokens` instead of `max_tokens`
         if ($config->provider === 'cerebras') {
-            return new CerebrasAdapter();
+            return new CerebrasAdapter;
         }
 
         // All other OpenAI-compatible providers
-        return new OpenAiCompatibleAdapter();
+        return new OpenAiCompatibleAdapter;
     }
 
     // ---------------------------------------------------------------
@@ -314,7 +315,7 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
         $maxChars = ((int) config('llm.analysis.max_chunk_tokens', 2000)) * 4;
 
         if (mb_strlen($content) > $maxChars) {
-            return mb_substr($content, 0, $maxChars) . "\n\n[... TEXTO TRUNCADO POR EXTENSIÓN PARA EL MODELO ...]";
+            return mb_substr($content, 0, $maxChars)."\n\n[... TEXTO TRUNCADO POR EXTENSIÓN PARA EL MODELO ...]";
         }
 
         return $content;
@@ -329,8 +330,8 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
     {
         if ($config->apiKey === '') {
             throw new \RuntimeException(
-                "LLM provider [{$config->provider}] API key is not configured. " .
-                "Set the corresponding *_API_KEY variable in your .env file."
+                "LLM provider [{$config->provider}] API key is not configured. ".
+                'Set the corresponding *_API_KEY variable in your .env file.'
             );
         }
     }
@@ -368,13 +369,13 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
 
         if (! is_array($decoded)) {
             Log::warning("LLM [{$provider}] response was not valid JSON; storing raw text.", [
-                'raw_length'  => mb_strlen($raw),
+                'raw_length' => mb_strlen($raw),
                 'raw_preview' => mb_substr($raw, 0, 300),
             ]);
 
             return [
                 'raw_response' => $raw,
-                'parse_error'  => 'La respuesta del modelo no fue JSON válido.',
+                'parse_error' => 'La respuesta del modelo no fue JSON válido.',
             ];
         }
 

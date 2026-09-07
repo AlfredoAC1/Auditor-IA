@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Security;
 
+use App\Http\Requests\Api\V1\StoreDocumentRequest;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Models\Organization;
@@ -11,7 +12,6 @@ use App\Models\User;
 use Database\Seeders\AiModelSeeder;
 use Database\Seeders\PlanSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -32,12 +32,14 @@ class Section1CriticalPrioritiesTest extends TestCase
     // Tenant A — the authenticated attacker
     // ---------------------------------------------------------------
     private Organization $orgA;
+
     private User $userA;
 
     // ---------------------------------------------------------------
     // Tenant B — the victim whose resources must never be accessible
     // ---------------------------------------------------------------
     private Organization $orgB;
+
     private User $userB;
 
     // ---------------------------------------------------------------
@@ -53,27 +55,27 @@ class Section1CriticalPrioritiesTest extends TestCase
 
         // Tenant A (attacker)
         $this->orgA = Organization::create([
-            'name'      => 'Tenant A - Attacker Corp',
-            'slug'      => 'tenant-a',
+            'name' => 'Tenant A - Attacker Corp',
+            'slug' => 'tenant-a',
             'is_active' => true,
         ]);
         $this->userA = User::create([
-            'name'            => 'Attacker User',
-            'email'           => 'attacker@tenant-a.com',
-            'password'        => bcrypt('password'),
+            'name' => 'Attacker User',
+            'email' => 'attacker@tenant-a.com',
+            'password' => bcrypt('password'),
             'organization_id' => $this->orgA->id,
         ]);
 
         // Tenant B (victim)
         $this->orgB = Organization::create([
-            'name'      => 'Tenant B - Victim Corp',
-            'slug'      => 'tenant-b',
+            'name' => 'Tenant B - Victim Corp',
+            'slug' => 'tenant-b',
             'is_active' => true,
         ]);
         $this->userB = User::create([
-            'name'            => 'Victim User',
-            'email'           => 'victim@tenant-b.com',
-            'password'        => bcrypt('password'),
+            'name' => 'Victim User',
+            'email' => 'victim@tenant-b.com',
+            'password' => bcrypt('password'),
             'organization_id' => $this->orgB->id,
         ]);
     }
@@ -84,17 +86,17 @@ class Section1CriticalPrioritiesTest extends TestCase
     private function createDocument(Organization $org, User $user, array $extra = []): Document
     {
         return Document::create(array_merge([
-            'organization_id'  => $org->id,
-            'uploaded_by'      => $user->id,
+            'organization_id' => $org->id,
+            'uploaded_by' => $user->id,
             'original_filename' => 'contrato.pdf',
-            'stored_filename'  => 'stored-' . uniqid() . '.pdf',
-            'storage_path'     => "documents/{$org->id}/2026/09",
-            'disk'             => 'local',
-            'mime_type'        => 'application/pdf',
-            'file_size_bytes'  => 102400,
-            'file_hash'        => hash('sha256', uniqid()),
-            'status'           => 'pending',
-            'metadata'         => [],
+            'stored_filename' => 'stored-'.uniqid().'.pdf',
+            'storage_path' => "documents/{$org->id}/2026/09",
+            'disk' => 'local',
+            'mime_type' => 'application/pdf',
+            'file_size_bytes' => 102400,
+            'file_hash' => hash('sha256', uniqid()),
+            'status' => 'pending',
+            'metadata' => [],
         ], $extra));
     }
 
@@ -104,15 +106,15 @@ class Section1CriticalPrioritiesTest extends TestCase
     private function createAnalysis(Document $document, Organization $org, User $user): DocumentAnalysis
     {
         return DocumentAnalysis::create([
-            'document_id'   => $document->id,
+            'document_id' => $document->id,
             'organization_id' => $org->id,
-            'requested_by'  => $user->id,
+            'requested_by' => $user->id,
             'analysis_type' => 'full_summary',
-            'llm_provider'  => 'groq',
-            'llm_model'     => 'llama-8b-instant',
-            'content'       => ['resumen_general' => 'Análisis de prueba.'],
-            'status'        => 'processed',
-            'version'       => 1,
+            'llm_provider' => 'groq',
+            'llm_model' => 'llama-8b-instant',
+            'content' => ['resumen_general' => 'Análisis de prueba.'],
+            'status' => 'processed',
+            'version' => 1,
         ]);
     }
 
@@ -166,7 +168,7 @@ class Section1CriticalPrioritiesTest extends TestCase
      */
     public function test_tenant_a_cannot_read_tenant_b_analysis(): void
     {
-        $docB      = $this->createDocument($this->orgB, $this->userB);
+        $docB = $this->createDocument($this->orgB, $this->userB);
         $analysisB = $this->createAnalysis($docB, $this->orgB, $this->userB);
 
         Sanctum::actingAs($this->userA);
@@ -203,7 +205,7 @@ class Section1CriticalPrioritiesTest extends TestCase
      */
     public function test_tenant_a_cannot_trigger_contextual_reanalysis_on_tenant_b_analysis(): void
     {
-        $docB      = $this->createDocument($this->orgB, $this->userB, [
+        $docB = $this->createDocument($this->orgB, $this->userB, [
             'metadata' => ['parsed_compact_content' => 'Contenido del contrato de Tenant B.'],
         ]);
         $analysisB = $this->createAnalysis($docB, $this->orgB, $this->userB);
@@ -224,8 +226,8 @@ class Section1CriticalPrioritiesTest extends TestCase
      */
     public function test_tenant_a_cannot_attach_document_to_tenant_b_analysis(): void
     {
-        $docA      = $this->createDocument($this->orgA, $this->userA);
-        $docB      = $this->createDocument($this->orgB, $this->userB);
+        $docA = $this->createDocument($this->orgA, $this->userA);
+        $docB = $this->createDocument($this->orgB, $this->userB);
         $analysisB = $this->createAnalysis($docB, $this->orgB, $this->userB);
 
         Sanctum::actingAs($this->userA);
@@ -259,8 +261,8 @@ class Section1CriticalPrioritiesTest extends TestCase
         // This test verifies the FormRequest only allows the fields it whitelists,
         // so that an extra 'organization_id' field in the JSON is not validated/passed.
 
-        $request = new \App\Http\Requests\Api\V1\StoreDocumentRequest();
-        $rules   = $request->rules();
+        $request = new StoreDocumentRequest;
+        $rules = $request->rules();
 
         $this->assertArrayNotHasKey(
             'organization_id',
@@ -334,8 +336,8 @@ class Section1CriticalPrioritiesTest extends TestCase
 
         // Verify no analysis was created for this cross-tenant attempt
         $this->assertDatabaseMissing('document_analyses', [
-            'document_id'    => $docB->id,
-            'requested_by'   => $this->userA->id,
+            'document_id' => $docB->id,
+            'requested_by' => $this->userA->id,
         ]);
     }
 
@@ -465,9 +467,9 @@ class Section1CriticalPrioritiesTest extends TestCase
     public function test_revoked_sanctum_token_is_immediately_rejected(): void
     {
         // Issue a real personal access token
-        $tokenResult    = $this->userA->createToken('revocation-test-token');
+        $tokenResult = $this->userA->createToken('revocation-test-token');
         $plainTextToken = $tokenResult->plainTextToken;
-        $tokenId        = $tokenResult->accessToken->id;
+        $tokenId = $tokenResult->accessToken->id;
 
         // Confirm the token row exists
         $this->assertDatabaseHas('personal_access_tokens', ['id' => $tokenId]);

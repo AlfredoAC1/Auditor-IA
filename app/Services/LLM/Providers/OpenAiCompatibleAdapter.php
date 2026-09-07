@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\LLM\Providers;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -35,19 +36,19 @@ class OpenAiCompatibleAdapter implements LlmProviderAdapterInterface
         LlmProviderConfig $config,
         ?string $documentId = null,
     ): array {
-        $endpoint = rtrim($config->baseUrl, '/') . '/chat/completions';
+        $endpoint = rtrim($config->baseUrl, '/').'/chat/completions';
 
         $headers = array_merge([
             'Authorization' => "Bearer {$config->apiKey}",
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
         ], $config->extraHeaders);
 
         $payload = $this->buildPayload($config, $systemPrompt, $userPrompt);
 
         Log::info("LLM [{$config->provider}] request started.", [
-            'document_id'    => $documentId,
-            'model'          => $config->model,
+            'document_id' => $documentId,
+            'model' => $config->model,
             'content_length' => mb_strlen($userPrompt),
         ]);
 
@@ -63,7 +64,7 @@ class OpenAiCompatibleAdapter implements LlmProviderAdapterInterface
             $this->handleError($response, $config, $documentId);
         }
 
-        $data    = $response->json();
+        $data = $response->json();
         $content = $data['choices'][0]['message']['content'] ?? null;
 
         if ($content === null) {
@@ -75,17 +76,17 @@ class OpenAiCompatibleAdapter implements LlmProviderAdapterInterface
         $usage = $data['usage'] ?? [];
 
         Log::info("LLM [{$config->provider}] request completed.", [
-            'document_id'        => $documentId,
-            'model'              => $config->model,
-            'input_tokens'       => $usage['prompt_tokens'] ?? 0,
-            'output_tokens'      => $usage['completion_tokens'] ?? 0,
+            'document_id' => $documentId,
+            'model' => $config->model,
+            'input_tokens' => $usage['prompt_tokens'] ?? 0,
+            'output_tokens' => $usage['completion_tokens'] ?? 0,
             'processing_time_ms' => $processingTimeMs,
         ]);
 
         return [
-            'raw_content'        => $content,
-            'input_tokens'       => (int) ($usage['prompt_tokens'] ?? 0),
-            'output_tokens'      => (int) ($usage['completion_tokens'] ?? 0),
+            'raw_content' => $content,
+            'input_tokens' => (int) ($usage['prompt_tokens'] ?? 0),
+            'output_tokens' => (int) ($usage['completion_tokens'] ?? 0),
             'processing_time_ms' => $processingTimeMs,
         ];
     }
@@ -103,13 +104,13 @@ class OpenAiCompatibleAdapter implements LlmProviderAdapterInterface
         string $userPrompt,
     ): array {
         return [
-            'model'           => $config->model,
-            'messages'        => [
+            'model' => $config->model,
+            'messages' => [
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user',   'content' => $userPrompt],
             ],
-            'max_tokens'      => $config->maxTokens,
-            'temperature'     => $config->temperature,
+            'max_tokens' => $config->maxTokens,
+            'temperature' => $config->temperature,
             'response_format' => ['type' => 'json_object'],
         ];
     }
@@ -120,24 +121,24 @@ class OpenAiCompatibleAdapter implements LlmProviderAdapterInterface
      * @throws \RuntimeException always
      */
     protected function handleError(
-        \Illuminate\Http\Client\Response $response,
+        Response $response,
         LlmProviderConfig $config,
         ?string $documentId,
     ): never {
-        $status    = $response->status();
+        $status = $response->status();
         $errorBody = $response->body();
 
         Log::error("LLM [{$config->provider}] request failed.", [
             'document_id' => $documentId,
-            'model'       => $config->model,
-            'status'      => $status,
-            'error'       => mb_substr($errorBody, 0, 500),
+            'model' => $config->model,
+            'status' => $status,
+            'error' => mb_substr($errorBody, 0, 500),
         ]);
 
         // 429 Rate Limit
         if ($status === 429 || str_contains($errorBody, 'rate limit') || str_contains($errorBody, 'Too Many Requests')) {
             $retryAfter = $response->header('Retry-After');
-            $waitMsg    = $retryAfter !== '' ? " Retry after {$retryAfter} seconds." : '';
+            $waitMsg = $retryAfter !== '' ? " Retry after {$retryAfter} seconds." : '';
             throw new \RuntimeException(
                 "[{$config->provider}] Rate limit reached.{$waitMsg} Status [429]."
             );
@@ -146,18 +147,18 @@ class OpenAiCompatibleAdapter implements LlmProviderAdapterInterface
         // Token overflow
         if (str_contains($errorBody, 'max completion tokens reached') || str_contains($errorBody, 'json_validate_failed')) {
             throw new \RuntimeException(
-                "[{$config->provider}] Token limit reached for model [{$config->model}] (max_tokens={$config->maxTokens}). " .
-                "Try increasing the token limit in your .env configuration."
+                "[{$config->provider}] Token limit reached for model [{$config->model}] (max_tokens={$config->maxTokens}). ".
+                'Try increasing the token limit in your .env configuration.'
             );
         }
 
-        $decoded      = json_decode($errorBody, true);
+        $decoded = json_decode($errorBody, true);
         $errorMessage = $decoded['detail']
             ?? $decoded['error']['message']
             ?? $errorBody;
 
         throw new \RuntimeException(
-            "[{$config->provider}] API returned status [{$status}]: " . mb_substr((string) $errorMessage, 0, 200)
+            "[{$config->provider}] API returned status [{$status}]: ".mb_substr((string) $errorMessage, 0, 200)
         );
     }
 }

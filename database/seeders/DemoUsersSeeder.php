@@ -14,6 +14,7 @@ use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 /**
  * Seeds demo Free and Pro users for local development and testing.
@@ -37,7 +38,7 @@ class DemoUsersSeeder extends Seeder
         $freeOrg = Organization::updateOrCreate(
             ['slug' => 'demo-free'],
             [
-                'uuid' => (string) \Illuminate\Support\Str::uuid(),
+                'uuid' => (string) Str::uuid(),
                 'name' => 'Demo Free Org',
                 'is_active' => true,
             ],
@@ -66,7 +67,7 @@ class DemoUsersSeeder extends Seeder
         $proOrg = Organization::updateOrCreate(
             ['slug' => 'demo-pro'],
             [
-                'uuid' => (string) \Illuminate\Support\Str::uuid(),
+                'uuid' => (string) Str::uuid(),
                 'name' => 'Demo Pro Org',
                 'is_active' => true,
             ],

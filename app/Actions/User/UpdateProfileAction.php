@@ -19,7 +19,7 @@ final class UpdateProfileAction
         $user->update(['name' => $name]);
 
         Log::info('User profile updated.', [
-            'user_id'  => $user->id,
+            'user_id' => $user->id,
             'old_name' => $old,
             'new_name' => $name,
         ]);

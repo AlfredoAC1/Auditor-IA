@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Form Request for attaching a supporting document to an existing analysis.
@@ -19,7 +21,7 @@ class AttachSupportingDocumentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        /** @var \App\Models\User|null $user */
+        /** @var User|null $user */
         $user = $this->user();
 
         return $user !== null && $user->hasOrganization();
@@ -32,7 +34,7 @@ class AttachSupportingDocumentRequest extends FormRequest
      */
     public function rules(): array
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $this->user();
 
         return [
@@ -40,14 +42,14 @@ class AttachSupportingDocumentRequest extends FormRequest
                 'required',
                 'uuid',
                 // Tenant-scoped: document must belong to the same organization
-                \Illuminate\Validation\Rule::exists('documents', 'id')
+                Rule::exists('documents', 'id')
                     ->where('organization_id', $user->organization_id)
                     ->whereNull('deleted_at'),
             ],
             'relationship_type' => [
                 'nullable',
                 'string',
-                \Illuminate\Validation\Rule::in(['referenced', 'related', 'clarification', 'complementary']),
+                Rule::in(['referenced', 'related', 'clarification', 'complementary']),
             ],
             'notes' => [
                 'nullable',
@@ -66,10 +68,10 @@ class AttachSupportingDocumentRequest extends FormRequest
     {
         return [
             'document_id.required' => 'Debe especificar el documento de apoyo.',
-            'document_id.uuid'     => 'El identificador del documento no es válido.',
-            'document_id.exists'   => 'El documento no existe o no pertenece a su organización.',
+            'document_id.uuid' => 'El identificador del documento no es válido.',
+            'document_id.exists' => 'El documento no existe o no pertenece a su organización.',
             'relationship_type.in' => 'El tipo de relación no es válido. Use: referenced, related, clarification o complementary.',
-            'notes.max'            => 'Las notas no pueden superar los 1000 caracteres.',
+            'notes.max' => 'Las notas no pueden superar los 1000 caracteres.',
         ];
     }
 
@@ -81,9 +83,9 @@ class AttachSupportingDocumentRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'document_id'       => 'documento de apoyo',
+            'document_id' => 'documento de apoyo',
             'relationship_type' => 'tipo de relación',
-            'notes'             => 'notas',
+            'notes' => 'notas',
         ];
     }
 }

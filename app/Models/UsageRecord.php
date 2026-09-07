@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\UsageType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -74,14 +75,14 @@ class UsageRecord extends Model
     /**
      * Scope to records within a billing period.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeForPeriod(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         \DateTimeInterface $periodStart,
         \DateTimeInterface $periodEnd,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query
             ->where('period_start', '>=', $periodStart)
             ->where('period_end', '<=', $periodEnd);
@@ -90,26 +91,26 @@ class UsageRecord extends Model
     /**
      * Scope to a specific usage type.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeOfType(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         UsageType $type,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('usage_type', $type);
     }
 
     /**
      * Scope to a specific organization.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeForOrganization(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         int $organizationId,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('organization_id', $organizationId);
     }
 }

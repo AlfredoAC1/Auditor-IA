@@ -22,15 +22,18 @@ class AdminMetricsTest extends TestCase
     use RefreshDatabase;
 
     private AdminMetricsService $service;
+
     private Organization $org;
+
     private User $user1;
+
     private User $user2;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->service = new AdminMetricsService();
+        $this->service = new AdminMetricsService;
 
         $this->org = Organization::create([
             'uuid' => (string) Str::uuid(),

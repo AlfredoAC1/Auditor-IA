@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Contracts\LLM\LLMAnalysisServiceInterface;
+use App\Services\Dashboard\DashboardMetricsService;
 use App\Services\Documents\DocumentParsingService;
+use App\Services\Documents\DocumentProcessingDispatcher;
 use App\Services\Documents\DocumentStorageService;
 use App\Services\LLM\LlmAnalysisService;
 use App\Services\LLM\LlmPromptBuilder;
@@ -25,8 +27,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(DocumentStorageService::class);
         $this->app->singleton(DocumentParsingService::class);
         $this->app->singleton(ExternalServiceHealthService::class);
-        $this->app->singleton(\App\Services\Documents\DocumentProcessingDispatcher::class);
-        $this->app->singleton(\App\Services\Dashboard\DashboardMetricsService::class);
+        $this->app->singleton(DocumentProcessingDispatcher::class);
+        $this->app->singleton(DashboardMetricsService::class);
 
         // Prompt builder is stateless — share one instance
         $this->app->singleton(LlmPromptBuilder::class);

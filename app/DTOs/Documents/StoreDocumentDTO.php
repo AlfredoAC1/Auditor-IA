@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\DTOs\Documents;
 
 use App\Enums\DocumentType;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -27,9 +29,9 @@ final readonly class StoreDocumentDTO
      * Create a DTO from a validated Form Request.
      */
     public static function fromRequest(
-        \Illuminate\Http\Request $request,
+        Request $request,
     ): self {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         return new self(

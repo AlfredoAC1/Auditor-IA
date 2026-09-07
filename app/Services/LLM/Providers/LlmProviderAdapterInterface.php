@@ -27,7 +27,7 @@ interface LlmProviderAdapterInterface
      * Execute a chat completion request against the provider API.
      *
      * @param  string  $systemPrompt  Pre-built system prompt from LlmPromptBuilder
-     * @param  string  $userPrompt    Pre-built user prompt from LlmPromptBuilder
+     * @param  string  $userPrompt  Pre-built user prompt from LlmPromptBuilder
      * @param  LlmProviderConfig  $config  Resolved configuration for this request
      * @param  string|null  $documentId  For contextual logging only
      * @return array{

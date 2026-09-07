@@ -6,7 +6,7 @@ namespace App\Enums;
 
 enum BugTicketStatus: string
 {
-    case New      = 'new';
+    case New = 'new';
     case Resolved = 'resolved';
 
     /**
@@ -15,7 +15,7 @@ enum BugTicketStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::New      => 'Nuevo',
+            self::New => 'Nuevo',
             self::Resolved => 'Resuelto',
         };
     }
@@ -26,7 +26,7 @@ enum BugTicketStatus: string
     public function badgeClasses(): string
     {
         return match ($this) {
-            self::New      => 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
+            self::New => 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
             self::Resolved => 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40',
         };
     }

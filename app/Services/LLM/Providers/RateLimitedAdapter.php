@@ -69,9 +69,9 @@ class RateLimitedAdapter extends OpenAiCompatibleAdapter
         $seconds = RateLimiter::availableIn($key);
 
         Log::warning('LLM rate limit reached locally (pre-request).', [
-            'document_id'    => $documentId,
+            'document_id' => $documentId,
             'rate_limit_key' => $key,
-            'rpm_limit'      => $rpm,
+            'rpm_limit' => $rpm,
             'seconds_to_wait' => $seconds,
         ]);
 

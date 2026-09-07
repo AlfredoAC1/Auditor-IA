@@ -11,6 +11,7 @@ use App\Enums\DocumentStatus;
 use App\Http\Requests\UploadAncillaryDocumentRequest;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -47,16 +48,16 @@ class AncillaryAnalysisController extends Controller
             $result = $this->storeAction->execute($dto, $analysis);
 
             return response()->json([
-                'message'               => 'Documento anexo recibido. Iniciando procesamiento contextual...',
+                'message' => 'Documento anexo recibido. Iniciando procesamiento contextual...',
                 'ancillary_document_id' => $result['ancillary_document']->id,
-                'status_url'            => route('analysis.ancillary.status', [
-                    'analysis'          => $analysis->id,
+                'status_url' => route('analysis.ancillary.status', [
+                    'analysis' => $analysis->id,
                     'ancillaryDocument' => $result['ancillary_document']->id,
                 ]),
             ], Response::HTTP_ACCEPTED);
         } catch (\RuntimeException $e) {
             return response()->json([
-                'error'   => 'processing_error',
+                'error' => 'processing_error',
                 'message' => $e->getMessage(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -74,7 +75,7 @@ class AncillaryAnalysisController extends Controller
     ): JsonResponse {
         $this->authorize('view', $analysis);
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         if ($ancillaryDocument->organization_id !== $user->organization_id) {
@@ -117,12 +118,12 @@ class AncillaryAnalysisController extends Controller
         }
 
         return response()->json([
-            'id'             => $ancillaryDocument->id,
-            'status'         => $ancillaryDocument->status->value,
-            'status_label'   => $ancillaryDocument->status->label(),
-            'is_terminal'    => $isTerminal,
-            'analysis_url'   => $contextualUrl,
-            'error'          => $ancillaryDocument->metadata['last_error'] ?? null,
+            'id' => $ancillaryDocument->id,
+            'status' => $ancillaryDocument->status->value,
+            'status_label' => $ancillaryDocument->status->label(),
+            'is_terminal' => $isTerminal,
+            'analysis_url' => $contextualUrl,
+            'error' => $ancillaryDocument->metadata['last_error'] ?? null,
         ]);
     }
 
@@ -137,7 +138,7 @@ class AncillaryAnalysisController extends Controller
         Document $document,
         DocumentAnalysis $analysis,
     ): View {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         if ($document->organization_id !== $user->organization_id || $analysis->organization_id !== $user->organization_id) {

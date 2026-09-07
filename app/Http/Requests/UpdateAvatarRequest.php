@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class UpdateAvatarRequest extends FormRequest
@@ -14,7 +15,7 @@ final class UpdateAvatarRequest extends FormRequest
     }
 
     /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -30,9 +31,9 @@ final class UpdateAvatarRequest extends FormRequest
     {
         return [
             'avatar.required' => 'Debe seleccionar una imagen.',
-            'avatar.image'    => 'El archivo debe ser una imagen.',
-            'avatar.mimes'    => 'Se permiten formatos: JPG, PNG y WebP.',
-            'avatar.max'      => 'La imagen no puede superar los 2 MB.',
+            'avatar.image' => 'El archivo debe ser una imagen.',
+            'avatar.mimes' => 'Se permiten formatos: JPG, PNG y WebP.',
+            'avatar.max' => 'La imagen no puede superar los 2 MB.',
         ];
     }
 }

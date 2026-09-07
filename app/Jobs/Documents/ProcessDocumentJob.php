@@ -154,7 +154,7 @@ class ProcessDocumentJob implements ShouldQueue
                     'output_tokens' => $analysisResult['output_tokens'],
                     'processing_time_ms' => $analysisResult['processing_time_ms'],
                     'prompt_metadata' => $analysisResult['prompt_metadata'],
-                    'status' => \App\Enums\DocumentStatus::Processed,
+                    'status' => DocumentStatus::Processed,
                     'version' => 1,
                 ]);
             } catch (\Throwable $llmException) {
@@ -173,7 +173,7 @@ class ProcessDocumentJob implements ShouldQueue
                     'llm_provider' => $provider,
                     'llm_model' => $modelSlugForRecord,
                     'content' => ['error' => $llmException->getMessage()],
-                    'status' => \App\Enums\DocumentStatus::Failed,
+                    'status' => DocumentStatus::Failed,
                     'version' => 1,
                 ]);
             }

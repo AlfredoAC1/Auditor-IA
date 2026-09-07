@@ -7,7 +7,9 @@ namespace Tests\Feature\Admin;
 use App\Enums\UserRole;
 use App\Models\Organization;
 use App\Models\User;
+use Database\Seeders\PlanSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class AdminAccessTest extends TestCase
@@ -15,16 +17,17 @@ class AdminAccessTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $regularUser;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->seed(\Database\Seeders\PlanSeeder::class);
+        $this->seed(PlanSeeder::class);
 
         $org = Organization::create([
-            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'uuid' => (string) Str::uuid(),
             'name' => 'Test Org',
             'slug' => 'test-org',
             'is_active' => true,

@@ -2,8 +2,15 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\AdminAnalysisController;
+use App\Http\Controllers\Admin\AdminBugTicketController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminOrganizationController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\AncillaryAnalysisController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\BugTicketController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -38,15 +45,17 @@ Route::middleware('auth')->group(function (): void {
 
     Route::get('/analisis/{document}', [DashboardController::class, 'show'])->name('analysis.show');
     Route::get('/analisis/{document}/clausulas', [DashboardController::class, 'showClauses'])->name('analysis.clauses');
-    Route::post('/analisis/{analysis}/ancillary', [\App\Http\Controllers\AncillaryAnalysisController::class, 'upload'])
+    Route::post('/analisis/{analysis}/ancillary', [AncillaryAnalysisController::class, 'upload'])
         ->name('analysis.ancillary.upload');
-    Route::get('/analisis/{analysis}/ancillary/{ancillaryDocument}/status', [\App\Http\Controllers\AncillaryAnalysisController::class, 'status'])
+    Route::get('/analisis/{analysis}/ancillary/{ancillaryDocument}/status', [AncillaryAnalysisController::class, 'status'])
         ->name('analysis.ancillary.status');
-    Route::get('/analisis/{document}/contextual/{analysis}', [\App\Http\Controllers\AncillaryAnalysisController::class, 'showContextual'])
+    Route::get('/analisis/{document}/contextual/{analysis}', [AncillaryAnalysisController::class, 'showContextual'])
         ->name('analysis.contextual.show');
 
     Route::post('/user/dismiss-tutorial', [UserController::class, 'dismissTutorial'])
         ->name('user.dismiss-tutorial');
+    Route::post('/user/dismiss-ancillary-tutorial', [UserController::class, 'dismissAncillaryTutorial'])
+        ->name('user.dismiss-ancillary-tutorial');
 
     // Account settings
     Route::get('/configuracion', [UserController::class, 'showSettings'])->name('settings');
@@ -57,29 +66,29 @@ Route::middleware('auth')->group(function (): void {
     Route::delete('/configuracion/account', [UserController::class, 'deleteAccount'])->name('settings.delete');
 
     // Bug ticket submission
-    Route::post('/tickets', [\App\Http\Controllers\BugTicketController::class, 'store'])->name('tickets.store');
+    Route::post('/tickets', [BugTicketController::class, 'store'])->name('tickets.store');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function (): void {
-    Route::get('/', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // User management
-    Route::get('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('users.index');
-    Route::get('/users/create', [\App\Http\Controllers\Admin\AdminUserController::class, 'create'])->name('users.create');
-    Route::post('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'store'])->name('users.store');
-    Route::get('/users/{user}/edit', [\App\Http\Controllers\Admin\AdminUserController::class, 'edit'])->name('users.edit');
-    Route::put('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'update'])->name('users.update');
-    Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
     // Organizations management
-    Route::get('/organizations', [\App\Http\Controllers\Admin\AdminOrganizationController::class, 'index'])->name('organizations.index');
-    Route::post('/organizations/{organization}/toggle', [\App\Http\Controllers\Admin\AdminOrganizationController::class, 'toggleStatus'])->name('organizations.toggle');
+    Route::get('/organizations', [AdminOrganizationController::class, 'index'])->name('organizations.index');
+    Route::post('/organizations/{organization}/toggle', [AdminOrganizationController::class, 'toggleStatus'])->name('organizations.toggle');
 
     // Analysis auditing
-    Route::get('/analyses', [\App\Http\Controllers\Admin\AdminAnalysisController::class, 'index'])->name('analyses.index');
-    Route::get('/analyses/{analysis}', [\App\Http\Controllers\Admin\AdminAnalysisController::class, 'show'])->name('analyses.show');
+    Route::get('/analyses', [AdminAnalysisController::class, 'index'])->name('analyses.index');
+    Route::get('/analyses/{analysis}', [AdminAnalysisController::class, 'show'])->name('analyses.show');
 
     // Bug tickets
-    Route::get('/tickets', [\App\Http\Controllers\Admin\AdminBugTicketController::class, 'index'])->name('tickets.index');
-    Route::post('/tickets/{ticket}/resolve', [\App\Http\Controllers\Admin\AdminBugTicketController::class, 'resolve'])->name('tickets.resolve');
+    Route::get('/tickets', [AdminBugTicketController::class, 'index'])->name('tickets.index');
+    Route::post('/tickets/{ticket}/resolve', [AdminBugTicketController::class, 'resolve'])->name('tickets.resolve');
 });

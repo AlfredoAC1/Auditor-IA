@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\AnalysisType;
 use App\Enums\DocumentStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -117,36 +118,36 @@ class DocumentAnalysis extends Model
     /**
      * Scope to analyses of a specific type.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeOfType(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         AnalysisType $type,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('analysis_type', $type);
     }
 
     /**
      * Scope to a specific organization.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeForOrganization(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         int $organizationId,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('organization_id', $organizationId);
     }
 
     /**
      * Scope to only the latest version of each analysis.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
-    public function scopeLatestVersion(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeLatestVersion(Builder $query): Builder
     {
         return $query->orderByDesc('version');
     }

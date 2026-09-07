@@ -21,8 +21,11 @@ class AiCreditServiceTest extends TestCase
     use RefreshDatabase;
 
     private AiCreditService $service;
+
     private Organization $freeOrg;
+
     private Organization $proOrg;
+
     private User $user;
 
     protected function setUp(): void
@@ -32,7 +35,7 @@ class AiCreditServiceTest extends TestCase
         $this->seed(PlanSeeder::class);
         $this->seed(AiModelSeeder::class);
 
-        $this->service = new AiCreditService();
+        $this->service = new AiCreditService;
 
         $this->freeOrg = Organization::create([
             'name' => 'Free Org',

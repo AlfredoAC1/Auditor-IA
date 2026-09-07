@@ -6,11 +6,11 @@ namespace App\Enums;
 
 enum AnalysisType: string
 {
-    case Recommendation    = 'recommendation';
-    case Explanation       = 'explanation';
-    case ClauseAnalysis    = 'clause_analysis';
-    case RiskAssessment    = 'risk_assessment';
-    case FullSummary       = 'full_summary';
+    case Recommendation = 'recommendation';
+    case Explanation = 'explanation';
+    case ClauseAnalysis = 'clause_analysis';
+    case RiskAssessment = 'risk_assessment';
+    case FullSummary = 'full_summary';
     case ContextualSummary = 'contextual_summary';
 
     /**
@@ -20,11 +20,11 @@ enum AnalysisType: string
     public function label(): string
     {
         return match ($this) {
-            self::Recommendation    => 'Recomendaciones',
-            self::Explanation       => 'Explicación Simple',
-            self::ClauseAnalysis    => 'Análisis de Cláusulas',
-            self::RiskAssessment    => 'Evaluación de Riesgos',
-            self::FullSummary       => 'Resumen Completo',
+            self::Recommendation => 'Recomendaciones',
+            self::Explanation => 'Explicación Simple',
+            self::ClauseAnalysis => 'Análisis de Cláusulas',
+            self::RiskAssessment => 'Evaluación de Riesgos',
+            self::FullSummary => 'Resumen Completo',
             self::ContextualSummary => 'Análisis Contextual con Documentos de Apoyo',
         };
     }
@@ -36,11 +36,11 @@ enum AnalysisType: string
     public function description(): string
     {
         return match ($this) {
-            self::Recommendation    => 'Puntos clave que debería revisar con un abogado',
-            self::Explanation       => 'Explicación del documento en lenguaje simple y claro',
-            self::ClauseAnalysis    => 'Desglose detallado de cada cláusula del documento',
-            self::RiskAssessment    => 'Identificación de riesgos y puntos de atención',
-            self::FullSummary       => 'Resumen completo incluyendo recomendaciones, explicaciones y riesgos',
+            self::Recommendation => 'Puntos clave que debería revisar con un abogado',
+            self::Explanation => 'Explicación del documento en lenguaje simple y claro',
+            self::ClauseAnalysis => 'Desglose detallado de cada cláusula del documento',
+            self::RiskAssessment => 'Identificación de riesgos y puntos de atención',
+            self::FullSummary => 'Resumen completo incluyendo recomendaciones, explicaciones y riesgos',
             self::ContextualSummary => 'Análisis enriquecido que incorpora documentos de apoyo y el análisis previo como contexto',
         };
     }

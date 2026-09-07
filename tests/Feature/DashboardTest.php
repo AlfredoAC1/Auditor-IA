@@ -9,6 +9,8 @@ use App\Models\Organization;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
+use Database\Seeders\DemoUsersSeeder;
+use Database\Seeders\PlanSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,7 +20,7 @@ class DashboardTest extends TestCase
 
     public function test_free_user_sees_standard_dashboard(): void
     {
-        $this->seed(\Database\Seeders\PlanSeeder::class);
+        $this->seed(PlanSeeder::class);
 
         $org = Organization::create(['name' => 'Free Org', 'slug' => 'free-org', 'is_active' => true]);
         $user = User::factory()->create(['organization_id' => $org->id]);
@@ -33,7 +35,7 @@ class DashboardTest extends TestCase
 
     public function test_pro_user_sees_pro_dashboard(): void
     {
-        $this->seed(\Database\Seeders\PlanSeeder::class);
+        $this->seed(PlanSeeder::class);
 
         $proPlan = Plan::query()->where('slug', 'pro')->firstOrFail();
         $org = Organization::create(['name' => 'Pro Org', 'slug' => 'pro-org', 'is_active' => true]);
@@ -58,7 +60,7 @@ class DashboardTest extends TestCase
 
     public function test_demo_pro_user_can_login(): void
     {
-        $this->seed(\Database\Seeders\DemoUsersSeeder::class);
+        $this->seed(DemoUsersSeeder::class);
 
         $response = $this->post(route('login.store'), [
             'email' => 'pro@auditor-ia.test',

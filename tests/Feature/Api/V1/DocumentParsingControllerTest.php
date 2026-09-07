@@ -18,6 +18,7 @@ class DocumentParsingControllerTest extends TestCase
     use RefreshDatabase;
 
     private Organization $organization;
+
     private User $user;
 
     protected function setUp(): void
@@ -41,7 +42,7 @@ class DocumentParsingControllerTest extends TestCase
     public function test_can_parse_document_successfully(): void
     {
         Storage::fake('local');
-        
+
         $document = Document::create([
             'organization_id' => $this->organization->id,
             'uploaded_by' => $this->user->id,
@@ -71,7 +72,7 @@ class DocumentParsingControllerTest extends TestCase
                     'element_id' => 'elem2',
                     'text' => 'En Santiago de Chile, a 9 de Junio de 2026...',
                     'metadata' => ['page_number' => 1],
-                ]
+                ],
             ], 200),
         ]);
 

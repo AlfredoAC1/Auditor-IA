@@ -15,10 +15,6 @@ final class AdminUserService
     /**
      * Get paginated users with search, filtering, and aggregated metrics.
      *
-     * @param string|null $search
-     * @param string|null $role
-     * @param int|null $organizationId
-     * @param int $perPage
      * @return LengthAwarePaginator<User>
      */
     public function getPaginatedUsers(
@@ -36,7 +32,7 @@ final class AdminUserService
                 $trimmed = trim($term);
                 $query->where(function (Builder $q) use ($trimmed): void {
                     $q->where('name', 'like', "%{$trimmed}%")
-                      ->orWhere('email', 'like', "%{$trimmed}%");
+                        ->orWhere('email', 'like', "%{$trimmed}%");
                 });
             })
             ->when($role && UserRole::tryFrom($role), function (Builder $query) use ($role): void {

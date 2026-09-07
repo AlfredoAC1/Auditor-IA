@@ -25,6 +25,7 @@ class NvidiaNimAnalysisServiceTest extends TestCase
     use RefreshDatabase;
 
     private LlmAnalysisService $service;
+
     private Document $document;
 
     protected function setUp(): void
@@ -34,21 +35,21 @@ class NvidiaNimAnalysisServiceTest extends TestCase
         RateLimiter::clear('llm:nvidia_nim:rate_limit');
 
         config([
-            'llm.default_provider'                    => 'nvidia_nim',
-            'llm.providers.nvidia_nim.api_key'        => 'test-nvidia-nim-key',
-            'llm.providers.nvidia_nim.model'          => 'meta/llama-3.3-70b-instruct',
-            'llm.providers.nvidia_nim.base_url'       => 'https://integrate.api.nvidia.com/v1',
+            'llm.default_provider' => 'nvidia_nim',
+            'llm.providers.nvidia_nim.api_key' => 'test-nvidia-nim-key',
+            'llm.providers.nvidia_nim.model' => 'meta/llama-3.3-70b-instruct',
+            'llm.providers.nvidia_nim.base_url' => 'https://integrate.api.nvidia.com/v1',
             'llm.providers.nvidia_nim.rate_limit_rpm' => 40,
-            'llm.providers.nvidia_nim.max_tokens'     => 4096,
-            'llm.providers.nvidia_nim.temperature'    => 0.3,
-            'llm.providers.nvidia_nim.timeout_seconds'=> 60,
+            'llm.providers.nvidia_nim.max_tokens' => 4096,
+            'llm.providers.nvidia_nim.temperature' => 0.3,
+            'llm.providers.nvidia_nim.timeout_seconds' => 60,
         ]);
 
-        $this->service = new LlmAnalysisService(new LlmPromptBuilder());
+        $this->service = new LlmAnalysisService(new LlmPromptBuilder);
 
         $this->document = new Document([
-            'id'                => '018f3a8b-1234-7000-8000-000000000001',
-            'organization_id'   => '018f3a8b-1234-7000-8000-000000000002',
+            'id' => '018f3a8b-1234-7000-8000-000000000001',
+            'organization_id' => '018f3a8b-1234-7000-8000-000000000002',
             'original_filename' => 'contrato_arrendamiento.pdf',
         ]);
     }
@@ -77,15 +78,15 @@ class NvidiaNimAnalysisServiceTest extends TestCase
                         'message' => [
                             'content' => json_encode([
                                 'resumen_general' => 'Resumen del contrato generado por NVIDIA NIM.',
-                                'tipo_documento'  => 'Contrato Legal',
+                                'tipo_documento' => 'Contrato Legal',
                                 'nivel_confianza' => 'alto',
                             ]),
                         ],
                     ],
                 ],
                 'usage' => [
-                    'prompt_tokens'      => 350,
-                    'completion_tokens'  => 200,
+                    'prompt_tokens' => 350,
+                    'completion_tokens' => 200,
                 ],
             ], 200),
         ]);

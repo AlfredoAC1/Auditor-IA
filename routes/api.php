@@ -46,4 +46,3 @@ Route::prefix('v1')
         // Contextual re-analysis — analyse with all supporting document context
         Route::post('analyses/{analysis}/analyze-with-context', [DocumentAnalysisController::class, 'analyzeWithContext']);
     });
-

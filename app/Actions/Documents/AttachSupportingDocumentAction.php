@@ -69,22 +69,22 @@ final class AttachSupportingDocumentAction
         // 4. Create pivot record within a transaction
         $pivot = DB::transaction(function () use ($dto, $analysis, $supportingDocument): AnalysisSupportingDocument {
             return AnalysisSupportingDocument::create([
-                'analysis_id'       => $analysis->id,
-                'document_id'       => $supportingDocument->id,
-                'organization_id'   => $dto->organizationId,
-                'attached_by'       => $dto->attachedBy,
+                'analysis_id' => $analysis->id,
+                'document_id' => $supportingDocument->id,
+                'organization_id' => $dto->organizationId,
+                'attached_by' => $dto->attachedBy,
                 'relationship_type' => $dto->relationshipType,
-                'notes'             => $dto->notes,
+                'notes' => $dto->notes,
             ]);
         });
 
         Log::info('Supporting document attached to analysis.', [
-            'analysis_id'           => $analysis->id,
-            'document_id'           => $analysis->document_id,
-            'supporting_document_id'=> $supportingDocument->id,
-            'organization_id'       => $dto->organizationId,
-            'attached_by'           => $dto->attachedBy,
-            'relationship_type'     => $dto->relationshipType,
+            'analysis_id' => $analysis->id,
+            'document_id' => $analysis->document_id,
+            'supporting_document_id' => $supportingDocument->id,
+            'organization_id' => $dto->organizationId,
+            'attached_by' => $dto->attachedBy,
+            'relationship_type' => $dto->relationshipType,
         ]);
 
         return $pivot;

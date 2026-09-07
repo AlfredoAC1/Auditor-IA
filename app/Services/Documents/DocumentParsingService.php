@@ -23,7 +23,9 @@ use Illuminate\Support\Facades\Storage;
 final class DocumentParsingService
 {
     private readonly string $apiUrl;
+
     private readonly string $apiKey;
+
     private readonly int $timeoutSeconds;
 
     public function __construct()
@@ -190,7 +192,7 @@ final class DocumentParsingService
             ]);
 
             throw new \RuntimeException(
-                "Unstructured API returned status [{$response->status()}]: " . mb_substr($errorBody, 0, 200)
+                "Unstructured API returned status [{$response->status()}]: ".mb_substr($errorBody, 0, 200)
             );
         }
 

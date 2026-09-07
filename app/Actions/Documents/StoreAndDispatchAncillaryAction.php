@@ -68,9 +68,9 @@ final class StoreAndDispatchAncillaryAction
                     ->where('is_active', true)
                     ->first()
                     ?? AiModel::query()
-                    ->where('provider_model_id', $analysis->llm_model)
-                    ->where('is_active', true)
-                    ->first();
+                        ->where('provider_model_id', $analysis->llm_model)
+                        ->where('is_active', true)
+                        ->first();
             }
 
             // Second check the previous analysis provider (e.g. 'cerebras')
@@ -119,35 +119,35 @@ final class StoreAndDispatchAncillaryAction
             // 4. Create Document and Pivot record within transaction
             [$ancillaryDocument, $pivot] = DB::transaction(function () use ($dto, $analysis, $storageResult, $aiModel): array {
                 $doc = Document::create([
-                    'organization_id'   => $dto->organizationId,
-                    'uploaded_by'       => $dto->userId,
+                    'organization_id' => $dto->organizationId,
+                    'uploaded_by' => $dto->userId,
                     'original_filename' => $dto->file->getClientOriginalName(),
-                    'stored_filename'   => $storageResult['stored_filename'],
-                    'storage_path'      => $storageResult['storage_path'],
-                    'disk'              => $storageResult['disk'],
-                    'mime_type'         => $storageResult['mime_type'],
-                    'file_size_bytes'   => $storageResult['file_size_bytes'],
-                    'file_hash'         => $storageResult['file_hash'],
-                    'status'            => DocumentStatus::Pending,
-                    'document_type'     => DocumentType::Amendment,
-                    'metadata'          => [
-                        'is_ancillary'        => true,
+                    'stored_filename' => $storageResult['stored_filename'],
+                    'storage_path' => $storageResult['storage_path'],
+                    'disk' => $storageResult['disk'],
+                    'mime_type' => $storageResult['mime_type'],
+                    'file_size_bytes' => $storageResult['file_size_bytes'],
+                    'file_hash' => $storageResult['file_hash'],
+                    'status' => DocumentStatus::Pending,
+                    'document_type' => DocumentType::Amendment,
+                    'metadata' => [
+                        'is_ancillary' => true,
                         'primary_document_id' => $analysis->document_id,
                         'primary_analysis_id' => $analysis->id,
-                        'relationship_type'   => $dto->relationshipType,
-                        'notes'               => $dto->notes,
-                        'model_slug'          => $aiModel->slug,
-                        'llm_provider'        => $aiModel->provider,
+                        'relationship_type' => $dto->relationshipType,
+                        'notes' => $dto->notes,
+                        'model_slug' => $aiModel->slug,
+                        'llm_provider' => $aiModel->provider,
                     ],
                 ]);
 
                 $piv = AnalysisSupportingDocument::create([
-                    'analysis_id'       => $analysis->id,
-                    'document_id'       => $doc->id,
-                    'organization_id'   => $dto->organizationId,
-                    'attached_by'       => $dto->userId,
+                    'analysis_id' => $analysis->id,
+                    'document_id' => $doc->id,
+                    'organization_id' => $dto->organizationId,
+                    'attached_by' => $dto->userId,
                     'relationship_type' => $dto->relationshipType,
-                    'notes'             => $dto->notes,
+                    'notes' => $dto->notes,
                 ]);
 
                 return [$doc, $piv];
@@ -162,8 +162,8 @@ final class StoreAndDispatchAncillaryAction
 
             Log::error('Ancillary document record creation failed, file cleaned up.', [
                 'organization_id' => $dto->organizationId,
-                'analysis_id'     => $analysis->id,
-                'error'           => $exception->getMessage(),
+                'analysis_id' => $analysis->id,
+                'error' => $exception->getMessage(),
             ]);
 
             throw $exception;
@@ -185,16 +185,16 @@ final class StoreAndDispatchAncillaryAction
         }
 
         Log::info('Ancillary document uploaded and contextual job queued.', [
-            'analysis_id'           => $analysis->id,
-            'primary_document_id'   => $analysis->document_id,
+            'analysis_id' => $analysis->id,
+            'primary_document_id' => $analysis->document_id,
             'ancillary_document_id' => $ancillaryDocument->id,
-            'organization_id'       => $dto->organizationId,
-            'model_slug'            => $aiModel->slug,
+            'organization_id' => $dto->organizationId,
+            'model_slug' => $aiModel->slug,
         ]);
 
         return [
             'ancillary_document' => $ancillaryDocument,
-            'analysis'           => $analysis,
+            'analysis' => $analysis,
         ];
     }
 }

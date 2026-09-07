@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class DeleteAccountRequest extends FormRequest
@@ -14,7 +15,7 @@ final class DeleteAccountRequest extends FormRequest
     }
 
     /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -30,7 +31,7 @@ final class DeleteAccountRequest extends FormRequest
     {
         return [
             'confirmation.required' => 'Debes escribir la palabra de confirmaci�n.',
-            'confirmation.in'       => 'Escribe exactamente "ELIMINAR" para confirmar.',
+            'confirmation.in' => 'Escribe exactamente "ELIMINAR" para confirmar.',
         ];
     }
 }

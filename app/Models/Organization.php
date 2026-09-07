@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\CreditRefreshInterval;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -135,10 +138,10 @@ class Organization extends Model
     /**
      * Scope to only active organizations.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
-    public function scopeActive(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
@@ -213,11 +216,11 @@ class Organization extends Model
     /**
      * Calculate when the credit period expires based on the plan's refresh interval.
      */
-    private function calculatePeriodExpiry(Plan $plan): \Carbon\Carbon
+    private function calculatePeriodExpiry(Plan $plan): Carbon
     {
         return match ($plan->credit_refresh_interval) {
-            \App\Enums\CreditRefreshInterval::Weekly => now()->addDays(7),
-            \App\Enums\CreditRefreshInterval::Monthly => now()->addMonth(),
+            CreditRefreshInterval::Weekly => now()->addDays(7),
+            CreditRefreshInterval::Monthly => now()->addMonth(),
             default => now()->addMonth(),
         };
     }

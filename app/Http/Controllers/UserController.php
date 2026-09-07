@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\User\DeleteAccountAction;
+use App\Actions\User\DismissAncillaryTutorialAction;
 use App\Actions\User\DismissTutorialAction;
 use App\Actions\User\UpdateAvatarAction;
 use App\Actions\User\UpdatePasswordAction;
@@ -21,16 +22,18 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 final class UserController extends Controller
 {
     public function __construct(
         private readonly DismissTutorialAction $dismissAction,
-        private readonly UpdateProfileAction   $updateProfileAction,
-        private readonly UpdateAvatarAction    $updateAvatarAction,
-        private readonly UpdatePasswordAction  $updatePasswordAction,
-        private readonly DeleteAccountAction   $deleteAccountAction,
+        private readonly DismissAncillaryTutorialAction $dismissAncillaryAction,
+        private readonly UpdateProfileAction $updateProfileAction,
+        private readonly UpdateAvatarAction $updateAvatarAction,
+        private readonly UpdatePasswordAction $updatePasswordAction,
+        private readonly DeleteAccountAction $deleteAccountAction,
     ) {}
 
     // ---------------------------------------------------------------
@@ -111,7 +114,7 @@ final class UserController extends Controller
             abort(404);
         }
 
-        $file     = Storage::disk('local')->get($user->avatar_path);
+        $file = Storage::disk('local')->get($user->avatar_path);
         $mimeType = Storage::disk('local')->mimeType($user->avatar_path) ?: 'image/jpeg';
 
         return response($file, 200)->header('Content-Type', $mimeType);
@@ -135,7 +138,7 @@ final class UserController extends Controller
                 $request->validated()['current_password'],
                 $request->validated()['password'],
             );
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return redirect()
                 ->route('settings', ['tab' => 'security'])
                 ->withErrors($e->errors())
@@ -194,6 +197,22 @@ final class UserController extends Controller
         }
 
         $this->dismissAction->execute($user);
+
+        return response()->json(['success' => true, 'message' => 'Tutorial descartado correctamente.']);
+    }
+
+    /**
+     * Dismiss the ancillary tutorial for the authenticated user.
+     */
+    public function dismissAncillaryTutorial(DismissTutorialRequest $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user === null) {
+            return response()->json(['success' => false, 'message' => 'Usuario no autenticado.'], 401);
+        }
+
+        $this->dismissAncillaryAction->execute($user);
 
         return response()->json(['success' => true, 'message' => 'Tutorial descartado correctamente.']);
     }

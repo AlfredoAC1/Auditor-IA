@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Models\DocumentAnalysis;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UploadAncillaryDocumentRequest extends FormRequest
@@ -31,7 +32,7 @@ class UploadAncillaryDocumentRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -43,8 +44,8 @@ class UploadAncillaryDocumentRequest extends FormRequest
                 'mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ],
             'relationship_type' => ['nullable', 'string', 'max:50'],
-            'notes'             => ['nullable', 'string', 'max:1000'],
-            'model_slug'        => ['nullable', 'string', 'exists:ai_models,slug'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+            'model_slug' => ['nullable', 'string', 'exists:ai_models,slug'],
         ];
     }
 
@@ -56,11 +57,11 @@ class UploadAncillaryDocumentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'file.required'  => 'Debe adjuntar un archivo anexo.',
-            'file.file'      => 'El archivo adjunto no es válido.',
-            'file.max'       => 'El archivo anexo no debe superar los 50 MB.',
+            'file.required' => 'Debe adjuntar un archivo anexo.',
+            'file.file' => 'El archivo adjunto no es válido.',
+            'file.max' => 'El archivo anexo no debe superar los 50 MB.',
             'file.mimetypes' => 'Solo se permiten archivos en formato PDF o Word (.docx).',
-            'notes.max'      => 'Las notas no pueden superar los 1000 caracteres.',
+            'notes.max' => 'Las notas no pueden superar los 1000 caracteres.',
         ];
     }
 }

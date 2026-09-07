@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\AiModelTier;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -65,10 +66,10 @@ class AiModel extends Model
     /**
      * Scope to only active models.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
-    public function scopeActive(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
@@ -76,27 +77,27 @@ class AiModel extends Model
     /**
      * Scope to models of a specific tier.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeOfTier(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         AiModelTier $tier,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('tier', $tier);
     }
 
     /**
      * Scope to models within a set of allowed tiers.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
+     * @param  Builder<static>  $query
      * @param  list<AiModelTier>  $tiers
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @return Builder<static>
      */
     public function scopeWithinTiers(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         array $tiers,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         $tierValues = array_map(fn (AiModelTier $tier) => $tier->value, $tiers);
 
         return $query->whereIn('tier', $tierValues);
@@ -105,10 +106,10 @@ class AiModel extends Model
     /**
      * Scope to models ordered by sort_order.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
-    public function scopeOrdered(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order');
     }

@@ -10,11 +10,14 @@ use App\Models\AiModel;
 use App\Models\AnalysisSupportingDocument;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
+use App\Models\Organization;
+use App\Models\User;
 use App\Services\Billing\AiCreditService;
 use App\Services\Documents\DocumentParsingService;
 use App\Services\LLM\LlmAnalysisService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -32,6 +35,7 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries;
+
     public array $backoff;
 
     public function __construct(
@@ -68,10 +72,10 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
         }
 
         Log::info('Ancillary document processing started.', [
-            'analysis_id'           => $analysis->id,
-            'primary_document_id'   => $primaryDocument->id,
+            'analysis_id' => $analysis->id,
+            'primary_document_id' => $primaryDocument->id,
             'ancillary_document_id' => $ancillaryDocument->id,
-            'organization_id'       => $analysis->organization_id,
+            'organization_id' => $analysis->organization_id,
         ]);
 
         try {
@@ -86,11 +90,11 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
 
                 $ancillaryDocument->update([
                     'metadata' => array_merge($ancillaryDocument->metadata ?? [], [
-                        'parsed_elements'         => $parseResult['elements'],
-                        'parsed_element_count'    => $parseResult['element_count'],
+                        'parsed_elements' => $parseResult['elements'],
+                        'parsed_element_count' => $parseResult['element_count'],
                         'parsed_estimated_tokens' => $parseResult['estimated_tokens'],
-                        'parsed_compact_content'  => $compactContent,
-                        'parsed_at'               => now()->toIso8601String(),
+                        'parsed_compact_content' => $compactContent,
+                        'parsed_at' => now()->toIso8601String(),
                     ]),
                     'status' => DocumentStatus::Processed,
                     'processed_at' => now(),
@@ -111,9 +115,9 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
                     ->where('is_active', true)
                     ->first()
                     ?? AiModel::query()
-                    ->where('provider_model_id', $analysis->llm_model)
-                    ->where('is_active', true)
-                    ->first();
+                        ->where('provider_model_id', $analysis->llm_model)
+                        ->where('is_active', true)
+                        ->first();
             }
 
             if ($aiModel === null && ! empty($analysis->llm_provider) && ! str_contains(strtolower($analysis->llm_provider), 'llama')) {
@@ -151,7 +155,7 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
             $result = $llmService->analyzeWithContext(
                 primaryDocument: $primaryDocument,
                 existingAnalysis: $analysis,
-                supportingDocuments: new \Illuminate\Database\Eloquent\Collection([$ancillaryDocument]),
+                supportingDocuments: new Collection([$ancillaryDocument]),
                 analysisType: AnalysisType::ContextualSummary,
                 overrideModel: $modelIdentifier,
             );
@@ -163,30 +167,30 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
 
             // 4. Create new Contextual DocumentAnalysis record
             $newAnalysis = DocumentAnalysis::create([
-                'document_id'        => $primaryDocument->id,
-                'organization_id'    => $primaryDocument->organization_id,
-                'requested_by'       => $ancillaryDocument->uploaded_by,
-                'analysis_type'      => AnalysisType::ContextualSummary,
-                'llm_provider'       => $result['llm_provider'],
-                'llm_model'          => $aiModel->slug,
-                'content'            => $result['content'],
-                'confidence_score'   => match ($result['content']['nivel_confianza'] ?? null) {
-                    'alto'  => 0.85,
+                'document_id' => $primaryDocument->id,
+                'organization_id' => $primaryDocument->organization_id,
+                'requested_by' => $ancillaryDocument->uploaded_by,
+                'analysis_type' => AnalysisType::ContextualSummary,
+                'llm_provider' => $result['llm_provider'],
+                'llm_model' => $aiModel->slug,
+                'content' => $result['content'],
+                'confidence_score' => match ($result['content']['nivel_confianza'] ?? null) {
+                    'alto' => 0.85,
                     'medio' => 0.60,
-                    'bajo'  => 0.35,
+                    'bajo' => 0.35,
                     default => null,
                 },
-                'input_tokens'       => $result['input_tokens'],
-                'output_tokens'      => $result['output_tokens'],
+                'input_tokens' => $result['input_tokens'],
+                'output_tokens' => $result['output_tokens'],
                 'processing_time_ms' => $result['processing_time_ms'],
-                'prompt_metadata'    => array_merge($result['prompt_metadata'] ?? [], [
-                    'model_tier'               => $aiModel->tier->value,
-                    'credit_cost'              => $aiModel->creditCostPerAnalysis(),
-                    'prior_analysis_id'        => $analysis->id,
-                    'ancillary_document_id'    => $ancillaryDocument->id,
-                    'is_contextual_ancillary'  => true,
+                'prompt_metadata' => array_merge($result['prompt_metadata'] ?? [], [
+                    'model_tier' => $aiModel->tier->value,
+                    'credit_cost' => $aiModel->creditCostPerAnalysis(),
+                    'prior_analysis_id' => $analysis->id,
+                    'ancillary_document_id' => $ancillaryDocument->id,
+                    'is_contextual_ancillary' => true,
                 ]),
-                'status'  => DocumentStatus::Processed,
+                'status' => DocumentStatus::Processed,
                 'version' => $latestVersion + 1,
             ]);
 
@@ -197,17 +201,17 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
                     'document_id' => $ancillaryDocument->id,
                 ],
                 [
-                    'organization_id'   => $primaryDocument->organization_id,
-                    'attached_by'       => $ancillaryDocument->uploaded_by,
+                    'organization_id' => $primaryDocument->organization_id,
+                    'attached_by' => $ancillaryDocument->uploaded_by,
                     'relationship_type' => $ancillaryDocument->metadata['relationship_type'] ?? 'complementary',
-                    'notes'             => $ancillaryDocument->metadata['notes'] ?? null,
+                    'notes' => $ancillaryDocument->metadata['notes'] ?? null,
                 ]
             );
 
             // 5. Deduct credits
-            /** @var \App\Models\Organization $organization */
+            /** @var Organization $organization */
             $organization = $primaryDocument->organization;
-            /** @var \App\Models\User $user */
+            /** @var User $user */
             $user = $ancillaryDocument->uploader ?? $analysis->requester;
 
             if ($organization !== null && $user !== null) {
@@ -222,16 +226,16 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
             ]);
 
             Log::info('Ancillary document processing and contextual analysis completed successfully.', [
-                'primary_document_id'    => $primaryDocument->id,
-                'ancillary_document_id'  => $ancillaryDocument->id,
+                'primary_document_id' => $primaryDocument->id,
+                'ancillary_document_id' => $ancillaryDocument->id,
                 'contextual_analysis_id' => $newAnalysis->id,
-                'version'                => $newAnalysis->version,
+                'version' => $newAnalysis->version,
             ]);
         } catch (\Throwable $exception) {
             Log::error('ProcessAncillaryAnalysisJob failed.', [
-                'analysis_id'           => $analysis->id,
+                'analysis_id' => $analysis->id,
                 'ancillary_document_id' => $ancillaryDocument->id,
-                'error'                 => $exception->getMessage(),
+                'error' => $exception->getMessage(),
             ]);
 
             if ($ancillaryDocument->canTransitionTo(DocumentStatus::Failed)) {
@@ -253,17 +257,17 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
     public function failed(?\Throwable $exception): void
     {
         Log::critical('Ancillary document processing permanently failed.', [
-            'analysis_id'           => $this->analysis->id,
+            'analysis_id' => $this->analysis->id,
             'ancillary_document_id' => $this->ancillaryDocument->id,
-            'error'                 => $exception?->getMessage(),
+            'error' => $exception?->getMessage(),
         ]);
 
         if ($this->ancillaryDocument->canTransitionTo(DocumentStatus::Failed)) {
             $this->ancillaryDocument->update([
                 'status' => DocumentStatus::Failed,
                 'metadata' => array_merge($this->ancillaryDocument->metadata ?? [], [
-                    'last_error'             => $exception?->getMessage(),
-                    'permanently_failed_at'  => now()->toIso8601String(),
+                    'last_error' => $exception?->getMessage(),
+                    'permanently_failed_at' => now()->toIso8601String(),
                 ]),
             ]);
         }

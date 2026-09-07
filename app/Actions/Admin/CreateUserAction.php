@@ -41,7 +41,7 @@ final class CreateUserAction
                 $organizationId = $org->id;
             }
 
-            $user = new User();
+            $user = new User;
             $user->name = $dto->name;
             $user->email = $dto->email;
             $user->password = $dto->password;

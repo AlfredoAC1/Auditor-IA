@@ -21,6 +21,7 @@ This document details the official user stories and use cases representing the c
 ## 3. Document Analysis
 * **As a User**, I want to view a detailed analysis of a processed document, so that I can read the AI-generated insights and summaries.
 * **As a User**, I want to view a clause-by-clause analysis of a processed document, so that I can thoroughly examine the specific contractual or legal elements identified by the AI.
+* **As a User**, I want to view a complementary analysis of ancillary documents, so that I can add it to my previous analysis.
 
 ## 4. Account Settings
 * **As a User**, I want to view my account settings page, so that I can manage my profile and preferences.

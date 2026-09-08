@@ -28,3 +28,10 @@ This document details the official user stories and use cases representing the c
 * **As a User**, I want to upload and change my profile avatar, so that I can personalize my account visually.
 * **As a User**, I want to change my password securely by providing my current password, so that I can keep my account safe.
 * **As a User**, I want to permanently delete my account and all associated data, so that I can remove my information completely if I decide to stop using the application.
+
+## 5. Administration & System Configuration
+* **As an Administrator**, I want to manage AI models and their corresponding tiers, so that I can control which models are available to different user plans.
+* **As an Administrator**, I want to configure the credit multipliers for different AI models, so that the credit consumption accurately reflects the computing costs.
+* **As an Administrator**, I want to view and manage subscription plans, so that I can adjust the limits (documents, storage, AI credits) and pricing based on business requirements.
+* **As an Administrator**, I want to monitor the system's external services (e.g., Stripe, LLM Providers), so that I can ensure all integrations are functioning correctly.
+* **As an Administrator**, I want to view an organization's active plan and credit usage, so that I can assist with support inquiries and billing.

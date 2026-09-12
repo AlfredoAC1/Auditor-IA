@@ -9,6 +9,7 @@ use App\Enums\DocumentStatus;
 use App\Models\AiModel;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
+use App\Services\Billing\AiCreditService;
 use App\Services\Documents\DocumentParsingService;
 use App\Services\LLM\LlmAnalysisService;
 use Illuminate\Bus\Queueable;
@@ -60,6 +61,7 @@ class ProcessDocumentJob implements ShouldQueue
      */
     public function handle(
         DocumentParsingService $parsingService,
+        AiCreditService $creditService,
     ): void {
         @set_time_limit(300);
         @ini_set('max_execution_time', '300');
@@ -136,7 +138,15 @@ class ProcessDocumentJob implements ShouldQueue
                     overrideModel: $modelIdentifier,
                 );
 
-                DocumentAnalysis::create([
+                $aiModelToCharge = $aiModel
+                    ?? AiModel::query()->where('provider', $provider)->where('is_active', true)->first()
+                    ?? AiModel::defaultModel();
+
+                $inputTokens = (int) ($analysisResult['input_tokens'] ?? 0);
+                $outputTokens = (int) ($analysisResult['output_tokens'] ?? 0);
+                $creditCost = $creditService->calculateCreditsCost($inputTokens, $outputTokens, (float) $aiModelToCharge->credit_multiplier);
+
+                $analysis = DocumentAnalysis::create([
                     'document_id' => $document->id,
                     'organization_id' => $document->organization_id,
                     'requested_by' => $document->uploaded_by,
@@ -150,13 +160,23 @@ class ProcessDocumentJob implements ShouldQueue
                         'bajo' => 0.35,
                         default => null,
                     },
-                    'input_tokens' => $analysisResult['input_tokens'],
-                    'output_tokens' => $analysisResult['output_tokens'],
+                    'input_tokens' => $inputTokens,
+                    'output_tokens' => $outputTokens,
                     'processing_time_ms' => $analysisResult['processing_time_ms'],
-                    'prompt_metadata' => $analysisResult['prompt_metadata'],
+                    'prompt_metadata' => array_merge($analysisResult['prompt_metadata'] ?? [], [
+                        'model_tier' => $aiModelToCharge->tier->value,
+                        'credit_cost' => $creditCost,
+                    ]),
                     'status' => \App\Enums\DocumentStatus::Processed,
                     'version' => 1,
                 ]);
+
+                $organization = $document->organization;
+                $user = $document->uploader;
+
+                if ($organization !== null && $user !== null) {
+                    $creditService->deductCredits($organization, $user, $aiModelToCharge, $analysis);
+                }
             } catch (\Throwable $llmException) {
                 Log::warning('Automatic document analysis failed, but document was parsed successfully.', [
                     'document_id' => $document->id,

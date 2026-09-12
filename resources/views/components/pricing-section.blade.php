@@ -57,7 +57,7 @@
                 </div>
                 <div>
                     <h3 class="text-xl font-serif font-bold text-[#A4D8FF] tracking-tight">¿Cómo funcionan los Créditos IA en Auditor-IA?</h3>
-                    <p class="text-[13px] font-mono text-[#A4D8FF]/70">Cada análisis consume créditos según la complejidad del modelo de IA que elijas para auditar tu documento.</p>
+                    <p class="text-[13px] font-mono text-[#A4D8FF]/70">Cada análisis consume créditos según la cantidad de tokens (texto) y el multiplicador del modelo de IA que elijas.</p>
                 </div>
             </div>
             <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#0F1E36] border border-[#A4D8FF]/40 text-[11px] font-mono font-bold text-[#A4D8FF] uppercase tracking-wider shrink-0 self-start md:self-auto">
@@ -69,29 +69,29 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div class="bg-[#15181B] border border-[#35393C] p-4 flex flex-col gap-2">
                 <div class="flex items-center justify-between">
-                    <span class="text-[12px] font-mono font-bold text-[#A4D8FF]">Modelo Básico</span>
-                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">1 crédito</span>
+                    <span class="text-[12px] font-mono font-bold text-[#A4D8FF]">Modelo Ligero</span>
+                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">1.0x peso</span>
                 </div>
                 <p class="text-[12px] font-sans text-[#A4D8FF]/70">Modelo liviano para revisiones rápidas y resúmenes generales de contratos.</p>
             </div>
             <div class="bg-[#15181B] border border-[#35393C] p-4 flex flex-col gap-2">
                 <div class="flex items-center justify-between">
                     <span class="text-[12px] font-mono font-bold text-[#A4D8FF]">Modelo Estándar</span>
-                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">2 créditos</span>
+                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">2.0x peso</span>
                 </div>
                 <p class="text-[12px] font-sans text-[#A4D8FF]/70">Mayor detalle y precisión en análisis de cláusulas y obligaciones.</p>
             </div>
             <div class="bg-[#15181B] border border-[#35393C] p-4 flex flex-col gap-2">
                 <div class="flex items-center justify-between">
                     <span class="text-[12px] font-mono font-bold text-[#A4D8FF]">Modelo Avanzado</span>
-                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">3 créditos</span>
+                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">3.0x peso</span>
                 </div>
                 <p class="text-[12px] font-sans text-[#A4D8FF]/70">Auditoría profunda de riesgos legales y detección de ambigüedades.</p>
             </div>
             <div class="bg-[#15181B] border border-[#35393C] p-4 flex flex-col gap-2">
                 <div class="flex items-center justify-between">
                     <span class="text-[12px] font-mono font-bold text-[#A4D8FF]">Modelo Premium</span>
-                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">4 créditos</span>
+                    <span class="text-[11px] font-mono font-bold text-[#A4D8FF] bg-[#0F1E36] px-2 py-0.5 border border-[#A4D8FF]/30">4.0x peso</span>
                 </div>
                 <p class="text-[12px] font-sans text-[#A4D8FF]/70">Máxima potencia de razonamiento jurídico para contratos complejos.</p>
             </div>
@@ -102,9 +102,9 @@
                 <svg class="w-4 h-4 text-[#A4D8FF]/60 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span><strong>Renovación automática:</strong> Semanal en Free, mensual en Pro e ilimitada en Lifetime.</span>
+                <span><strong>Renovación de créditos:</strong> Semanal en Free, mensual en Pro y mensual de por vida en Lifetime.</span>
             </div>
-            <span class="text-[11px] text-[#A4D8FF]/60">Elige el modelo según la complejidad de cada contrato.</span>
+            <span class="text-[11px] text-[#A4D8FF]/60">Fórmula: ((Tokens entrada + salida) / 175) × peso del modelo.</span>
         </div>
     </div>
 

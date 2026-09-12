@@ -45,10 +45,11 @@ return [
             'price_lifetime_clp' => null,
             'max_documents_per_month' => 3,
             'max_storage_bytes' => 104857600, // 100 MB
-            'ai_credits_quota' => 25,
+            'ai_credits_quota' => 100,
             'credit_refresh_interval' => 'weekly',
             'allowed_model_tiers' => ['lightweight'],
             'highlights' => [
+                '100 créditos IA semanales (~2 a 3 análisis)',
                 'Resumen y detección de riesgos',
                 'Análisis según legislación chilena',
                 'Soporte por email',
@@ -65,11 +66,12 @@ return [
             'price_lifetime_clp' => null,
             'max_documents_per_month' => 50,
             'max_storage_bytes' => 5368709120, // 5 GB
-            'ai_credits_quota' => 500,
+            'ai_credits_quota' => 1000,
             'credit_refresh_interval' => 'monthly',
             'allowed_model_tiers' => ['lightweight', 'standard', 'advanced', 'premium'],
             'popular' => true,
             'highlights' => [
+                '1.000 créditos IA mensuales',
                 'Todos los tipos de análisis',
                 'Selección de modelo IA',
                 'Prioridad en procesamiento',
@@ -80,26 +82,42 @@ return [
 
         'lifetime' => [
             'name' => 'Lifetime',
-            'description' => 'Acceso completo de por vida, pago único',
+            'description' => 'Acceso Pro de por vida, pago único sin mensualidades',
             'is_free' => false,
             'billing_type' => 'lifetime',
             'price_monthly_clp' => null,
             'price_yearly_clp' => null,
             'price_lifetime_clp' => 199990,
             'limited_offer' => true,
-            'max_documents_per_month' => null,
-            'max_storage_bytes' => null,
-            'ai_credits_quota' => null, // Unlimited
+            'max_documents_per_month' => 50,
+            'max_storage_bytes' => 5368709120, // 5 GB
+            'ai_credits_quota' => 1000,
             'credit_refresh_interval' => 'monthly',
             'allowed_model_tiers' => ['lightweight', 'standard', 'advanced', 'premium'],
             'highlights' => [
-                'Todas las funciones actuales y futuras',
+                '1.000 créditos IA / mes de por vida',
+                'Todas las funciones del plan Pro',
                 'Selección de modelo IA',
-                'Sin renovaciones ni sorpresas',
+                'Pago único, sin suscripción recurrente',
                 'Soporte prioritario de por vida',
             ],
         ],
 
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | AI Credits Economy Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Formula: ((Input Tokens + Output Tokens) / tokens_per_credit) * Model Weight
+    |
+    */
+
+    'credits' => [
+        'tokens_per_credit' => (int) env('AI_CREDITS_TOKENS_PER_CREDIT', 175),
+        'min_charge' => (int) env('AI_CREDITS_MIN_CHARGE', 1),
+        'rounding' => 'ceil',
     ],
 
     /*

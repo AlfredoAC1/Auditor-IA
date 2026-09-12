@@ -122,6 +122,22 @@ final class AiCreditService
     }
 
     /**
+     * Calculate credit cost based on token consumption and model weight.
+     *
+     * Formula: max(min_charge, ceil(((input_tokens + output_tokens) / tokens_per_credit) * model_weight))
+     */
+    public function calculateCreditsCost(int $inputTokens, int $outputTokens, float $modelWeight): int
+    {
+        $totalTokens = $inputTokens + $outputTokens;
+        $tokensPerCredit = (int) config('billing.credits.tokens_per_credit', 175);
+        $minCharge = (int) config('billing.credits.min_charge', 1);
+
+        $rawCredits = ($totalTokens / $tokensPerCredit) * $modelWeight;
+
+        return max($minCharge, (int) ceil($rawCredits));
+    }
+
+    /**
      * Deduct credits for a completed analysis and record audit trail.
      */
     public function deductCredits(
@@ -137,12 +153,20 @@ final class AiCreditService
                 return;
             }
 
-            $cost = $model->creditCostPerAnalysis();
+            $inputTokens = (int) ($analysis->input_tokens ?? 0);
+            $outputTokens = (int) ($analysis->output_tokens ?? 0);
+            $totalTokens = $inputTokens + $outputTokens;
+            $tokensPerCredit = (int) config('billing.credits.tokens_per_credit', 175);
+            $modelWeight = (float) $model->credit_multiplier;
+
+            // Calculate cost using the token formula: ((input + output) / 175) * weight
+            $cost = $this->calculateCreditsCost($inputTokens, $outputTokens, $modelWeight);
             $currentBalance = $ledger->credits_remaining;
 
-            // Deduct cost, floor at 0
+            // Overdraft absorption: allow last analysis to finish gracefully if balance > 0
+            $actualDeducted = min($currentBalance, $cost);
+            $overdraftAbsorbed = max(0, $cost - $currentBalance);
             $newBalance = max(0, $currentBalance - $cost);
-            $actualDeducted = $currentBalance - $newBalance;
             $now = now();
 
             // Update ledger
@@ -161,10 +185,16 @@ final class AiCreditService
                 'model_tier' => $model->tier,
                 'analysis_id' => $analysis->id,
                 'metadata' => [
-                    'model_slug' => $model->slug,
-                    'input_tokens' => $analysis->input_tokens,
-                    'output_tokens' => $analysis->output_tokens,
-                    'cost_charged' => $cost,
+                    'model_slug'         => $model->slug,
+                    'model_weight'       => $modelWeight,
+                    'input_tokens'       => $inputTokens,
+                    'output_tokens'      => $outputTokens,
+                    'total_tokens'       => $totalTokens,
+                    'tokens_per_credit'  => $tokensPerCredit,
+                    'calculated_cost'    => $cost,
+                    'actual_deducted'    => $actualDeducted,
+                    'overdraft_absorbed' => $overdraftAbsorbed,
+                    'is_overdraft'       => $overdraftAbsorbed > 0,
                 ],
                 'created_at' => $now,
             ]);
@@ -176,8 +206,10 @@ final class AiCreditService
                 'usage_type' => UsageType::AiCreditsConsumed,
                 'quantity' => $actualDeducted,
                 'metadata' => [
-                    'analysis_id' => $analysis->id,
-                    'model_slug' => $model->slug,
+                    'analysis_id'        => $analysis->id,
+                    'model_slug'         => $model->slug,
+                    'calculated_cost'    => $cost,
+                    'overdraft_absorbed' => $overdraftAbsorbed,
                 ],
                 'period_start' => $ledger->period_started_at?->toDateString() ?? $now->toDateString(),
                 'period_end' => $ledger->period_expires_at?->toDateString() ?? $now->toDateString(),
@@ -185,11 +217,14 @@ final class AiCreditService
             ]);
 
             Log::info('AI credits deducted for analysis.', [
-                'organization_id' => $organization->id,
-                'user_id' => $user->id,
-                'analysis_id' => $analysis->id,
-                'credits_deducted' => $actualDeducted,
-                'remaining_balance' => $newBalance,
+                'organization_id'    => $organization->id,
+                'user_id'            => $user->id,
+                'analysis_id'        => $analysis->id,
+                'total_tokens'       => $totalTokens,
+                'calculated_cost'    => $cost,
+                'credits_deducted'   => $actualDeducted,
+                'overdraft_absorbed' => $overdraftAbsorbed,
+                'remaining_balance'  => $newBalance,
             ]);
         });
     }

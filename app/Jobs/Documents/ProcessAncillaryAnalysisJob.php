@@ -161,6 +161,10 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
                 ->where('analysis_type', AnalysisType::ContextualSummary)
                 ->max('version') ?? 0;
 
+            $inputTokens = (int) ($result['input_tokens'] ?? 0);
+            $outputTokens = (int) ($result['output_tokens'] ?? 0);
+            $creditCost = $creditService->calculateCreditsCost($inputTokens, $outputTokens, (float) $aiModel->credit_multiplier);
+
             // 4. Create new Contextual DocumentAnalysis record
             $newAnalysis = DocumentAnalysis::create([
                 'document_id'        => $primaryDocument->id,
@@ -176,12 +180,12 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
                     'bajo'  => 0.35,
                     default => null,
                 },
-                'input_tokens'       => $result['input_tokens'],
-                'output_tokens'      => $result['output_tokens'],
+                'input_tokens'       => $inputTokens,
+                'output_tokens'      => $outputTokens,
                 'processing_time_ms' => $result['processing_time_ms'],
                 'prompt_metadata'    => array_merge($result['prompt_metadata'] ?? [], [
                     'model_tier'               => $aiModel->tier->value,
-                    'credit_cost'              => $aiModel->creditCostPerAnalysis(),
+                    'credit_cost'              => $creditCost,
                     'prior_analysis_id'        => $analysis->id,
                     'ancillary_document_id'    => $ancillaryDocument->id,
                     'is_contextual_ancillary'  => true,

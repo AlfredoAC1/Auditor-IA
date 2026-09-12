@@ -124,6 +124,10 @@ class DocumentAnalysisController extends Controller
                 ->where('analysis_type', $analysisType)
                 ->max('version') ?? 0;
 
+            $inputTokens = (int) $result['input_tokens'];
+            $outputTokens = (int) $result['output_tokens'];
+            $creditCost = $this->creditService->calculateCreditsCost($inputTokens, $outputTokens, (float) $aiModel->credit_multiplier);
+
             $analysis = DocumentAnalysis::create([
                 'document_id'        => $document->id,
                 'organization_id'    => $document->organization_id,
@@ -133,12 +137,12 @@ class DocumentAnalysisController extends Controller
                 'llm_model'          => $aiModel->slug,
                 'content'            => $result['content'],
                 'confidence_score'   => $this->extractConfidence($result['content']),
-                'input_tokens'       => $result['input_tokens'],
-                'output_tokens'      => $result['output_tokens'],
+                'input_tokens'       => $inputTokens,
+                'output_tokens'      => $outputTokens,
                 'processing_time_ms' => $result['processing_time_ms'],
                 'prompt_metadata'    => array_merge($result['prompt_metadata'] ?? [], [
                     'model_tier'   => $aiModel->tier->value,
-                    'credit_cost'  => $aiModel->creditCostPerAnalysis(),
+                    'credit_cost'  => $creditCost,
                 ]),
                 'status'  => DocumentStatus::Processed,
                 'version' => $latestVersion + 1,

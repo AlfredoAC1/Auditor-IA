@@ -147,8 +147,8 @@ class DocumentAnalysisControllerTest extends TestCase
             'status' => 'processed',
         ]);
 
-        // Assert AI credits were deducted
-        $this->assertEquals($initialBalance - 1, $ledger->fresh()->credits_remaining);
+        // Assert AI credits were deducted (200 + 150 = 350 tokens / 175 * 1.0 = 2 credits)
+        $this->assertEquals($initialBalance - 2, $ledger->fresh()->credits_remaining);
 
         $this->assertDatabaseHas('credit_transactions', [
             'organization_id' => $this->organization->id,
@@ -205,6 +205,7 @@ class DocumentAnalysisControllerTest extends TestCase
                         'display_name',
                         'tier' => ['value', 'label', 'description'],
                         'credit_multiplier',
+                        'tokens_per_credit',
                         'credit_cost',
                         'max_tokens',
                     ],

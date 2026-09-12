@@ -118,12 +118,30 @@ class AiModel extends Model
     // ---------------------------------------------------------------
 
     /**
-     * Calculate the credit cost for a single analysis using this model.
-     *
-     * Base cost is 1 credit, multiplied by the model's tier multiplier.
+     * Calculate credit cost based on token consumption and model weight.
+     * Formula: ((total_tokens) / tokens_per_credit) * weight
      */
-    public function creditCostPerAnalysis(): int
+    public function calculateCreditCost(int $totalTokens): int
     {
+        $tokensPerCredit = (int) config('billing.credits.tokens_per_credit', 175);
+        $minCharge = (int) config('billing.credits.min_charge', 1);
+
+        $rawCredits = ($totalTokens / $tokensPerCredit) * $this->credit_multiplier;
+
+        return max($minCharge, (int) ceil($rawCredits));
+    }
+
+    /**
+     * Calculate the credit cost for a single analysis using this model.
+     * If total tokens are provided, calculates dynamically based on formula;
+     * otherwise returns the base multiplier.
+     */
+    public function creditCostPerAnalysis(?int $totalTokens = null): int
+    {
+        if ($totalTokens !== null) {
+            return $this->calculateCreditCost($totalTokens);
+        }
+
         return (int) ceil($this->credit_multiplier);
     }
 

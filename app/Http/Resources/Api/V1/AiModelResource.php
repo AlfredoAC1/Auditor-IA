@@ -32,6 +32,7 @@ class AiModelResource extends JsonResource
                 'description' => $this->tier->description(),
             ],
             'credit_multiplier' => $this->credit_multiplier,
+            'tokens_per_credit' => (int) config('billing.credits.tokens_per_credit', 175),
             'credit_cost' => $this->creditCostPerAnalysis(),
             'max_tokens' => $this->max_tokens,
         ];

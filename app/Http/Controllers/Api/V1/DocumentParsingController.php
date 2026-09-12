@@ -67,7 +67,7 @@ class DocumentParsingController extends Controller
                 'document_id' => $document->id,
                 'element_count' => $result['element_count'],
                 'estimated_tokens' => $result['estimated_tokens'],
-                'compact_content_preview' => mb_substr($compactContent, 0, 500) . '...',
+                'compact_content_preview' => mb_substr($compactContent, 0, 500).'...',
             ]);
         } catch (\RuntimeException $exception) {
             Log::error('Document parsing failed via controller.', [

@@ -44,14 +44,14 @@ final class CerebrasAdapter extends OpenAiCompatibleAdapter
         string $userPrompt,
     ): array {
         return [
-            'model'                 => $config->model,
-            'messages'              => [
+            'model' => $config->model,
+            'messages' => [
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user',   'content' => $userPrompt],
             ],
             // Cerebras uses `max_completion_tokens`, not `max_tokens`.
             'max_completion_tokens' => $config->maxTokens,
-            'temperature'           => $config->temperature,
+            'temperature' => $config->temperature,
         ];
     }
 }

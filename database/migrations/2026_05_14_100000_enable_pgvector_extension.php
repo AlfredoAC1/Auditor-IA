@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Enable the pgvector extension in PostgreSQL.
@@ -23,8 +24,8 @@ return new class extends Migration
         if (DB::connection()->getDriverName() === 'pgsql') {
             try {
                 DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::warning('pgvector extension is not available on this PostgreSQL server: ' . $e->getMessage());
+            } catch (Exception $e) {
+                Log::warning('pgvector extension is not available on this PostgreSQL server: '.$e->getMessage());
             }
         }
     }

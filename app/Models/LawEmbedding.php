@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -48,10 +49,10 @@ class LawEmbedding extends Model
     /**
      * Scope to only current (latest version) embeddings.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
-    public function scopeCurrent(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeCurrent(Builder $query): Builder
     {
         return $query->where('is_current', true);
     }
@@ -59,13 +60,13 @@ class LawEmbedding extends Model
     /**
      * Scope to a specific law.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeForLaw(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         string $lawName,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('law_name', $lawName);
     }
 

@@ -15,6 +15,7 @@ use App\Models\AiModel;
 use App\Models\AnalysisSupportingDocument;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
+use App\Models\User;
 use App\Services\Billing\AiCreditService;
 use App\Services\LLM\LlmAnalysisService;
 use Illuminate\Http\JsonResponse;
@@ -53,33 +54,33 @@ class DocumentAnalysisController extends Controller
 
         $validated = $request->validate([
             'analysis_type' => ['required', 'string', Rule::enum(AnalysisType::class)],
-            'model_slug'    => ['nullable', 'string', 'exists:ai_models,slug'],
+            'model_slug' => ['nullable', 'string', 'exists:ai_models,slug'],
         ], [
             'analysis_type.required' => 'Debe especificar el tipo de análisis.',
-            'analysis_type.enum'     => 'El tipo de análisis no es válido.',
-            'model_slug.exists'      => 'El modelo seleccionado no está disponible.',
+            'analysis_type.enum' => 'El tipo de análisis no es válido.',
+            'model_slug.exists' => 'El modelo seleccionado no está disponible.',
         ]);
 
         $analysisType = AnalysisType::from($validated['analysis_type']);
 
         // Verify document has been parsed
-        $metadata       = $document->metadata ?? [];
+        $metadata = $document->metadata ?? [];
         $compactContent = $metadata['parsed_compact_content'] ?? null;
 
         if ($compactContent === null || $compactContent === '') {
             return response()->json([
-                'error'   => 'not_parsed',
+                'error' => 'not_parsed',
                 'message' => 'El documento debe ser procesado primero. Use POST /documents/{id}/parse.',
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        /** @var \App\Models\User $user */
-        $user         = $request->user();
+        /** @var User $user */
+        $user = $request->user();
         $organization = $user->organization;
 
         if ($organization === null) {
             return response()->json([
-                'error'   => 'no_organization',
+                'error' => 'no_organization',
                 'message' => 'El usuario no pertenece a ninguna organización.',
             ], JsonResponse::HTTP_FORBIDDEN);
         }
@@ -102,11 +103,11 @@ class DocumentAnalysisController extends Controller
         // 2. Validate AI Credit Quota
         if (! $this->creditService->canPerformAnalysis($organization, $aiModel)) {
             return response()->json([
-                'error'   => 'credits_depleted',
+                'error' => 'credits_depleted',
                 'message' => 'Créditos de Inteligencia Artificial insuficientes para realizar este análisis. Por favor, actualiza tu plan para obtener más créditos.',
-                'meta'    => [
+                'meta' => [
                     'required_credits' => $aiModel->creditCostPerAnalysis(),
-                    'model_tier'       => $aiModel->tier->value,
+                    'model_tier' => $aiModel->tier->value,
                 ],
             ], JsonResponse::HTTP_PAYMENT_REQUIRED);
         }
@@ -144,8 +145,8 @@ class DocumentAnalysisController extends Controller
                     'model_tier'   => $aiModel->tier->value,
                     'credit_cost'  => $creditCost,
                 ]),
-                'status'  => DocumentStatus::Processed,
-                'version' => $latestVersion + 1,
+                'status'             => DocumentStatus::Processed,
+                'version'            => $latestVersion + 1,
             ]);
 
             $this->creditService->deductCredits($organization, $user, $aiModel, $analysis);
@@ -157,23 +158,23 @@ class DocumentAnalysisController extends Controller
                 ->setStatusCode(JsonResponse::HTTP_CREATED);
         } catch (\RuntimeException $exception) {
             Log::error('Document analysis failed via controller.', [
-                'document_id'   => $document->id,
+                'document_id' => $document->id,
                 'organization_id' => $document->organization_id,
                 'analysis_type' => $analysisType->value,
-                'model_slug'    => $aiModel->slug,
-                'error'         => $exception->getMessage(),
+                'model_slug' => $aiModel->slug,
+                'error' => $exception->getMessage(),
             ]);
 
             $failedAnalysis = DocumentAnalysis::create([
-                'document_id'     => $document->id,
+                'document_id' => $document->id,
                 'organization_id' => $document->organization_id,
-                'requested_by'    => $user->id,
-                'analysis_type'   => $analysisType,
-                'llm_provider'    => $aiModel->provider,
-                'llm_model'       => $aiModel->slug,
-                'content'         => ['error' => $exception->getMessage()],
-                'status'          => DocumentStatus::Failed,
-                'version'         => 1,
+                'requested_by' => $user->id,
+                'analysis_type' => $analysisType,
+                'llm_provider' => $aiModel->provider,
+                'llm_model' => $aiModel->slug,
+                'content' => ['error' => $exception->getMessage()],
+                'status' => DocumentStatus::Failed,
+                'version' => 1,
             ]);
 
             $ledger = $organization->getOrCreateCreditLedger();
@@ -182,7 +183,7 @@ class DocumentAnalysisController extends Controller
             }
 
             return response()->json([
-                'error'   => 'analysis_failed',
+                'error' => 'analysis_failed',
                 'message' => 'No se pudo completar el análisis. Intente nuevamente.',
             ], JsonResponse::HTTP_SERVICE_UNAVAILABLE);
         }
@@ -224,7 +225,7 @@ class DocumentAnalysisController extends Controller
 
         if ($analysis->document_id !== $document->id) {
             return response()->json([
-                'error'   => 'not_found',
+                'error' => 'not_found',
                 'message' => 'Análisis no encontrado para este documento.',
             ], JsonResponse::HTTP_NOT_FOUND);
         }
@@ -253,7 +254,7 @@ class DocumentAnalysisController extends Controller
         // Authorize via the analysis's primary document
         $this->authorize('view', $analysis->document);
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $supportingDocument = Document::query()
@@ -267,12 +268,12 @@ class DocumentAnalysisController extends Controller
             $pivot = $this->attachAction->execute($dto, $analysis, $supportingDocument);
         } catch (\LogicException $e) {
             return response()->json([
-                'error'   => 'attachment_conflict',
+                'error' => 'attachment_conflict',
                 'message' => $e->getMessage(),
             ], JsonResponse::HTTP_CONFLICT);
         } catch (\InvalidArgumentException $e) {
             return response()->json([
-                'error'   => 'tenant_violation',
+                'error' => 'tenant_violation',
                 'message' => $e->getMessage(),
             ], JsonResponse::HTTP_FORBIDDEN);
         }
@@ -281,19 +282,19 @@ class DocumentAnalysisController extends Controller
         $analysis->load(['requester:id,name', 'supportingDocuments']);
 
         return response()->json([
-            'message'              => 'Documento de apoyo adjuntado exitosamente.',
-            'pivot_id'             => $pivot->id,
-            'supporting_document'  => [
-                'id'                => $supportingDocument->id,
+            'message' => 'Documento de apoyo adjuntado exitosamente.',
+            'pivot_id' => $pivot->id,
+            'supporting_document' => [
+                'id' => $supportingDocument->id,
                 'original_filename' => $supportingDocument->original_filename,
-                'status'            => $supportingDocument->status->value,
-                'is_parsed'         => isset($supportingDocument->metadata['parsed_compact_content']),
+                'status' => $supportingDocument->status->value,
+                'is_parsed' => isset($supportingDocument->metadata['parsed_compact_content']),
                 'relationship_type' => $pivot->relationship_type,
-                'relationship_label'=> $pivot->relationshipLabel(),
-                'notes'             => $pivot->notes,
-                'attached_at'       => $pivot->created_at?->toIso8601String(),
+                'relationship_label' => $pivot->relationshipLabel(),
+                'notes' => $pivot->notes,
+                'attached_at' => $pivot->created_at?->toIso8601String(),
             ],
-            'analysis'             => new DocumentAnalysisResource($analysis),
+            'analysis' => new DocumentAnalysisResource($analysis),
         ], JsonResponse::HTTP_CREATED);
     }
 
@@ -316,24 +317,24 @@ class DocumentAnalysisController extends Controller
             ->get();
 
         $items = $pivots->map(fn (AnalysisSupportingDocument $pivot) => [
-            'pivot_id'             => $pivot->id,
-            'document_id'          => $pivot->document_id,
-            'original_filename'    => $pivot->document?->original_filename,
-            'status'               => $pivot->document?->status->value,
-            'is_parsed'            => isset($pivot->document?->metadata['parsed_compact_content']),
-            'relationship_type'    => $pivot->relationship_type,
-            'relationship_label'   => $pivot->relationshipLabel(),
-            'notes'                => $pivot->notes,
-            'attached_by'          => $pivot->attacher ? [
-                'id'   => $pivot->attacher->id,
+            'pivot_id' => $pivot->id,
+            'document_id' => $pivot->document_id,
+            'original_filename' => $pivot->document?->original_filename,
+            'status' => $pivot->document?->status->value,
+            'is_parsed' => isset($pivot->document?->metadata['parsed_compact_content']),
+            'relationship_type' => $pivot->relationship_type,
+            'relationship_label' => $pivot->relationshipLabel(),
+            'notes' => $pivot->notes,
+            'attached_by' => $pivot->attacher ? [
+                'id' => $pivot->attacher->id,
                 'name' => $pivot->attacher->name,
             ] : null,
-            'attached_at'          => $pivot->created_at?->toIso8601String(),
+            'attached_at' => $pivot->created_at?->toIso8601String(),
         ]);
 
         return response()->json([
-            'analysis_id'       => $analysis->id,
-            'count'             => $items->count(),
+            'analysis_id' => $analysis->id,
+            'count' => $items->count(),
             'supporting_documents' => $items,
         ]);
     }
@@ -350,7 +351,7 @@ class DocumentAnalysisController extends Controller
     ): JsonResponse {
         $this->authorize('view', $analysis->document);
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $deleted = AnalysisSupportingDocument::query()
@@ -361,16 +362,16 @@ class DocumentAnalysisController extends Controller
 
         if ($deleted === 0) {
             return response()->json([
-                'error'   => 'not_found',
+                'error' => 'not_found',
                 'message' => 'El documento de apoyo no está adjunto a este análisis.',
             ], JsonResponse::HTTP_NOT_FOUND);
         }
 
         Log::info('Supporting document detached from analysis.', [
-            'analysis_id'   => $analysis->id,
-            'document_id'   => $document->id,
+            'analysis_id' => $analysis->id,
+            'document_id' => $document->id,
             'organization_id' => $user->organization_id,
-            'detached_by'   => $user->id,
+            'detached_by' => $user->id,
         ]);
 
         return response()->json([
@@ -400,7 +401,7 @@ class DocumentAnalysisController extends Controller
                 'string',
                 Rule::in([AnalysisType::ContextualSummary->value, AnalysisType::FullSummary->value, AnalysisType::RiskAssessment->value]),
             ],
-            'model_slug'    => ['nullable', 'string', 'exists:ai_models,slug'],
+            'model_slug' => ['nullable', 'string', 'exists:ai_models,slug'],
         ], [
             'analysis_type.in' => 'Para análisis contextual, use: contextual_summary, full_summary o risk_assessment.',
         ]);
@@ -412,7 +413,7 @@ class DocumentAnalysisController extends Controller
 
         if ($primaryDocument === null) {
             return response()->json([
-                'error'   => 'document_not_found',
+                'error' => 'document_not_found',
                 'message' => 'No se encontró el documento principal del análisis.',
             ], JsonResponse::HTTP_NOT_FOUND);
         }
@@ -421,18 +422,18 @@ class DocumentAnalysisController extends Controller
         $primaryContent = $primaryDocument->metadata['parsed_compact_content'] ?? null;
         if ($primaryContent === null || $primaryContent === '') {
             return response()->json([
-                'error'   => 'primary_not_parsed',
+                'error' => 'primary_not_parsed',
                 'message' => 'El documento principal debe ser procesado antes de realizar un análisis contextual. Use POST /documents/{id}/parse.',
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        /** @var \App\Models\User $user */
-        $user         = $request->user();
+        /** @var User $user */
+        $user = $request->user();
         $organization = $user->organization;
 
         if ($organization === null) {
             return response()->json([
-                'error'   => 'no_organization',
+                'error' => 'no_organization',
                 'message' => 'El usuario no pertenece a ninguna organización.',
             ], JsonResponse::HTTP_FORBIDDEN);
         }
@@ -454,11 +455,11 @@ class DocumentAnalysisController extends Controller
         // Validate AI Credit Quota
         if (! $this->creditService->canPerformAnalysis($organization, $aiModel)) {
             return response()->json([
-                'error'   => 'credits_depleted',
+                'error' => 'credits_depleted',
                 'message' => 'Créditos de Inteligencia Artificial insuficientes. Por favor, actualiza tu plan.',
-                'meta'    => [
+                'meta' => [
                     'required_credits' => $aiModel->creditCostPerAnalysis(),
-                    'model_tier'       => $aiModel->tier->value,
+                    'model_tier' => $aiModel->tier->value,
                 ],
             ], JsonResponse::HTTP_PAYMENT_REQUIRED);
         }
@@ -470,7 +471,7 @@ class DocumentAnalysisController extends Controller
 
         if ($supportingDocuments->isEmpty()) {
             return response()->json([
-                'error'   => 'no_supporting_documents',
+                'error' => 'no_supporting_documents',
                 'message' => 'No hay documentos de apoyo adjuntos a este análisis. Use POST /analyses/{id}/supporting-documents para adjuntar documentos.',
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -489,27 +490,31 @@ class DocumentAnalysisController extends Controller
                 ->where('analysis_type', $analysisType)
                 ->max('version') ?? 0;
 
+            $inputTokens = (int) ($result['input_tokens'] ?? 0);
+            $outputTokens = (int) ($result['output_tokens'] ?? 0);
+            $creditCost = $this->creditService->calculateCreditsCost($inputTokens, $outputTokens, (float) $aiModel->credit_multiplier);
+
             $newAnalysis = DocumentAnalysis::create([
-                'document_id'        => $primaryDocument->id,
-                'organization_id'    => $analysis->organization_id,
-                'requested_by'       => $user->id,
-                'analysis_type'      => $analysisType,
-                'llm_provider'       => $result['llm_provider'],
-                'llm_model'          => $aiModel->slug,
-                'content'            => $result['content'],
-                'confidence_score'   => $this->extractConfidence($result['content']),
-                'input_tokens'       => $result['input_tokens'],
-                'output_tokens'      => $result['output_tokens'],
+                'document_id' => $primaryDocument->id,
+                'organization_id' => $analysis->organization_id,
+                'requested_by' => $user->id,
+                'analysis_type' => $analysisType,
+                'llm_provider' => $result['llm_provider'],
+                'llm_model' => $aiModel->slug,
+                'content' => $result['content'],
+                'confidence_score' => $this->extractConfidence($result['content']),
+                'input_tokens' => $inputTokens,
+                'output_tokens' => $outputTokens,
                 'processing_time_ms' => $result['processing_time_ms'],
-                'prompt_metadata'    => array_merge($result['prompt_metadata'] ?? [], [
-                    'model_tier'               => $aiModel->tier->value,
-                    'credit_cost'              => $aiModel->creditCostPerAnalysis(),
-                    'contextual_analysis'      => true,
-                    'prior_analysis_id'        => $analysis->id,
-                    'supporting_document_ids'  => $supportingDocuments->pluck('id')->all(),
-                    'skipped_documents'        => $result['skipped_documents'] ?? [],
+                'prompt_metadata' => array_merge($result['prompt_metadata'] ?? [], [
+                    'model_tier' => $aiModel->tier->value,
+                    'credit_cost' => $creditCost,
+                    'contextual_analysis' => true,
+                    'prior_analysis_id' => $analysis->id,
+                    'supporting_document_ids' => $supportingDocuments->pluck('id')->all(),
+                    'skipped_documents' => $result['skipped_documents'] ?? [],
                 ]),
-                'status'  => DocumentStatus::Processed,
+                'status' => DocumentStatus::Processed,
                 'version' => $latestVersion + 1,
             ]);
 
@@ -526,15 +531,15 @@ class DocumentAnalysisController extends Controller
             );
         } catch (\RuntimeException $exception) {
             Log::error('Contextual analysis failed via controller.', [
-                'analysis_id'   => $analysis->id,
-                'document_id'   => $primaryDocument->id,
+                'analysis_id' => $analysis->id,
+                'document_id' => $primaryDocument->id,
                 'organization_id' => $analysis->organization_id,
                 'analysis_type' => $analysisType->value,
-                'error'         => $exception->getMessage(),
+                'error' => $exception->getMessage(),
             ]);
 
             return response()->json([
-                'error'   => 'analysis_failed',
+                'error' => 'analysis_failed',
                 'message' => 'No se pudo completar el análisis contextual. Intente nuevamente.',
             ], JsonResponse::HTTP_SERVICE_UNAVAILABLE);
         }
@@ -548,9 +553,9 @@ class DocumentAnalysisController extends Controller
         $level = $content['nivel_confianza'] ?? null;
 
         return match ($level) {
-            'alto'  => 0.85,
+            'alto' => 0.85,
             'medio' => 0.60,
-            'bajo'  => 0.35,
+            'bajo' => 0.35,
             default => null,
         };
     }

@@ -6,6 +6,8 @@ namespace App\Models;
 
 use App\Enums\AiModelTier;
 use App\Enums\CreditTransactionType;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,7 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $model_tier
  * @property string|null $analysis_id
  * @property array<string, mixed>|null $metadata
- * @property \Carbon\Carbon $created_at
+ * @property Carbon $created_at
  */
 class CreditTransaction extends Model
 {
@@ -102,36 +104,36 @@ class CreditTransaction extends Model
     /**
      * Scope to a specific organization.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeForOrganization(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         int $organizationId,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('organization_id', $organizationId);
     }
 
     /**
      * Scope to a specific transaction type.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeOfType(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         CreditTransactionType $type,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('type', $type);
     }
 
     /**
      * Scope to only debit transactions.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
-    public function scopeDebits(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeDebits(Builder $query): Builder
     {
         return $query->where('type', CreditTransactionType::AnalysisDebit);
     }
@@ -139,14 +141,14 @@ class CreditTransaction extends Model
     /**
      * Scope to transactions within a date range.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeForPeriod(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         \DateTimeInterface $from,
         \DateTimeInterface $to,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query
             ->where('created_at', '>=', $from)
             ->where('created_at', '<=', $to);

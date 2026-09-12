@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\DTOs\Documents;
 
+use App\Models\User;
+use Illuminate\Http\Request;
+
 /**
  * Data Transfer Object for attaching a supporting document to an existing analysis.
  *
@@ -30,14 +33,13 @@ final readonly class AttachSupportingDocumentDTO
     /**
      * Create a DTO from a validated Form Request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  string  $analysisId  UUID of the parent analysis
      */
     public static function fromRequest(
-        \Illuminate\Http\Request $request,
+        Request $request,
         string $analysisId,
     ): self {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         return new self(

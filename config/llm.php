@@ -37,14 +37,14 @@ return [
         // Groq — OpenAI-compatible, no enforced RPM (free tier)
         // ---------------------------------------------------------------
         'groq' => [
-            'api_key'         => env('GROQ_API_KEY'),
-            'model'           => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
-            'base_url'        => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
-            'max_tokens'      => (int) env('GROQ_MAX_TOKENS', 8192),
-            'temperature'     => (float) env('GROQ_TEMPERATURE', 0.3),
+            'api_key' => env('GROQ_API_KEY'),
+            'model' => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
+            'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+            'max_tokens' => (int) env('GROQ_MAX_TOKENS', 8192),
+            'temperature' => (float) env('GROQ_TEMPERATURE', 0.3),
             'timeout_seconds' => (int) env('GROQ_TIMEOUT', 180),
-            'rate_limit_rpm'  => 0,
-            'extra_headers'   => [],
+            'rate_limit_rpm' => 0,
+            'extra_headers' => [],
         ],
 
         // ---------------------------------------------------------------
@@ -52,17 +52,17 @@ return [
         // Docs: https://inference-docs.cerebras.ai
         // ---------------------------------------------------------------
         'cerebras' => [
-            'api_key'         => env('CEREBRAS_API_KEY'),
-            'model'           => env('CEREBRAS_MODEL', 'gemma-4-31b'),
-            'base_url'        => env('CEREBRAS_BASE_URL', 'https://api.cerebras.ai/v1'),
+            'api_key' => env('CEREBRAS_API_KEY'),
+            'model' => env('CEREBRAS_MODEL', 'gemma-4-31b'),
+            'base_url' => env('CEREBRAS_BASE_URL', 'https://api.cerebras.ai/v1'),
             // gemma-4-31b Preview supports up to 40,960 completion tokens.
             // 32,768 is the safe operational ceiling (leaves ~8k headroom).
-            'max_tokens'      => (int) env('CEREBRAS_MAX_TOKENS', 32768),
-            'temperature'     => (float) env('CEREBRAS_TEMPERATURE', 0.3),
+            'max_tokens' => (int) env('CEREBRAS_MAX_TOKENS', 32768),
+            'temperature' => (float) env('CEREBRAS_TEMPERATURE', 0.3),
             // Larger responses need more time — raised from 120s to 180s.
             'timeout_seconds' => (int) env('CEREBRAS_TIMEOUT', 180),
-            'rate_limit_rpm'  => 0,
-            'extra_headers'   => [],
+            'rate_limit_rpm' => 0,
+            'extra_headers' => [],
         ],
 
         // ---------------------------------------------------------------
@@ -71,43 +71,43 @@ return [
         // ---------------------------------------------------------------
         'qwen_cloud' => [
             // Bridge: supports both QWEN_API_KEY and legacy QWEN_CLOUD_API_KEY naming.
-            'api_key'         => env('QWEN_API_KEY', env('QWEN_CLOUD_API_KEY')),
-            'model'           => env('QWEN_MODEL', 'qwen-plus'),
+            'api_key' => env('QWEN_API_KEY', env('QWEN_CLOUD_API_KEY')),
+            'model' => env('QWEN_MODEL', 'qwen-plus'),
             // DashScope international endpoint (OpenAI-compatible mode).
-            'base_url'        => env('QWEN_BASE_URL', 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1'),
-            'max_tokens'      => (int) env('QWEN_MAX_TOKENS', 16384),
-            'temperature'     => (float) env('QWEN_TEMPERATURE', 0.3),
+            'base_url' => env('QWEN_BASE_URL', 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1'),
+            'max_tokens' => (int) env('QWEN_MAX_TOKENS', 16384),
+            'temperature' => (float) env('QWEN_TEMPERATURE', 0.3),
             'timeout_seconds' => (int) env('QWEN_TIMEOUT', 150),
-            'rate_limit_rpm'  => 0,
-            'extra_headers'   => [],
+            'rate_limit_rpm' => 0,
+            'extra_headers' => [],
         ],
 
         // ---------------------------------------------------------------
         // NVIDIA NIM — OpenAI-compatible, strict 40 RPM cap
         // ---------------------------------------------------------------
         'nvidia_nim' => [
-            'api_key'         => env('NVIDIA_NIM_API_KEY'),
-            'model'           => env('NVIDIA_NIM_MODEL', 'meta/llama-3.3-70b-instruct'),
-            'base_url'        => env('NVIDIA_NIM_BASE_URL', 'https://integrate.api.nvidia.com/v1'),
-            'max_tokens'      => (int) env('NVIDIA_NIM_MAX_TOKENS', 4096),
-            'temperature'     => (float) env('NVIDIA_NIM_TEMPERATURE', 0.3),
+            'api_key' => env('NVIDIA_NIM_API_KEY'),
+            'model' => env('NVIDIA_NIM_MODEL', 'meta/llama-3.3-70b-instruct'),
+            'base_url' => env('NVIDIA_NIM_BASE_URL', 'https://integrate.api.nvidia.com/v1'),
+            'max_tokens' => (int) env('NVIDIA_NIM_MAX_TOKENS', 4096),
+            'temperature' => (float) env('NVIDIA_NIM_TEMPERATURE', 0.3),
             'timeout_seconds' => (int) env('NVIDIA_NIM_TIMEOUT', 180),
-            'rate_limit_rpm'  => (int) env('NVIDIA_NIM_RPM', 40),
-            'extra_headers'   => [],
+            'rate_limit_rpm' => (int) env('NVIDIA_NIM_RPM', 40),
+            'extra_headers' => [],
         ],
 
         // ---------------------------------------------------------------
         // DeepSeek — OpenAI-compatible
         // ---------------------------------------------------------------
         'deepseek' => [
-            'api_key'         => env('DEEPSEEK_API_KEY'),
-            'model'           => env('DEEPSEEK_MODEL', 'deepseek-chat'),
-            'base_url'        => env('DEEPSEEK_BASE_URL', 'https://api.deepseek.com/v1'),
-            'max_tokens'      => (int) env('DEEPSEEK_MAX_TOKENS', 4096),
-            'temperature'     => (float) env('DEEPSEEK_TEMPERATURE', 0.3),
+            'api_key' => env('DEEPSEEK_API_KEY'),
+            'model' => env('DEEPSEEK_MODEL', 'deepseek-chat'),
+            'base_url' => env('DEEPSEEK_BASE_URL', 'https://api.deepseek.com/v1'),
+            'max_tokens' => (int) env('DEEPSEEK_MAX_TOKENS', 4096),
+            'temperature' => (float) env('DEEPSEEK_TEMPERATURE', 0.3),
             'timeout_seconds' => (int) env('DEEPSEEK_TIMEOUT', 120),
-            'rate_limit_rpm'  => 0,
-            'extra_headers'   => [],
+            'rate_limit_rpm' => 0,
+            'extra_headers' => [],
         ],
 
         // ---------------------------------------------------------------
@@ -116,14 +116,14 @@ return [
         //   https://{resource}.openai.azure.com/openai/deployments/{deployment}
         // ---------------------------------------------------------------
         'azure' => [
-            'api_key'         => env('AZURE_OPENAI_KEY'),
-            'model'           => env('AZURE_OPENAI_DEPLOYMENT', 'gpt-4'),
-            'base_url'        => env('AZURE_OPENAI_ENDPOINT'),
-            'max_tokens'      => (int) env('AZURE_OPENAI_MAX_TOKENS', 4096),
-            'temperature'     => (float) env('AZURE_OPENAI_TEMPERATURE', 0.3),
+            'api_key' => env('AZURE_OPENAI_KEY'),
+            'model' => env('AZURE_OPENAI_DEPLOYMENT', 'gpt-4'),
+            'base_url' => env('AZURE_OPENAI_ENDPOINT'),
+            'max_tokens' => (int) env('AZURE_OPENAI_MAX_TOKENS', 4096),
+            'temperature' => (float) env('AZURE_OPENAI_TEMPERATURE', 0.3),
             'timeout_seconds' => (int) env('AZURE_OPENAI_TIMEOUT', 120),
-            'rate_limit_rpm'  => 0,
-            'extra_headers'   => [
+            'rate_limit_rpm' => 0,
+            'extra_headers' => [
                 'api-version' => env('AZURE_OPENAI_API_VERSION', '2024-02-15-preview'),
             ],
         ],
@@ -137,10 +137,10 @@ return [
     */
 
     'analysis' => [
-        'queue'                 => env('LLM_ANALYSIS_QUEUE', 'analysis'),
-        'max_retries'           => (int) env('LLM_ANALYSIS_MAX_RETRIES', 3),
+        'queue' => env('LLM_ANALYSIS_QUEUE', 'analysis'),
+        'max_retries' => (int) env('LLM_ANALYSIS_MAX_RETRIES', 3),
         'retry_backoff_seconds' => [30, 120, 600],
-        'max_chunk_tokens'      => (int) env('LLM_MAX_CHUNK_TOKENS', 2000),
+        'max_chunk_tokens' => (int) env('LLM_MAX_CHUNK_TOKENS', 2000),
     ],
 
     /*
@@ -150,12 +150,12 @@ return [
     */
 
     'cost_per_1k_tokens' => [
-        'groq'       => ['input' => 0.0,     'output' => 0.0],
-        'cerebras'   => ['input' => 0.0001,  'output' => 0.0001],
+        'groq' => ['input' => 0.0,     'output' => 0.0],
+        'cerebras' => ['input' => 0.0001,  'output' => 0.0001],
         'qwen_cloud' => ['input' => 0.0004,  'output' => 0.0012],
         'nvidia_nim' => ['input' => 0.0,     'output' => 0.0],
-        'deepseek'   => ['input' => 0.00014, 'output' => 0.00028],
-        'azure'      => ['input' => 0.0015,  'output' => 0.002],
+        'deepseek' => ['input' => 0.00014, 'output' => 0.00028],
+        'azure' => ['input' => 0.0015,  'output' => 0.002],
     ],
 
 ];

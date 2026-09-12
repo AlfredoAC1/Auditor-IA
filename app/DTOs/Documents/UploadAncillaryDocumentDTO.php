@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTOs\Documents;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 
@@ -32,7 +33,7 @@ final readonly class UploadAncillaryDocumentDTO
         string $analysisId,
         string $primaryDocumentId,
     ): self {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var UploadedFile $file */

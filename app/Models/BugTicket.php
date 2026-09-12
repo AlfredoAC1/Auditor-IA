@@ -73,7 +73,7 @@ class BugTicket extends Model
     /**
      * Scope to only new/unresolved tickets.
      *
-     * @param Builder<static> $query
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeNew(Builder $query): Builder
@@ -84,7 +84,7 @@ class BugTicket extends Model
     /**
      * Scope to resolved tickets.
      *
-     * @param Builder<static> $query
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeResolved(Builder $query): Builder
@@ -95,7 +95,7 @@ class BugTicket extends Model
     /**
      * Scope by organization.
      *
-     * @param Builder<static> $query
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeForOrganization(Builder $query, int $organizationId): Builder

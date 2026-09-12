@@ -167,7 +167,7 @@ class ProcessDocumentJob implements ShouldQueue
                         'model_tier' => $aiModelToCharge->tier->value,
                         'credit_cost' => $creditCost,
                     ]),
-                    'status' => \App\Enums\DocumentStatus::Processed,
+                    'status' => DocumentStatus::Processed,
                     'version' => 1,
                 ]);
 
@@ -193,7 +193,7 @@ class ProcessDocumentJob implements ShouldQueue
                     'llm_provider' => $provider,
                     'llm_model' => $modelSlugForRecord,
                     'content' => ['error' => $llmException->getMessage()],
-                    'status' => \App\Enums\DocumentStatus::Failed,
+                    'status' => DocumentStatus::Failed,
                     'version' => 1,
                 ]);
             }

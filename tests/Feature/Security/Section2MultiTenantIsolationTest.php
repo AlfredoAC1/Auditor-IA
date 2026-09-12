@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Tests\Feature\Security;
 
 use App\Enums\DocumentStatus;
-use App\Models\AiModel;
+use App\Http\Requests\Api\V1\StoreDocumentRequest;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Models\Organization;
 use App\Models\User;
+use App\Services\Documents\DocumentStorageService;
 use Database\Seeders\AiModelSeeder;
 use Database\Seeders\PlanSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -34,10 +36,12 @@ class Section2MultiTenantIsolationTest extends TestCase
 
     // Tenant A (Attacker context)
     private Organization $orgA;
+
     private User $userA;
 
     // Tenant B (Victim context)
     private Organization $orgB;
+
     private User $userB;
 
     protected function setUp(): void
@@ -49,27 +53,27 @@ class Section2MultiTenantIsolationTest extends TestCase
 
         // Setup Tenant A (Attacker)
         $this->orgA = Organization::create([
-            'name'      => 'Tenant A - Attacker Corp',
-            'slug'      => 'tenant-a',
+            'name' => 'Tenant A - Attacker Corp',
+            'slug' => 'tenant-a',
             'is_active' => true,
         ]);
         $this->userA = User::create([
-            'name'            => 'Attacker User',
-            'email'           => 'attacker@tenant-a.com',
-            'password'        => bcrypt('secret123'),
+            'name' => 'Attacker User',
+            'email' => 'attacker@tenant-a.com',
+            'password' => bcrypt('secret123'),
             'organization_id' => $this->orgA->id,
         ]);
 
         // Setup Tenant B (Victim)
         $this->orgB = Organization::create([
-            'name'      => 'Tenant B - Victim Corp',
-            'slug'      => 'tenant-b',
+            'name' => 'Tenant B - Victim Corp',
+            'slug' => 'tenant-b',
             'is_active' => true,
         ]);
         $this->userB = User::create([
-            'name'            => 'Victim User',
-            'email'           => 'victim@tenant-b.com',
-            'password'        => bcrypt('secret123'),
+            'name' => 'Victim User',
+            'email' => 'victim@tenant-b.com',
+            'password' => bcrypt('secret123'),
             'organization_id' => $this->orgB->id,
         ]);
     }
@@ -77,32 +81,32 @@ class Section2MultiTenantIsolationTest extends TestCase
     private function createDocument(Organization $org, User $user, array $extra = []): Document
     {
         return Document::create(array_merge([
-            'organization_id'   => $org->id,
-            'uploaded_by'       => $user->id,
+            'organization_id' => $org->id,
+            'uploaded_by' => $user->id,
             'original_filename' => 'contrato-confidencial.pdf',
-            'stored_filename'   => 'stored-' . uniqid() . '.pdf',
-            'storage_path'      => "documents/{$org->id}/2026/09",
-            'disk'              => 'local',
-            'mime_type'         => 'application/pdf',
-            'file_size_bytes'   => 204800,
-            'file_hash'         => hash('sha256', uniqid()),
-            'status'            => DocumentStatus::Processed,
-            'metadata'          => ['parsed_compact_content' => 'Contenido confidencial del contrato.'],
+            'stored_filename' => 'stored-'.uniqid().'.pdf',
+            'storage_path' => "documents/{$org->id}/2026/09",
+            'disk' => 'local',
+            'mime_type' => 'application/pdf',
+            'file_size_bytes' => 204800,
+            'file_hash' => hash('sha256', uniqid()),
+            'status' => DocumentStatus::Processed,
+            'metadata' => ['parsed_compact_content' => 'Contenido confidencial del contrato.'],
         ], $extra));
     }
 
     private function createAnalysis(Document $document, Organization $org, User $user): DocumentAnalysis
     {
         return DocumentAnalysis::create([
-            'document_id'        => $document->id,
-            'organization_id'    => $org->id,
-            'requested_by'       => $user->id,
-            'analysis_type'      => 'full_summary',
-            'llm_provider'       => 'groq',
-            'llm_model'          => 'llama-8b-instant',
-            'content'            => ['resumen_general' => 'Auditoría confidencial de Tenant B.'],
-            'status'             => DocumentStatus::Processed,
-            'version'            => 1,
+            'document_id' => $document->id,
+            'organization_id' => $org->id,
+            'requested_by' => $user->id,
+            'analysis_type' => 'full_summary',
+            'llm_provider' => 'groq',
+            'llm_model' => 'llama-8b-instant',
+            'content' => ['resumen_general' => 'Auditoría confidencial de Tenant B.'],
+            'status' => DocumentStatus::Processed,
+            'version' => 1,
             'processing_time_ms' => 120,
         ]);
     }
@@ -117,11 +121,11 @@ class Section2MultiTenantIsolationTest extends TestCase
      */
     public function test_client_cannot_inject_tenant_or_user_identity(): void
     {
-        \Illuminate\Support\Facades\Queue::fake();
+        Queue::fake();
         Storage::fake('local');
 
         // Verify at FormRequest level: ownership fields are not allowed in validation rules
-        $formRequest = new \App\Http\Requests\Api\V1\StoreDocumentRequest();
+        $formRequest = new StoreDocumentRequest;
         $rules = $formRequest->rules();
         $this->assertArrayNotHasKey('organization_id', $rules);
         $this->assertArrayNotHasKey('uploaded_by', $rules);
@@ -134,11 +138,11 @@ class Section2MultiTenantIsolationTest extends TestCase
 
         // Attacker attempts to post organization_id = orgB->id and uploaded_by = userB->id
         $response = $this->post('/api/v1/documents', [
-            'file'            => $file,
+            'file' => $file,
             'organization_id' => $this->orgB->id,
-            'uploaded_by'     => $this->userB->id,
-            'user_id'         => $this->userB->id,
-            'tenant_id'       => $this->orgB->id,
+            'uploaded_by' => $this->userB->id,
+            'user_id' => $this->userB->id,
+            'tenant_id' => $this->orgB->id,
         ], ['Accept' => 'application/json']);
 
         $response->assertStatus(201);
@@ -159,9 +163,9 @@ class Section2MultiTenantIsolationTest extends TestCase
     public function test_user_without_organization_is_denied(): void
     {
         $orphanUser = User::create([
-            'name'            => 'Orphan User',
-            'email'           => 'orphan@nowhere.com',
-            'password'        => bcrypt('secret123'),
+            'name' => 'Orphan User',
+            'email' => 'orphan@nowhere.com',
+            'password' => bcrypt('secret123'),
             'organization_id' => null,
         ]);
 
@@ -279,7 +283,7 @@ class Section2MultiTenantIsolationTest extends TestCase
 
         // Confirm document was NOT soft-deleted
         $this->assertDatabaseHas('documents', [
-            'id'         => $docB->id,
+            'id' => $docB->id,
             'deleted_at' => null,
         ]);
     }
@@ -362,7 +366,7 @@ class Section2MultiTenantIsolationTest extends TestCase
      */
     public function test_storage_path_enforces_tenant_partitioning(): void
     {
-        $storageService = new \App\Services\Documents\DocumentStorageService();
+        $storageService = new DocumentStorageService;
 
         Storage::fake('local');
         $fileA = UploadedFile::fake()->create('docA.pdf', 100, 'application/pdf');

@@ -49,7 +49,8 @@ return new class extends Migration
         if (DB::connection()->getDriverName() === 'pgsql') {
             try {
                 $hasVector = DB::selectOne("SELECT 1 FROM pg_extension WHERE extname = 'vector'") !== null;
-            } catch (\Exception $e) {}
+            } catch (Exception $e) {
+            }
         }
 
         if ($hasVector) {

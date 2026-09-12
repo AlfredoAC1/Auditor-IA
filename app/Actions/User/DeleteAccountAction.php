@@ -26,14 +26,14 @@ final class DeleteAccountAction
     public function execute(User $user): void
     {
         $userId = $user->id;
-        $orgId  = $user->organization_id;
+        $orgId = $user->organization_id;
 
         Log::warning('Account deletion initiated.', [
-            'user_id'         => $userId,
+            'user_id' => $userId,
             'organization_id' => $orgId,
         ]);
 
-        DB::transaction(function () use ($user, $userId, $orgId): void {
+        DB::transaction(function () use ($user, $orgId): void {
             // 1. Revoke all API tokens
             $user->tokens()->delete();
 
@@ -53,7 +53,7 @@ final class DeleteAccountAction
         });
 
         Log::warning('Account deletion completed.', [
-            'user_id'         => $userId,
+            'user_id' => $userId,
             'organization_id' => $orgId,
         ]);
     }

@@ -38,7 +38,7 @@ final class DocumentStorageService
         $storagePath = $this->generateTenantPath($basePath, $organizationId);
         $storedFilename = $this->generateSafeFilename($file);
 
-        $fullPath = $storagePath . '/' . $storedFilename;
+        $fullPath = $storagePath.'/'.$storedFilename;
 
         // Store file on the configured disk
         $result = Storage::disk($disk)->putFileAs(
@@ -70,7 +70,7 @@ final class DocumentStorageService
      */
     public function delete(string $storagePath, string $storedFilename, string $disk): bool
     {
-        $fullPath = $storagePath . '/' . $storedFilename;
+        $fullPath = $storagePath.'/'.$storedFilename;
 
         return Storage::disk($disk)->delete($fullPath);
     }
@@ -80,7 +80,7 @@ final class DocumentStorageService
      */
     public function exists(string $storagePath, string $storedFilename, string $disk): bool
     {
-        return Storage::disk($disk)->exists($storagePath . '/' . $storedFilename);
+        return Storage::disk($disk)->exists($storagePath.'/'.$storedFilename);
     }
 
     /**
@@ -112,7 +112,7 @@ final class DocumentStorageService
     {
         $extension = $this->getSafeExtension($file);
 
-        return Str::uuid()->toString() . '.' . $extension;
+        return Str::uuid()->toString().'.'.$extension;
     }
 
     /**

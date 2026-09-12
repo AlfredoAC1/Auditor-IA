@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Admin;
 
 use App\Enums\AnalysisType;
-use App\Enums\BugTicketStatus;
-use App\Enums\DocumentStatus;
 use App\Models\BugTicket;
 use App\Models\DocumentAnalysis;
 use App\Models\Organization;
@@ -141,6 +139,7 @@ final class AdminMetricsService
             ->map(function (User $user): array {
                 $in = (int) $user->getAttribute('in_tokens');
                 $out = (int) $user->getAttribute('out_tokens');
+
                 return [
                     'name' => $user->name,
                     'email' => $user->email,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -82,13 +83,13 @@ class AnalysisSupportingDocument extends Model
     /**
      * Scope to supporting documents belonging to a specific organization.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeForOrganization(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         int $organizationId,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('organization_id', $organizationId);
     }
 
@@ -102,11 +103,11 @@ class AnalysisSupportingDocument extends Model
     public function relationshipLabel(): string
     {
         return match ($this->relationship_type) {
-            'referenced'    => 'Referenciado',
-            'related'       => 'Relacionado',
+            'referenced' => 'Referenciado',
+            'related' => 'Relacionado',
             'clarification' => 'Aclaración',
             'complementary' => 'Complementario',
-            default         => 'Adjunto',
+            default => 'Adjunto',
         };
     }
 }

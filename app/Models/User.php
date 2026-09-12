@@ -31,6 +31,7 @@ class User extends Authenticatable
         'role',
         'organization_id',
         'dismissed_tutorial',
+        'dismissed_ancillary_tutorial',
         'avatar_path',
     ];
 
@@ -55,6 +56,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'dismissed_tutorial' => 'boolean',
+            'dismissed_ancillary_tutorial' => 'boolean',
             'role' => UserRole::class,
         ];
     }

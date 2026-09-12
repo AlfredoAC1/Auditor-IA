@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,9 +21,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $organization_id
  * @property int $credits_remaining
  * @property int $credits_quota
- * @property \Carbon\Carbon|null $period_started_at
- * @property \Carbon\Carbon|null $period_expires_at
- * @property \Carbon\Carbon|null $last_usage_at
+ * @property Carbon|null $period_started_at
+ * @property Carbon|null $period_expires_at
+ * @property Carbon|null $last_usage_at
  */
 class AiCreditLedger extends Model
 {

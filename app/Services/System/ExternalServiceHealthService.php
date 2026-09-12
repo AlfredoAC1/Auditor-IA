@@ -89,7 +89,7 @@ final class ExternalServiceHealthService
             return [
                 'configured' => true,
                 'connected' => false,
-                'message' => 'No se pudo conectar con Groq: ' . $exception->getMessage(),
+                'message' => 'No se pudo conectar con Groq: '.$exception->getMessage(),
                 'details' => ['model' => $model],
             ];
         }
@@ -164,7 +164,7 @@ final class ExternalServiceHealthService
             return [
                 'configured' => true,
                 'connected' => false,
-                'message' => 'No se pudo conectar con NVIDIA NIM: ' . $exception->getMessage(),
+                'message' => 'No se pudo conectar con NVIDIA NIM: '.$exception->getMessage(),
                 'details' => [
                     'model' => $model,
                     'rate_limit_rpm' => $rpm,
@@ -210,7 +210,7 @@ final class ExternalServiceHealthService
                 return [
                     'configured' => true,
                     'connected' => false,
-                    'message' => 'Unstructured rechazó la API key (HTTP ' . $response->status() . ').',
+                    'message' => 'Unstructured rechazó la API key (HTTP '.$response->status().').',
                     'details' => ['api_url' => $apiUrl],
                 ];
             }
@@ -220,7 +220,7 @@ final class ExternalServiceHealthService
                 return [
                     'configured' => true,
                     'connected' => false,
-                    'message' => 'Unstructured respondió con error del servidor (HTTP ' . $response->status() . ').',
+                    'message' => 'Unstructured respondió con error del servidor (HTTP '.$response->status().').',
                     'details' => ['api_url' => $apiUrl],
                 ];
             }
@@ -242,7 +242,7 @@ final class ExternalServiceHealthService
             return [
                 'configured' => true,
                 'connected' => false,
-                'message' => 'No se pudo conectar con Unstructured: ' . $exception->getMessage(),
+                'message' => 'No se pudo conectar con Unstructured: '.$exception->getMessage(),
                 'details' => ['api_url' => $apiUrl],
             ];
         }
@@ -256,10 +256,10 @@ final class ExternalServiceHealthService
             return $apiUrl;
         }
 
-        $base = $parsed['scheme'] . '://' . $parsed['host'];
+        $base = $parsed['scheme'].'://'.$parsed['host'];
 
         if (isset($parsed['port'])) {
-            $base .= ':' . $parsed['port'];
+            $base .= ':'.$parsed['port'];
         }
 
         // Legacy partition API has no dedicated health endpoint; probe the service root.
@@ -267,9 +267,9 @@ final class ExternalServiceHealthService
             $path = $parsed['path'] ?? '';
             $basePath = str_replace('/general/v0/general', '', $path);
 
-            return $base . ($basePath !== '' ? $basePath : '');
+            return $base.($basePath !== '' ? $basePath : '');
         }
 
-        return $base . '/healthcheck';
+        return $base.'/healthcheck';
     }
 }

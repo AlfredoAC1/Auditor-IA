@@ -31,19 +31,19 @@ class AiModelSeeder extends Seeder
             AiModel::updateOrCreate(
                 ['slug' => $model['slug']],
                 [
-                    'display_name'      => $model['display_name'],
-                    'provider'          => $model['provider'],
+                    'display_name' => $model['display_name'],
+                    'provider' => $model['provider'],
                     'provider_model_id' => $model['provider_model_id'],
-                    'tier'              => $model['tier'],
+                    'tier' => $model['tier'],
                     'credit_multiplier' => $model['tier']->creditMultiplier(),
-                    'max_tokens'        => $model['max_tokens'],
-                    'is_active'         => $model['is_active'],
-                    'sort_order'        => $sortOrder++,
+                    'max_tokens' => $model['max_tokens'],
+                    'is_active' => $model['is_active'],
+                    'sort_order' => $sortOrder++,
                 ],
             );
         }
 
-        $this->command?->info('AI models seeded: ' . count($models) . ' models created/updated.');
+        $this->command?->info('AI models seeded: '.count($models).' models created/updated.');
     }
 
     /**
@@ -73,42 +73,42 @@ class AiModelSeeder extends Seeder
             // Fast, efficient models for everyday document analysis
             // ---------------------------------------------------------------
             [
-                'slug'              => 'cerebras-gemma4',
-                'display_name'      => 'Gemma 4 31B (Preview)',
-                'provider'          => 'cerebras',
+                'slug' => 'cerebras-gemma4',
+                'display_name' => 'Gemma 4 31B (Preview)',
+                'provider' => 'cerebras',
                 'provider_model_id' => 'gemma-4-31b',
-                'tier'              => AiModelTier::Lightweight,
+                'tier' => AiModelTier::Lightweight,
                 // gemma-4-31b Preview hard cap: 40,960 tokens.
                 // 32,768 is the configured operational ceiling.
-                'max_tokens'        => 32768,
-                'is_active'         => true, // CEREBRAS_API_KEY is set
+                'max_tokens' => 32768,
+                'is_active' => true, // CEREBRAS_API_KEY is set
             ],
             [
-                'slug'              => 'llama-8b-instant',
-                'display_name'      => 'Llama 3.1 8B',
-                'provider'          => 'groq',
+                'slug' => 'llama-8b-instant',
+                'display_name' => 'Llama 3.1 8B',
+                'provider' => 'groq',
                 'provider_model_id' => 'llama-3.1-8b-instant',
-                'tier'              => AiModelTier::Lightweight,
-                'max_tokens'        => 4096,
-                'is_active'         => false, // Disabled during testing
+                'tier' => AiModelTier::Lightweight,
+                'max_tokens' => 4096,
+                'is_active' => false, // Disabled during testing
             ],
             [
-                'slug'              => 'qwen3-8b',
-                'display_name'      => 'Qwen 3 8B',
-                'provider'          => 'qwen_cloud',
+                'slug' => 'qwen3-8b',
+                'display_name' => 'Qwen 3 8B',
+                'provider' => 'qwen_cloud',
                 'provider_model_id' => 'qwen3-8b',
-                'tier'              => AiModelTier::Lightweight,
-                'max_tokens'        => 8192,
-                'is_active'         => false, // Enable when QWEN_API_KEY is set
+                'tier' => AiModelTier::Lightweight,
+                'max_tokens' => 8192,
+                'is_active' => false, // Enable when QWEN_API_KEY is set
             ],
             [
-                'slug'              => 'qwen2-5-7b',
-                'display_name'      => 'Qwen 2.5 7B',
-                'provider'          => 'qwen_cloud',
+                'slug' => 'qwen2-5-7b',
+                'display_name' => 'Qwen 2.5 7B',
+                'provider' => 'qwen_cloud',
                 'provider_model_id' => 'qwen2.5-7b-instruct',
-                'tier'              => AiModelTier::Lightweight,
-                'max_tokens'        => 8192,
-                'is_active'         => false, // Enable when QWEN_API_KEY is set
+                'tier' => AiModelTier::Lightweight,
+                'max_tokens' => 8192,
+                'is_active' => false, // Enable when QWEN_API_KEY is set
             ],
 
             // ---------------------------------------------------------------
@@ -116,22 +116,22 @@ class AiModelSeeder extends Seeder
             // Balanced models with strong reasoning and context handling
             // ---------------------------------------------------------------
             [
-                'slug'              => 'llama-70b-versatile',
-                'display_name'      => 'Llama 3.3 70B',
-                'provider'          => 'groq',
+                'slug' => 'llama-70b-versatile',
+                'display_name' => 'Llama 3.3 70B',
+                'provider' => 'groq',
                 'provider_model_id' => 'llama-3.3-70b-versatile',
-                'tier'              => AiModelTier::Standard,
-                'max_tokens'        => 8192,
-                'is_active'         => false, // Disabled during testing
+                'tier' => AiModelTier::Standard,
+                'max_tokens' => 8192,
+                'is_active' => false, // Disabled during testing
             ],
             [
-                'slug'              => 'qwen3-14b',
-                'display_name'      => 'Qwen 3 14B',
-                'provider'          => 'qwen_cloud',
+                'slug' => 'qwen3-14b',
+                'display_name' => 'Qwen 3 14B',
+                'provider' => 'qwen_cloud',
                 'provider_model_id' => 'qwen3-14b',
-                'tier'              => AiModelTier::Standard,
-                'max_tokens'        => 8192,
-                'is_active'         => false, // Enable when QWEN_API_KEY is set
+                'tier' => AiModelTier::Standard,
+                'max_tokens' => 8192,
+                'is_active' => false, // Enable when QWEN_API_KEY is set
             ],
 
             // ---------------------------------------------------------------
@@ -139,31 +139,31 @@ class AiModelSeeder extends Seeder
             // High-quality models with deep legal reasoning capabilities
             // ---------------------------------------------------------------
             [
-                'slug'              => 'deepseek-v3',
-                'display_name'      => 'DeepSeek V3',
-                'provider'          => 'deepseek',
+                'slug' => 'deepseek-v3',
+                'display_name' => 'DeepSeek V3',
+                'provider' => 'deepseek',
                 'provider_model_id' => 'deepseek-chat',
-                'tier'              => AiModelTier::Advanced,
-                'max_tokens'        => 8192,
-                'is_active'         => false, // Enable when DEEPSEEK_API_KEY is set
+                'tier' => AiModelTier::Advanced,
+                'max_tokens' => 8192,
+                'is_active' => false, // Enable when DEEPSEEK_API_KEY is set
             ],
             [
-                'slug'              => 'qwen-plus',
-                'display_name'      => 'Qwen Plus',
-                'provider'          => 'qwen_cloud',
+                'slug' => 'qwen-plus',
+                'display_name' => 'Qwen Plus',
+                'provider' => 'qwen_cloud',
                 'provider_model_id' => 'qwen-plus',
-                'tier'              => AiModelTier::Advanced,
-                'max_tokens'        => 8192,
-                'is_active'         => false, // Enable when QWEN_API_KEY is set
+                'tier' => AiModelTier::Advanced,
+                'max_tokens' => 8192,
+                'is_active' => false, // Enable when QWEN_API_KEY is set
             ],
             [
-                'slug'              => 'nvidia-llama-70b',
-                'display_name'      => 'Llama 3.3 70B (NIM)',
-                'provider'          => 'nvidia_nim',
+                'slug' => 'nvidia-llama-70b',
+                'display_name' => 'Llama 3.3 70B (NIM)',
+                'provider' => 'nvidia_nim',
                 'provider_model_id' => 'meta/llama-3.3-70b-instruct',
-                'tier'              => AiModelTier::Advanced,
-                'max_tokens'        => 4096,
-                'is_active'         => true,
+                'tier' => AiModelTier::Advanced,
+                'max_tokens' => 4096,
+                'is_active' => true,
             ],
 
             // ---------------------------------------------------------------
@@ -171,31 +171,31 @@ class AiModelSeeder extends Seeder
             // Frontier & experimental models for critical analysis
             // ---------------------------------------------------------------
             [
-                'slug'              => 'deepseek-v4',
-                'display_name'      => 'DeepSeek V4',
-                'provider'          => 'deepseek',
+                'slug' => 'deepseek-v4',
+                'display_name' => 'DeepSeek V4',
+                'provider' => 'deepseek',
                 'provider_model_id' => 'deepseek-reasoner',
-                'tier'              => AiModelTier::Premium,
-                'max_tokens'        => 8192,
-                'is_active'         => false, // Future: when available + DEEPSEEK_API_KEY
+                'tier' => AiModelTier::Premium,
+                'max_tokens' => 8192,
+                'is_active' => false, // Future: when available + DEEPSEEK_API_KEY
             ],
             [
-                'slug'              => 'qwen3-5',
-                'display_name'      => 'Qwen 3.5',
-                'provider'          => 'qwen_cloud',
+                'slug' => 'qwen3-5',
+                'display_name' => 'Qwen 3.5',
+                'provider' => 'qwen_cloud',
                 'provider_model_id' => 'qwen-max',
-                'tier'              => AiModelTier::Premium,
-                'max_tokens'        => 8192,
-                'is_active'         => false, // Future: when QWEN_API_KEY is set
+                'tier' => AiModelTier::Premium,
+                'max_tokens' => 8192,
+                'is_active' => false, // Future: when QWEN_API_KEY is set
             ],
             [
-                'slug'              => 'azure-gpt4',
-                'display_name'      => 'GPT-4',
-                'provider'          => 'azure',
+                'slug' => 'azure-gpt4',
+                'display_name' => 'GPT-4',
+                'provider' => 'azure',
                 'provider_model_id' => 'gpt-4',
-                'tier'              => AiModelTier::Premium,
-                'max_tokens'        => 4096,
-                'is_active'         => false, // Enable when Azure is configured
+                'tier' => AiModelTier::Premium,
+                'max_tokens' => 4096,
+                'is_active' => false, // Enable when Azure is configured
             ],
         ];
     }

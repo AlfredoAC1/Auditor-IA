@@ -14,6 +14,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * REST controller for document operations.
@@ -81,7 +82,7 @@ class DocumentController extends Controller
 
         return (new DocumentResource($document))
             ->response()
-            ->setStatusCode(JsonResponse::HTTP_CREATED);
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**

@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controller for document analysis via LLM.
@@ -71,7 +72,7 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'not_parsed',
                 'message' => 'El documento debe ser procesado primero. Use POST /documents/{id}/parse.',
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         /** @var User $user */
@@ -82,7 +83,7 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'no_organization',
                 'message' => 'El usuario no pertenece a ninguna organización.',
-            ], JsonResponse::HTTP_FORBIDDEN);
+            ], Response::HTTP_FORBIDDEN);
         }
 
         $plan = $organization->currentPlan();
@@ -109,7 +110,7 @@ class DocumentAnalysisController extends Controller
                     'required_credits' => $aiModel->creditCostPerAnalysis(),
                     'model_tier' => $aiModel->tier->value,
                 ],
-            ], JsonResponse::HTTP_PAYMENT_REQUIRED);
+            ], Response::HTTP_PAYMENT_REQUIRED);
         }
 
         try {
@@ -155,7 +156,7 @@ class DocumentAnalysisController extends Controller
 
             return (new DocumentAnalysisResource($analysis))
                 ->response()
-                ->setStatusCode(JsonResponse::HTTP_CREATED);
+                ->setStatusCode(Response::HTTP_CREATED);
         } catch (\RuntimeException $exception) {
             Log::error('Document analysis failed via controller.', [
                 'document_id' => $document->id,
@@ -185,7 +186,7 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'analysis_failed',
                 'message' => 'No se pudo completar el análisis. Intente nuevamente.',
-            ], JsonResponse::HTTP_SERVICE_UNAVAILABLE);
+            ], Response::HTTP_SERVICE_UNAVAILABLE);
         }
     }
 
@@ -227,7 +228,7 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'not_found',
                 'message' => 'Análisis no encontrado para este documento.',
-            ], JsonResponse::HTTP_NOT_FOUND);
+            ], Response::HTTP_NOT_FOUND);
         }
 
         $analysis->load(['requester:id,name', 'supportingDocuments']);
@@ -270,12 +271,12 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'attachment_conflict',
                 'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_CONFLICT);
+            ], Response::HTTP_CONFLICT);
         } catch (\InvalidArgumentException $e) {
             return response()->json([
                 'error' => 'tenant_violation',
                 'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_FORBIDDEN);
+            ], Response::HTTP_FORBIDDEN);
         }
 
         // Reload analysis with all supporting documents
@@ -295,7 +296,7 @@ class DocumentAnalysisController extends Controller
                 'attached_at' => $pivot->created_at?->toIso8601String(),
             ],
             'analysis' => new DocumentAnalysisResource($analysis),
-        ], JsonResponse::HTTP_CREATED);
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -364,7 +365,7 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'not_found',
                 'message' => 'El documento de apoyo no está adjunto a este análisis.',
-            ], JsonResponse::HTTP_NOT_FOUND);
+            ], Response::HTTP_NOT_FOUND);
         }
 
         Log::info('Supporting document detached from analysis.', [
@@ -415,7 +416,7 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'document_not_found',
                 'message' => 'No se encontró el documento principal del análisis.',
-            ], JsonResponse::HTTP_NOT_FOUND);
+            ], Response::HTTP_NOT_FOUND);
         }
 
         // Verify the primary document has been parsed
@@ -424,7 +425,7 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'primary_not_parsed',
                 'message' => 'El documento principal debe ser procesado antes de realizar un análisis contextual. Use POST /documents/{id}/parse.',
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         /** @var User $user */
@@ -435,7 +436,7 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'no_organization',
                 'message' => 'El usuario no pertenece a ninguna organización.',
-            ], JsonResponse::HTTP_FORBIDDEN);
+            ], Response::HTTP_FORBIDDEN);
         }
 
         $plan = $organization->currentPlan();
@@ -461,7 +462,7 @@ class DocumentAnalysisController extends Controller
                     'required_credits' => $aiModel->creditCostPerAnalysis(),
                     'model_tier' => $aiModel->tier->value,
                 ],
-            ], JsonResponse::HTTP_PAYMENT_REQUIRED);
+            ], Response::HTTP_PAYMENT_REQUIRED);
         }
 
         // Load supporting document models
@@ -473,7 +474,7 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'no_supporting_documents',
                 'message' => 'No hay documentos de apoyo adjuntos a este análisis. Use POST /analyses/{id}/supporting-documents para adjuntar documentos.',
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
@@ -527,7 +528,7 @@ class DocumentAnalysisController extends Controller
 
             return response()->json(
                 array_merge(['message' => 'Análisis contextual completado exitosamente.'], $response),
-                JsonResponse::HTTP_CREATED,
+                Response::HTTP_CREATED,
             );
         } catch (\RuntimeException $exception) {
             Log::error('Contextual analysis failed via controller.', [
@@ -541,7 +542,7 @@ class DocumentAnalysisController extends Controller
             return response()->json([
                 'error' => 'analysis_failed',
                 'message' => 'No se pudo completar el análisis contextual. Intente nuevamente.',
-            ], JsonResponse::HTTP_SERVICE_UNAVAILABLE);
+            ], Response::HTTP_SERVICE_UNAVAILABLE);
         }
     }
 

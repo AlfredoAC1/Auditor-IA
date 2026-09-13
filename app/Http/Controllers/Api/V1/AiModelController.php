@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\Billing\AiCreditService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class AiModelController extends Controller
 {
@@ -33,7 +34,7 @@ class AiModelController extends Controller
             return response()->json([
                 'error' => 'no_organization',
                 'message' => 'El usuario no pertenece a ninguna organización.',
-            ], JsonResponse::HTTP_FORBIDDEN);
+            ], Response::HTTP_FORBIDDEN);
         }
 
         $plan = $organization->currentPlan();

@@ -9,6 +9,7 @@ use App\Models\Document;
 use App\Services\Documents\DocumentParsingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controller for document parsing operations.
@@ -43,7 +44,7 @@ class DocumentParsingController extends Controller
             return response()->json([
                 'error' => 'document_not_stored',
                 'message' => 'El documento no tiene un archivo almacenado para procesar.',
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
@@ -79,7 +80,7 @@ class DocumentParsingController extends Controller
             return response()->json([
                 'error' => 'parsing_failed',
                 'message' => 'No se pudo procesar el documento. Intente nuevamente.',
-            ], JsonResponse::HTTP_SERVICE_UNAVAILABLE);
+            ], Response::HTTP_SERVICE_UNAVAILABLE);
         }
     }
 
@@ -100,7 +101,7 @@ class DocumentParsingController extends Controller
             return response()->json([
                 'error' => 'not_parsed',
                 'message' => 'El documento aún no ha sido procesado. Use POST /documents/{id}/parse primero.',
-            ], JsonResponse::HTTP_NOT_FOUND);
+            ], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json([

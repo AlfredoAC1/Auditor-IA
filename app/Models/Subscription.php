@@ -23,6 +23,8 @@ class Subscription extends Model
         'stripe_subscription_id',
         'stripe_customer_id',
         'status',
+        'starts_at',
+        'ends_at',
         'trial_ends_at',
         'current_period_start',
         'current_period_end',
@@ -36,6 +38,8 @@ class Subscription extends Model
     {
         return [
             'status' => SubscriptionStatus::class,
+            'starts_at' => 'datetime',
+            'ends_at' => 'datetime',
             'trial_ends_at' => 'datetime',
             'current_period_start' => 'datetime',
             'current_period_end' => 'datetime',

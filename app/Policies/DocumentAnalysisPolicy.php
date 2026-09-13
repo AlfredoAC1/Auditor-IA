@@ -55,10 +55,16 @@ class DocumentAnalysisPolicy
 
     /**
      * Determine if the user can delete the analysis.
+     *
+     * Only Owner and Admin can delete analysis records to preserve
+     * compliance and forensic audit history for Auditors and Users.
      */
     public function delete(User $user, DocumentAnalysis $analysis): bool
     {
-        return $user->hasOrganization()
-            && $user->belongsToOrganization($analysis->organization_id);
+        if (! $user->hasOrganization() || ! $user->belongsToOrganization($analysis->organization_id)) {
+            return false;
+        }
+
+        return $user->isOwner() || $user->isAdmin();
     }
 }

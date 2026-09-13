@@ -32,4 +32,34 @@ final class OrganizationPolicy
     {
         return $actor->isAdmin();
     }
+
+    /**
+     * Determine whether the user can update organization settings.
+     * Allowed for System Admin or Organization Owner/Admin.
+     */
+    public function update(User $actor, Organization $organization): bool
+    {
+        if ($actor->isAdmin()) {
+            return true;
+        }
+
+        return $actor->hasOrganization()
+            && $actor->belongsToOrganization($organization->id)
+            && $actor->canManageSettings();
+    }
+
+    /**
+     * Determine whether the user can manage organization billing and subscription.
+     * Restricted to Organization Owner or System Admin.
+     */
+    public function manageBilling(User $actor, Organization $organization): bool
+    {
+        if ($actor->isAdmin()) {
+            return true;
+        }
+
+        return $actor->hasOrganization()
+            && $actor->belongsToOrganization($organization->id)
+            && $actor->canManageBilling();
+    }
 }

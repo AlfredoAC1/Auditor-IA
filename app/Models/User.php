@@ -36,6 +36,17 @@ class User extends Authenticatable
     ];
 
     /**
+     * Default model attribute values.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'role' => 'user',
+        'dismissed_tutorial' => false,
+        'dismissed_ancillary_tutorial' => false,
+    ];
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>
@@ -102,6 +113,14 @@ class User extends Authenticatable
     // ---------------------------------------------------------------
 
     /**
+     * Determine if the user is an organization owner.
+     */
+    public function isOwner(): bool
+    {
+        return $this->role === UserRole::Owner;
+    }
+
+    /**
      * Determine if the user has administrator privileges.
      */
     public function isAdmin(): bool
@@ -110,11 +129,59 @@ class User extends Authenticatable
     }
 
     /**
+     * Determine if the user is a compliance/legal auditor.
+     */
+    public function isAuditor(): bool
+    {
+        return $this->role === UserRole::Auditor;
+    }
+
+    /**
      * Determine if the user is a regular user.
      */
     public function isUser(): bool
     {
         return $this->role === UserRole::User;
+    }
+
+    /**
+     * Determine if the user has any of the specified roles.
+     */
+    public function hasRole(UserRole ...$roles): bool
+    {
+        return in_array($this->role, $roles, true);
+    }
+
+    /**
+     * Determine if the user can manage team members.
+     */
+    public function canManageUsers(): bool
+    {
+        return $this->role?->canManageUsers() ?? false;
+    }
+
+    /**
+     * Determine if the user can manage billing and subscriptions.
+     */
+    public function canManageBilling(): bool
+    {
+        return $this->role?->canManageBilling() ?? false;
+    }
+
+    /**
+     * Determine if the user can modify organization settings.
+     */
+    public function canManageSettings(): bool
+    {
+        return $this->role?->canManageSettings() ?? false;
+    }
+
+    /**
+     * Determine if the user can mutate documents (upload, update, delete).
+     */
+    public function canMutateDocuments(): bool
+    {
+        return $this->role?->canMutateDocuments() ?? false;
     }
 
     /**

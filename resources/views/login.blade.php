@@ -68,9 +68,9 @@
             <!-- Form -->
             <form action="{{ route('login.store') }}" method="POST" class="flex flex-col gap-5">
                 @csrf
-                @if(session('error'))
+                @if(session('error') || $errors->any())
                     <div class="bg-navy-dark border-2 border-gunmetal-dark text-icy px-4 py-3 text-[13px] font-mono">
-                        {{ session('error') }}
+                        {{ session('error') ?? $errors->first() }}
                     </div>
                 @endif
 

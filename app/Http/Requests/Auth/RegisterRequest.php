@@ -28,7 +28,16 @@ final class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
             'organization_name' => ['nullable', 'string', 'max:255'],
-            'password' => ['required', 'string', 'confirmed', Password::min(8)],
+            'password' => [
+                'required',
+                'string',
+                'confirmed',
+                Password::min(10)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
             'terms' => ['accepted'],
         ];
     }

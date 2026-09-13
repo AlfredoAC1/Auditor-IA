@@ -22,7 +22,15 @@ final class UpdatePasswordRequest extends FormRequest
     {
         return [
             'current_password' => ['required', 'string'],
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(10)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
         ];
     }
 
@@ -32,10 +40,14 @@ final class UpdatePasswordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'current_password.required' => 'La contrase�a actual es obligatoria.',
-            'password.required' => 'La nueva contrase�a es obligatoria.',
-            'password.confirmed' => 'Las contrase�as no coinciden.',
-            'password.min' => 'La contrase�a debe tener al menos 8 caracteres.',
+            'current_password.required' => 'La contraseña actual es obligatoria.',
+            'password.required' => 'La nueva contraseña es obligatoria.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.min' => 'La contraseña debe tener al menos :min caracteres.',
+            'password.letters' => 'La contraseña debe contener al menos una letra.',
+            'password.mixed' => 'La contraseña debe combinar mayúsculas y minúsculas.',
+            'password.numbers' => 'La contraseña debe contener al menos un número.',
+            'password.symbols' => 'La contraseña debe contener al menos un carácter especial.',
         ];
     }
 }

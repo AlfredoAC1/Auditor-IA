@@ -13,7 +13,7 @@ final class UserPolicy
      */
     public function viewAny(User $actor): bool
     {
-        return $actor->isAdmin();
+        return $actor->isAdmin() || $actor->isOwner();
     }
 
     /**
@@ -21,15 +21,25 @@ final class UserPolicy
      */
     public function view(User $actor, User $target): bool
     {
-        return $actor->isAdmin() || $actor->id === $target->id;
+        if ($actor->isAdmin()) {
+            return true;
+        }
+
+        if ($actor->id === $target->id) {
+            return true;
+        }
+
+        return $actor->isOwner()
+            && $actor->hasOrganization()
+            && $actor->belongsToOrganization($target->organization_id);
     }
 
     /**
-     * Determine whether the user can create users through admin controls.
+     * Determine whether the user can create users.
      */
     public function create(User $actor): bool
     {
-        return $actor->isAdmin();
+        return $actor->isAdmin() || $actor->isOwner();
     }
 
     /**
@@ -37,15 +47,41 @@ final class UserPolicy
      */
     public function update(User $actor, User $target): bool
     {
-        return $actor->isAdmin();
+        if ($actor->isAdmin()) {
+            return true;
+        }
+
+        // Self-profile update is allowed (profile details only)
+        if ($actor->id === $target->id) {
+            return true;
+        }
+
+        // Owner can update users within their own organization, but cannot demote themselves here
+        return $actor->isOwner()
+            && $actor->hasOrganization()
+            && $actor->belongsToOrganization($target->organization_id);
     }
 
     /**
      * Determine whether the user can delete the specific user.
-     * Prevents self-deletion at policy level.
+     * Prevents self-deletion and non-admin/owner deletion.
      */
     public function delete(User $actor, User $target): bool
     {
-        return $actor->isAdmin() && $actor->id !== $target->id;
+        // Prevent self-deletion via admin/management operations
+        if ($actor->id === $target->id) {
+            return false;
+        }
+
+        if ($actor->isAdmin()) {
+            return true;
+        }
+
+        // Owner can delete non-owner members of their organization
+        if ($actor->isOwner() && $actor->hasOrganization() && $actor->belongsToOrganization($target->organization_id)) {
+            return ! $target->isOwner();
+        }
+
+        return false;
     }
 }

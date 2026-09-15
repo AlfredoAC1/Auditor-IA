@@ -69,133 +69,64 @@ class AiModelSeeder extends Seeder
     {
         return [
             // ---------------------------------------------------------------
-            // Lightweight (1x credits) — Free tier default
-            // Fast, efficient models for everyday document analysis
+            // Lightweight (1x credits) — Free tier default & Pro Lightweight
             // ---------------------------------------------------------------
             [
-                'slug' => 'cerebras-gemma4',
-                'display_name' => 'Gemma 4 31B (Preview)',
+                'slug' => 'cerebras-gpt-oss-20b',
+                'display_name' => 'GPT-OSS 20B (Cerebras)',
                 'provider' => 'cerebras',
-                'provider_model_id' => 'gemma-4-31b',
-                'tier' => AiModelTier::Lightweight,
-                // gemma-4-31b Preview hard cap: 40,960 tokens.
-                // 32,768 is the configured operational ceiling.
-                'max_tokens' => 32768,
-                'is_active' => true, // CEREBRAS_API_KEY is set
-            ],
-            [
-                'slug' => 'llama-8b-instant',
-                'display_name' => 'Llama 3.1 8B',
-                'provider' => 'groq',
-                'provider_model_id' => 'llama-3.1-8b-instant',
-                'tier' => AiModelTier::Lightweight,
-                'max_tokens' => 4096,
-                'is_active' => false, // Disabled during testing
-            ],
-            [
-                'slug' => 'qwen3-8b',
-                'display_name' => 'Qwen 3 8B',
-                'provider' => 'qwen_cloud',
-                'provider_model_id' => 'qwen3-8b',
+                'provider_model_id' => 'gpt-oss-20b',
                 'tier' => AiModelTier::Lightweight,
                 'max_tokens' => 8192,
-                'is_active' => false, // Enable when QWEN_API_KEY is set
-            ],
-            [
-                'slug' => 'qwen2-5-7b',
-                'display_name' => 'Qwen 2.5 7B',
-                'provider' => 'qwen_cloud',
-                'provider_model_id' => 'qwen2.5-7b-instruct',
-                'tier' => AiModelTier::Lightweight,
-                'max_tokens' => 8192,
-                'is_active' => false, // Enable when QWEN_API_KEY is set
-            ],
-
-            // ---------------------------------------------------------------
-            // Standard (2x credits) — Pro/Lifetime
-            // Balanced models with strong reasoning and context handling
-            // ---------------------------------------------------------------
-            [
-                'slug' => 'llama-70b-versatile',
-                'display_name' => 'Llama 3.3 70B',
-                'provider' => 'groq',
-                'provider_model_id' => 'llama-3.3-70b-versatile',
-                'tier' => AiModelTier::Standard,
-                'max_tokens' => 8192,
-                'is_active' => false, // Disabled during testing
+                'is_active' => true, // Exclusively for Free Tier
             ],
             [
                 'slug' => 'qwen3-14b',
                 'display_name' => 'Qwen 3 14B',
                 'provider' => 'qwen_cloud',
                 'provider_model_id' => 'qwen3-14b',
+                'tier' => AiModelTier::Lightweight,
+                'max_tokens' => 4096,
+                'is_active' => true, // Pro/Lifetime Lightweight
+            ],
+
+            // ---------------------------------------------------------------
+            // Standard (2x credits) — Pro/Lifetime Standard
+            // ---------------------------------------------------------------
+            [
+                'slug' => 'qwen3-max',
+                'display_name' => 'Qwen 3 Max',
+                'provider' => 'qwen_cloud',
+                'provider_model_id' => 'qwen3-max',
                 'tier' => AiModelTier::Standard,
                 'max_tokens' => 8192,
-                'is_active' => false, // Enable when QWEN_API_KEY is set
+                'is_active' => true, // Pro/Lifetime Standard
             ],
 
             // ---------------------------------------------------------------
-            // Advanced (3x credits) — Pro/Lifetime
-            // High-quality models with deep legal reasoning capabilities
+            // Advanced (3x credits) — Pro/Lifetime Advanced
             // ---------------------------------------------------------------
             [
-                'slug' => 'deepseek-v3',
-                'display_name' => 'DeepSeek V3',
-                'provider' => 'deepseek',
-                'provider_model_id' => 'deepseek-chat',
-                'tier' => AiModelTier::Advanced,
-                'max_tokens' => 8192,
-                'is_active' => false, // Enable when DEEPSEEK_API_KEY is set
-            ],
-            [
-                'slug' => 'qwen-plus',
-                'display_name' => 'Qwen Plus',
+                'slug' => 'qwen3-5-flash',
+                'display_name' => 'Qwen 3.5 Flash',
                 'provider' => 'qwen_cloud',
-                'provider_model_id' => 'qwen-plus',
+                'provider_model_id' => 'qwen3.5-flash',
                 'tier' => AiModelTier::Advanced,
-                'max_tokens' => 8192,
-                'is_active' => false, // Enable when QWEN_API_KEY is set
-            ],
-            [
-                'slug' => 'nvidia-llama-70b',
-                'display_name' => 'Llama 3.3 70B (NIM)',
-                'provider' => 'nvidia_nim',
-                'provider_model_id' => 'meta/llama-3.3-70b-instruct',
-                'tier' => AiModelTier::Advanced,
-                'max_tokens' => 4096,
-                'is_active' => true,
+                'max_tokens' => 16384,
+                'is_active' => true, // Pro/Lifetime Advanced
             ],
 
             // ---------------------------------------------------------------
-            // Premium (4x credits) — Pro/Lifetime
-            // Frontier & experimental models for critical analysis
+            // Premium (4x credits) — Pro/Lifetime Premium
             // ---------------------------------------------------------------
             [
-                'slug' => 'deepseek-v4',
-                'display_name' => 'DeepSeek V4',
-                'provider' => 'deepseek',
-                'provider_model_id' => 'deepseek-reasoner',
-                'tier' => AiModelTier::Premium,
-                'max_tokens' => 8192,
-                'is_active' => false, // Future: when available + DEEPSEEK_API_KEY
-            ],
-            [
-                'slug' => 'qwen3-5',
-                'display_name' => 'Qwen 3.5',
+                'slug' => 'qwen-3-7-flash',
+                'display_name' => 'Qwen 3.7 Flash',
                 'provider' => 'qwen_cloud',
-                'provider_model_id' => 'qwen-max',
+                'provider_model_id' => 'qwen-3.7-flash',
                 'tier' => AiModelTier::Premium,
-                'max_tokens' => 8192,
-                'is_active' => false, // Future: when QWEN_API_KEY is set
-            ],
-            [
-                'slug' => 'azure-gpt4',
-                'display_name' => 'GPT-4',
-                'provider' => 'azure',
-                'provider_model_id' => 'gpt-4',
-                'tier' => AiModelTier::Premium,
-                'max_tokens' => 4096,
-                'is_active' => false, // Enable when Azure is configured
+                'max_tokens' => 32768,
+                'is_active' => true, // Pro/Lifetime Premium
             ],
         ];
     }

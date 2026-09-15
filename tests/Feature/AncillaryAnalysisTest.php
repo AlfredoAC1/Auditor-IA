@@ -47,16 +47,30 @@ class AncillaryAnalysisTest extends TestCase
 
         // Create active AI models for testing
         AiModel::firstOrCreate(
-            ['slug' => 'cerebras-gemma4'],
+            ['slug' => 'cerebras-gpt-oss-20b'],
             [
-                'display_name' => 'Cerebras Gemma 4',
+                'display_name' => 'Cerebras GPT-OSS 20B',
                 'provider' => 'cerebras',
-                'provider_model_id' => 'gemma-4-31b',
-                'tier' => 'standard',
+                'provider_model_id' => 'gpt-oss-20b',
+                'tier' => 'lightweight',
                 'credit_multiplier' => 1.0,
                 'max_tokens' => 8192,
                 'is_active' => true,
                 'sort_order' => 1,
+            ]
+        );
+
+        AiModel::firstOrCreate(
+            ['slug' => 'qwen3-max'],
+            [
+                'display_name' => 'Qwen 3 Max',
+                'provider' => 'qwen_cloud',
+                'provider_model_id' => 'qwen3-max',
+                'tier' => 'standard',
+                'credit_multiplier' => 2.0,
+                'max_tokens' => 8192,
+                'is_active' => true,
+                'sort_order' => 2,
             ]
         );
 
@@ -101,7 +115,7 @@ class AncillaryAnalysisTest extends TestCase
             'requested_by' => $this->proUser->id,
             'analysis_type' => AnalysisType::FullSummary,
             'llm_provider' => 'cerebras',
-            'llm_model' => 'cerebras-gemma4',
+            'llm_model' => 'cerebras-gpt-oss-20b',
             'content' => [
                 'resumen_general' => 'Resumen del contrato principal.',
                 'tipo_documento' => 'Contrato de Prestación de Servicios',
@@ -146,7 +160,7 @@ class AncillaryAnalysisTest extends TestCase
             'requested_by' => $freeUser->id,
             'analysis_type' => AnalysisType::FullSummary,
             'llm_provider' => 'cerebras',
-            'llm_model' => 'cerebras-gemma4',
+            'llm_model' => 'cerebras-gpt-oss-20b',
             'content' => ['resumen_general' => 'Test'],
             'status' => DocumentStatus::Processed,
             'version' => 1,
@@ -322,12 +336,12 @@ class AncillaryAnalysisTest extends TestCase
         $job = new ProcessAncillaryAnalysisJob(
             analysis: $this->primaryAnalysis,
             ancillaryDocument: $ancillaryDoc,
-            modelSlug: 'cerebras-gemma4',
+            modelSlug: 'cerebras-gpt-oss-20b',
         );
 
         $job->handle(
             parsingService: app(DocumentParsingService::class),
-            llmService: app(LlmAnalysisService::class),
+            resolver: app(\App\Services\LLM\LlmServiceResolver::class),
             creditService: app(AiCreditService::class),
         );
 
@@ -366,7 +380,7 @@ class AncillaryAnalysisTest extends TestCase
             'requested_by' => $this->proUser->id,
             'analysis_type' => AnalysisType::ContextualSummary,
             'llm_provider' => 'cerebras',
-            'llm_model' => 'cerebras-gemma4',
+            'llm_model' => 'cerebras-gpt-oss-20b',
             'content' => [
                 'resumen_integrado' => 'Resumen integrado completo para pruebas.',
                 'datos_complementarios' => [

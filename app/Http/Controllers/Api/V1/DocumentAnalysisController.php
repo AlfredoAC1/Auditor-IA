@@ -17,7 +17,7 @@ use App\Models\Document;
 use App\Models\DocumentAnalysis;
 use App\Models\User;
 use App\Services\Billing\AiCreditService;
-use App\Services\LLM\LlmAnalysisService;
+use App\Services\LLM\LlmServiceResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -37,7 +37,7 @@ use Symfony\Component\HttpFoundation\Response;
 class DocumentAnalysisController extends Controller
 {
     public function __construct(
-        private readonly LlmAnalysisService $llmService,
+        private readonly LlmServiceResolver $llmResolver,
         private readonly AiCreditService $creditService,
         private readonly AttachSupportingDocumentAction $attachAction,
     ) {}
@@ -114,7 +114,9 @@ class DocumentAnalysisController extends Controller
         }
 
         try {
-            $result = $this->llmService->analyze(
+            $llmService = $this->llmResolver->resolveForOrganization($organization);
+
+            $result = $llmService->analyze(
                 documentContent: $compactContent,
                 analysisType: $analysisType,
                 document: $document,
@@ -478,7 +480,9 @@ class DocumentAnalysisController extends Controller
         }
 
         try {
-            $result = $this->llmService->analyzeWithContext(
+            $llmService = $this->llmResolver->resolveForOrganization($organization);
+
+            $result = $llmService->analyzeWithContext(
                 primaryDocument: $primaryDocument,
                 existingAnalysis: $analysis,
                 supportingDocuments: $supportingDocuments,

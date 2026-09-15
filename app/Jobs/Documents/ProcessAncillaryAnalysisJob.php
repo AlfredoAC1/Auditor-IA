@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs\Documents;
 
+use App\Enums\AiModelTier;
 use App\Enums\AnalysisType;
 use App\Enums\DocumentStatus;
 use App\Models\AiModel;
@@ -15,6 +16,7 @@ use App\Models\User;
 use App\Services\Billing\AiCreditService;
 use App\Services\Documents\DocumentParsingService;
 use App\Services\LLM\LlmAnalysisService;
+use App\Services\LLM\LlmServiceResolver;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,36 +26,28 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Job responsible for parsing the newly uploaded ancillary document
- * and executing the contextual cross-document LLM analysis.
- *
- * NOTE: Does NOT call Unstructured API for the primary document;
- * uses the primary document's stored parsed JSON output directly.
+ * Job for asynchronous processing and re-analysis of ancillary/supporting documents.
  */
 class ProcessAncillaryAnalysisJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries;
+    public int $timeout = 360;
 
-    public array $backoff;
+    public int $tries = 3;
 
     public function __construct(
         public readonly DocumentAnalysis $analysis,
         public readonly Document $ancillaryDocument,
         public readonly ?string $modelSlug = null,
-    ) {
-        $this->onQueue((string) config('documents.processing.queue', 'documents'));
-        $this->tries = (int) config('documents.processing.max_retries', 3);
-        $this->backoff = (array) config('documents.processing.retry_backoff_seconds', [30, 120, 600]);
-    }
+    ) {}
 
     /**
      * Execute the job.
      */
     public function handle(
         DocumentParsingService $parsingService,
-        LlmAnalysisService $llmService,
+        LlmServiceResolver $resolver,
         AiCreditService $creditService,
     ): void {
         @set_time_limit(300);
@@ -141,15 +135,31 @@ class ProcessAncillaryAnalysisJob implements ShouldQueue
                 }
             }
 
+            $organization = $primaryDocument->relationLoaded('organization')
+                ? $primaryDocument->organization
+                : Organization::query()->find($primaryDocument->organization_id);
+
+            $isPro = $organization !== null && $organization->hasProAccess();
+
             if ($aiModel === null) {
-                $aiModel = AiModel::query()
-                    ->where('provider', 'cerebras')
-                    ->where('is_active', true)
-                    ->first()
-                    ?? AiModel::defaultModel();
+                if ($isPro) {
+                    $aiModel = AiModel::query()
+                        ->where('provider', 'qwen_cloud')
+                        ->where('tier', AiModelTier::Standard)
+                        ->where('is_active', true)
+                        ->first()
+                        ?? AiModel::query()->where('provider', 'qwen_cloud')->where('is_active', true)->first();
+                } else {
+                    $aiModel = AiModel::query()
+                        ->where('provider', 'cerebras')
+                        ->where('is_active', true)
+                        ->first()
+                        ?? AiModel::defaultModel();
+                }
             }
 
-            $modelIdentifier = "{$aiModel->provider}::{$aiModel->provider_model_id}";
+            $modelIdentifier = $aiModel !== null ? "{$aiModel->provider}::{$aiModel->provider_model_id}" : null;
+            $llmService = $resolver->resolveForOrganization($organization);
 
             // 3. Perform Contextual LLM Analysis using existing primary JSON output + ancillary parsed content
             $result = $llmService->analyzeWithContext(

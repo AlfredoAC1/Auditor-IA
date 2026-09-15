@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Jobs\Documents;
 
+use App\Enums\AiModelTier;
 use App\Enums\AnalysisType;
 use App\Enums\DocumentStatus;
 use App\Models\AiModel;
 use App\Models\Document;
 use App\Models\DocumentAnalysis;
+use App\Models\Organization;
 use App\Services\Billing\AiCreditService;
 use App\Services\Documents\DocumentParsingService;
 use App\Services\LLM\LlmAnalysisService;
+use App\Services\LLM\LlmServiceResolver;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -96,24 +99,38 @@ class ProcessDocumentJob implements ShouldQueue
                 ]);
             }
 
-            // 2. AI Analysis (Resolve AiModel from metadata or fallback to provider)
+            // 2. AI Analysis — Resolve tenant access & route to Pro Qwen or Free Cerebras
+            $organization = $document->relationLoaded('organization')
+                ? $document->organization
+                : Organization::query()->find($document->organization_id);
+
+            $isPro = $organization !== null && $organization->hasProAccess();
             $modelSlug = $document->metadata['model_slug'] ?? null;
             $aiModel = null;
 
-            if ($modelSlug !== null && is_string($modelSlug)) {
-                $aiModel = AiModel::query()
-                    ->where('slug', $modelSlug)
-                    ->where('is_active', true)
-                    ->first();
-            }
+            if ($isPro) {
+                if ($modelSlug !== null && is_string($modelSlug)) {
+                    $aiModel = AiModel::query()
+                        ->where('slug', $modelSlug)
+                        ->where('is_active', true)
+                        ->first();
+                }
 
-            if ($aiModel === null && isset($document->metadata['llm_provider'])) {
-                $requestedProvider = (string) $document->metadata['llm_provider'];
+                if ($aiModel === null) {
+                    $aiModel = AiModel::query()
+                        ->where('provider', 'qwen_cloud')
+                        ->where('tier', AiModelTier::Standard)
+                        ->where('is_active', true)
+                        ->first()
+                        ?? AiModel::query()->where('provider', 'qwen_cloud')->where('is_active', true)->first();
+                }
+            } else {
+                // Free tier: strictly Cerebras GPT-OSS 20B
                 $aiModel = AiModel::query()
-                    ->where('provider', $requestedProvider)
+                    ->where('provider', 'cerebras')
                     ->where('is_active', true)
-                    ->ordered()
-                    ->first();
+                    ->first()
+                    ?? AiModel::defaultModel();
             }
 
             if ($aiModel !== null) {
@@ -121,14 +138,15 @@ class ProcessDocumentJob implements ShouldQueue
                 $modelIdentifier = "{$aiModel->provider}::{$aiModel->provider_model_id}";
                 $modelSlugForRecord = $aiModel->slug;
             } else {
-                $provider = (string) ($document->metadata['llm_provider'] ?? config('llm.default_provider', 'cerebras'));
-                $configModel = (string) config("llm.providers.{$provider}.model", '');
-                $modelIdentifier = $configModel !== '' ? "{$provider}::{$configModel}" : null;
-                $modelSlugForRecord = $configModel !== '' ? $configModel : $provider;
+                $provider = $isPro ? 'qwen_cloud' : 'cerebras';
+                $configModel = (string) config("llm.providers.{$provider}.model", $isPro ? 'qwen3-max' : 'gpt-oss-20b');
+                $modelIdentifier = "{$provider}::{$configModel}";
+                $modelSlugForRecord = $configModel;
             }
 
-            /** @var LlmAnalysisService $llmService */
-            $llmService = app(LlmAnalysisService::class);
+            /** @var LlmServiceResolver $resolver */
+            $resolver = app(LlmServiceResolver::class);
+            $llmService = $resolver->resolveForOrganization($organization);
 
             try {
                 $analysisResult = $llmService->analyze(

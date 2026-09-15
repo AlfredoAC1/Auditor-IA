@@ -33,12 +33,14 @@ class DashboardController extends Controller
         $user = Auth::user();
         $metrics = $this->metricsService->forOrganization($user);
 
+        $isPro = $user->hasProAccess();
+        $defaultSlug = $isPro ? 'qwen3-max' : 'cerebras-gpt-oss-20b';
+
         $selectedModelSlug = (string) session('selected_model_slug', '');
         if ($selectedModelSlug === '' || str_contains(strtolower($selectedModelSlug), 'llama') || ! AiModel::query()->where('slug', $selectedModelSlug)->where('is_active', true)->exists()) {
-            $defaultSlug = 'cerebras-gemma4';
             $selectedModelSlug = AiModel::query()->where('slug', $defaultSlug)->where('is_active', true)->exists()
                 ? $defaultSlug
-                : (AiModel::query()->active()->where('slug', 'not like', '%llama%')->ordered()->first()?->slug ?? 'cerebras-gemma4');
+                : (AiModel::query()->active()->where('slug', 'not like', '%llama%')->ordered()->first()?->slug ?? $defaultSlug);
 
             session(['selected_model_slug' => $selectedModelSlug]);
         }
@@ -207,18 +209,27 @@ class DashboardController extends Controller
             $aiModel = AiModel::query()->where('slug', $requestedModelSlug)->where('is_active', true)->first();
         }
 
-        if ($aiModel === null && ! empty($validated['llm_provider']) && ! str_contains(strtolower($validated['llm_provider']), 'llama')) {
-            $aiModel = AiModel::query()->where('provider', $validated['llm_provider'])->where('is_active', true)->ordered()->first();
-        }
+        $isPro = $user->hasProAccess();
 
-        if ($aiModel === null) {
-            $defaultSlug = 'cerebras-gemma4';
+        if ($isPro) {
+            if ($aiModel === null && ! empty($validated['llm_provider'])) {
+                $aiModel = AiModel::query()->where('provider', 'qwen_cloud')->where('is_active', true)->ordered()->first();
+            }
+
+            if ($aiModel === null) {
+                $defaultSlug = 'qwen3-max';
+                $aiModel = AiModel::query()->where('slug', $defaultSlug)->where('is_active', true)->first()
+                    ?? AiModel::query()->where('provider', 'qwen_cloud')->where('is_active', true)->first();
+            }
+        } else {
+            // Free users strictly use Cerebras GPT-OSS 20B
+            $defaultSlug = 'cerebras-gpt-oss-20b';
             $aiModel = AiModel::query()->where('slug', $defaultSlug)->where('is_active', true)->first()
-                ?? AiModel::query()->where('is_active', true)->where('slug', 'not like', '%llama%')->ordered()->first()
+                ?? AiModel::query()->where('provider', 'cerebras')->where('is_active', true)->first()
                 ?? AiModel::defaultModel();
         }
 
-        $selectedProvider = $aiModel?->provider ?? $validated['llm_provider'] ?? session('llm_provider', config('llm.default_provider', 'cerebras'));
+        $selectedProvider = $aiModel?->provider ?? ($isPro ? 'qwen_cloud' : 'cerebras');
         $selectedModelSlug = $aiModel?->slug;
 
         session([

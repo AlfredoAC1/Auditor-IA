@@ -17,28 +17,14 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Unified LLM Analysis Service.
+ * Free Tier LLM Analysis Service.
  *
- * Single entry-point for all LLM-powered document analysis.
- * Resolves the correct provider adapter at runtime based on the
- * AiModel record (or the configured default), then delegates the
- * HTTP transport to that adapter while keeping all prompt logic
- * inside LlmPromptBuilder.
+ * Dedicated exclusively to Free tier document analysis.
+ * Operates exclusively on Cerebras Inference with GPT-OSS 20B,
+ * strictly separated from Pro & Lifetime pipelines.
  *
- * Adding a new provider requires only:
- *   1. A new entry in config/llm.php → providers
- *   2. Optionally a new adapter if the API is not OpenAI-compatible
- *   3. A new case in resolveAdapter() if a custom adapter is needed
- *
- * Currently supported providers (via OpenAI-compatible endpoint):
- *   - Groq
- *   - Cerebras (OpenAI-compatible, no extra RPM limits needed)
- *   - Qwen Cloud / DashScope (OpenAI-compatible endpoint)
- *   - NVIDIA NIM (rate-limited, 40 RPM)
- *   - DeepSeek (OpenAI-compatible)
- *
- * @see LlmPromptBuilder  For prompt construction
- * @see LlmProviderAdapterInterface  For the adapter contract
+ * @see LlmPromptBuilder For free tier prompt construction
+ * @see CerebrasAdapter For Cerebras inference transport
  */
 final class LlmAnalysisService implements LLMAnalysisServiceInterface
 {
@@ -227,7 +213,7 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
      */
     private function resolveConfig(?string $overrideModel): LlmProviderConfig
     {
-        $defaultProvider = (string) config('llm.default_provider', 'groq');
+        $defaultProvider = 'cerebras';
 
         if ($overrideModel !== null && str_contains($overrideModel, '::')) {
             [$provider, $modelId] = explode('::', $overrideModel, 2);
@@ -237,6 +223,16 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
         }
 
         $providerKey = $this->normaliseProviderKey($provider);
+
+        // Enforce Cerebras in production for Free tier isolation
+        if ($providerKey !== 'cerebras' && ! app()->environment('testing')) {
+            Log::warning("Unauthorized provider [{$providerKey}] requested in Free Tier LLM service. Enforcing [cerebras].", [
+                'requested_provider' => $provider,
+            ]);
+            $providerKey = 'cerebras';
+            $modelId = null;
+        }
+
         $cfg = (array) config("llm.providers.{$providerKey}", []);
 
         if ($cfg === []) {
@@ -250,9 +246,9 @@ final class LlmAnalysisService implements LLMAnalysisServiceInterface
         return new LlmProviderConfig(
             provider: $providerKey,
             apiKey: (string) ($cfg['api_key'] ?? ''),
-            model: $modelId ?? (string) ($cfg['model'] ?? ''),
+            model: $modelId ?? (string) ($cfg['model'] ?? 'gpt-oss-20b'),
             baseUrl: (string) ($cfg['base_url'] ?? ''),
-            maxTokens: (int) ($cfg['max_tokens'] ?? 4096),
+            maxTokens: (int) ($cfg['max_tokens'] ?? 8192),
             temperature: (float) ($cfg['temperature'] ?? 0.3),
             timeoutSeconds: (int) ($cfg['timeout_seconds'] ?? 180),
             rateLimitRpm: (int) ($cfg['rate_limit_rpm'] ?? 0),

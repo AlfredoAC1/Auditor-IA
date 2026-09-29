@@ -49,7 +49,10 @@ final class DashboardMetricsService
             ->orderByDesc('created_at')
             ->get();
 
-        $analyzedCount = $documents->where('status', DocumentStatus::Processed)->count();
+        $analyzedCount = Document::query()
+            ->where('organization_id', $organizationId)
+            ->where('status', DocumentStatus::Processed)
+            ->count();
 
         $riskCount = 0;
         $totalTimeMs = 0;

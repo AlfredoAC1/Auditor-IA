@@ -204,7 +204,7 @@ class DashboardMetricsServiceTest extends TestCase
         $queryCount = count(DB::getQueryLog());
         $executionTimeMs = ($endTime - $startTime) * 1000;
 
-        fwrite(STDERR, sprintf("\n[BENCHMARK RESULT - BEFORE OPTIMIZATION]\nDocuments: %d\nQuery Count: %d\nExecution Time: %.2f ms\n", $documentsCount, $queryCount, $executionTimeMs));
+        fwrite(STDERR, sprintf("\n[BENCHMARK RESULT - AFTER OPTIMIZATION]\nDocuments: %d\nQuery Count: %d\nExecution Time: %.2f ms\n", $documentsCount, $queryCount, $executionTimeMs));
 
         $this->assertCount($documentsCount, $metrics['documents']);
         $this->assertEquals($documentsCount * 2, $metrics['riskCount']);

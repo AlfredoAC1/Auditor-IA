@@ -29,6 +29,7 @@ class DocumentAnalysisControllerTest extends TestCase
 
         // Enforce LLM_PROVIDER as groq and set a dummy key for testing
         config(['llm.providers.groq.api_key' => 'fake-groq-key']);
+        config(['llm.providers.cerebras.api_key' => 'fake-cerebras-key']);
 
         $this->seed(PlanSeeder::class);
         $this->seed(AiModelSeeder::class);

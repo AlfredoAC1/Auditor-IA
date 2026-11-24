@@ -16,9 +16,13 @@
 /public/build
 /public/hot
 /public/storage
+/vercel-dist
 /storage/*.key
 /storage/pail
 /vendor
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+.vercel
+.env*

@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BugTicketController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DemoPreviewController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,12 @@ Route::get('/', function () {
 Route::get('/terminos-y-condiciones', function () {
     return view('terms');
 })->name('terms');
+
+Route::prefix('demo')->name('demo.')->group(function (): void {
+    Route::get('/', [DemoPreviewController::class, 'index'])->name('dashboard');
+    Route::get('/analisis/{slug}', [DemoPreviewController::class, 'show'])->name('analysis.show');
+    Route::get('/clausulas/{slug}', [DemoPreviewController::class, 'showClauses'])->name('analysis.clauses');
+});
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [LoginController::class, 'create'])->name('login');

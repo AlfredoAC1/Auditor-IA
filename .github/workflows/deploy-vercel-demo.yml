@@ -1,0 +1,63 @@
+name: Deploy Static Demo to Vercel (prod)
+
+on:
+  push:
+    branches:
+      - prod
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, json
+          coverage: none
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Composer dependencies (no-dev)
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Install NPM dependencies and build Vite assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Generate ephemeral APP_KEY for static Blade compilation
+        run: echo "APP_KEY=base64:$(php -r 'echo base64_encode(random_bytes(32));')" >> "$GITHUB_ENV"
+
+      - name: Export purely static demo bundle (zero DB / zero APIs)
+        env:
+          APP_ENV: production
+          APP_DEBUG: false
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+        run: php artisan demo:build-static
+
+      - name: Verify static bundle contains no local URLs or external API hosts
+        run: |
+          test -f vercel-dist/index.html
+          test -f vercel-dist/demo/index.html
+          ! grep -rnE "127\.0\.0\.1|api\.groq\.com|api\.cerebras\.ai|dashscope|api\.nvidia\.com|api\.openai\.com|unstructuredapp\.io" vercel-dist/
+
+      - name: Deploy static bundle to Vercel (prod)
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: npx --yes vercel@latest deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+

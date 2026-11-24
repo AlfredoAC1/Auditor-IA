@@ -1,0 +1,7 @@
+# Upload ONLY the static demo output and Vercel routing config.
+# Ensures zero PHP backend code, .env files, or secrets ever reach Vercel.
+*
+!vercel.json
+!vercel-dist
+!vercel-dist/**
+

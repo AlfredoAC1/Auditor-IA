@@ -53,7 +53,7 @@
                 Volver al Inicio
             </a>
             
-            <a href="{{ route('dashboard') }}" class="w-full sm:w-auto px-6 py-3.5 bg-[#15181B] border-2 border-[#35393C] hover:bg-[#162A45] text-xs sm:text-sm font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 uppercase tracking-wider">
+            <a href="{{ ($isStaticDemo ?? false) ? route('demo.dashboard') : route('dashboard') }}" class="w-full sm:w-auto px-6 py-3.5 bg-[#15181B] border-2 border-[#35393C] hover:bg-[#162A45] text-xs sm:text-sm font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 uppercase tracking-wider">
                 <svg class="w-4 h-4 text-[#A4D8FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>

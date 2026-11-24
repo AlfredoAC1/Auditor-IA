@@ -202,20 +202,21 @@
                     @endforeach
                 </ul>
 
+                @php $planCtaUrl = ($isStaticDemo ?? false) ? route('demo.dashboard') : route('login'); @endphp
                 @if ($isFree)
-                    <a href="{{ route('login') }}" class="w-full text-center px-6 py-3.5 bg-[#15181B] border-2 border-[#35393C] hover:bg-[#162A45] text-[14px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider">
-                        Comenzar gratis
+                    <a href="{{ $planCtaUrl }}" class="w-full text-center px-6 py-3.5 bg-[#15181B] border-2 border-[#35393C] hover:bg-[#162A45] text-[14px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider">
+                        {{ ($isStaticDemo ?? false) ? 'Probar en Demo' : 'Comenzar gratis' }}
                     </a>
                 @elseif ($isLifetime)
-                    <a href="{{ route('login') }}" class="w-full text-center px-6 py-3.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[14px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider">
-                        Obtener acceso Lifetime
+                    <a href="{{ $planCtaUrl }}" class="w-full text-center px-6 py-3.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[14px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider">
+                        {{ ($isStaticDemo ?? false) ? 'Explorar Demo Pro' : 'Obtener acceso Lifetime' }}
                     </a>
                 @else
                     <a
-                        href="{{ route('login') }}"
+                        href="{{ $planCtaUrl }}"
                         class="w-full text-center px-6 py-3.5 bg-[#0F1E36] hover:bg-[#162A45] border border-[#A4D8FF]/40 text-[14px] font-mono font-bold text-[#A4D8FF] shadow-brutal hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all uppercase tracking-wider"
                     >
-                        Elegir Pro
+                        {{ ($isStaticDemo ?? false) ? 'Ver Demo Pro' : 'Elegir Pro' }}
                     </a>
                 @endif
             </div>

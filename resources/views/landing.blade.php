@@ -23,8 +23,8 @@
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="{{ route('login') }}" class="w-full sm:w-auto px-8 py-4 bg-navy-dark hover:bg-navy-light border border-icy/40 text-[15px] font-mono font-bold text-icy shadow-brutal hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
-                Analizar mi primer contrato
+            <a href="{{ ($isStaticDemo ?? false) ? route('demo.dashboard') : route('login') }}" class="w-full sm:w-auto px-8 py-4 bg-navy-dark hover:bg-navy-light border border-icy/40 text-[15px] font-mono font-bold text-icy shadow-brutal hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
+                {{ ($isStaticDemo ?? false) ? 'Explorar Demo Pro' : 'Analizar mi primer contrato' }}
             </a>
             <a href="#planes" class="w-full sm:w-auto px-8 py-4 bg-gunmetal-dark border-2 border-gunmetal hover:bg-navy-light text-[15px] font-mono font-bold text-icy shadow-brutal hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
                 Ver planes
@@ -67,12 +67,18 @@
                 Comienza gratis con 3 documentos al mes. Escala a Pro o Lifetime cuando necesites más capacidad.
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="{{ route('register') }}" class="inline-flex px-8 py-4 bg-navy-dark hover:bg-navy-light border border-icy/40 text-[15px] font-mono font-bold text-icy shadow-brutal hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
-                    Crear cuenta gratis
-                </a>
-                <a href="{{ route('dashboard') }}" class="inline-flex px-8 py-4 bg-gunmetal-dark border-2 border-gunmetal hover:bg-navy-light text-[15px] font-mono font-bold text-icy shadow-brutal hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
-                    Ir al panel
-                </a>
+                @if($isStaticDemo ?? false)
+                    <a href="{{ route('demo.dashboard') }}" class="inline-flex px-8 py-4 bg-navy-dark hover:bg-navy-light border border-icy/40 text-[15px] font-mono font-bold text-icy shadow-brutal hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
+                        Ir al Dashboard Demo Pro
+                    </a>
+                @else
+                    <a href="{{ route('register') }}" class="inline-flex px-8 py-4 bg-navy-dark hover:bg-navy-light border border-icy/40 text-[15px] font-mono font-bold text-icy shadow-brutal hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
+                        Crear cuenta gratis
+                    </a>
+                    <a href="{{ route('dashboard') }}" class="inline-flex px-8 py-4 bg-gunmetal-dark border-2 border-gunmetal hover:bg-navy-light text-[15px] font-mono font-bold text-icy shadow-brutal hover:-translate-x-px hover:-translate-y-px active:translate-x-px active:translate-y-px active:shadow-none transition-all uppercase tracking-wider">
+                        Ir al panel
+                    </a>
+                @endif
             </div>
         </div>
     </section>

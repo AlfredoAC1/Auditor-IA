@@ -1,59 +1,178 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Auditor-IA — Plataforma SaaS de Auditoría y Análisis Legal con IA
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Auditor-IA** es una plataforma SaaS multi-tenant desarrollada en **Laravel 12** y **PHP 8.3** diseñada para democratizar la comprensión y auditoría de documentos legales en Chile. Permite subir contratos y documentos legales en formato **PDF** o **DOCX** de forma segura y obtener análisis estructurados generados por Inteligencia Artificial: resúmenes ejecutivos, desglose cláusula por cláusula con detección de cláusulas abusivas, evaluación de riesgos con referencia a normativa chilena (Código Civil, Código del Trabajo, Ley 19.496, Ley 18.101), recomendaciones prácticas y explicaciones en lenguaje claro.
 
-## About Laravel
+> **Manual de Despliegue:** Para instrucciones detalladas de puesta en producción (VPS/Linux, Nginx, Supervisor, PostgreSQL + `pgvector`, Redis, Unstructured API y demo estática en Vercel), consulta el archivo **[`DEPLOYMENT.md`](DEPLOYMENT.md)**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Funcionalidades Principales
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Subida Segura y Aislamiento Multi-Tenant:**
+  - Validación estricta de archivos PDF/DOCX (`UploadDocumentRequest`), límite configurable (50 MB por defecto) y cálculo de hash SHA-256 para integridad.
+  - Almacenamiento en disco privado aislado por organización (`documents/{organization_id}/{year}/{month}/{uuid}`) mediante `DocumentStorageService`.
+- **Parsing Documental Estructurado:**
+  - Extracción semántica de texto y elementos estructurales (`Title`, `NarrativeText`, `ListItem`, `Table`) vía **Unstructured API** (`DocumentParsingService`).
+- **Motor Multi-Proveedor de IA (`LlmServiceResolver`):**
+  - **Tier Free:** Inferencia ultrarrápida mediante **Cerebras** (`gpt-oss-20b`) con retención automática de documentos por 7 días (`documents:prune-free`).
+  - **Tiers Pro y Lifetime:** Acceso a modelos avanzados en **Qwen Cloud / DashScope** (`qwen3-14b`, `qwen3-max`, `qwen3.5-flash`, `qwen-3.7-flash`) agrupados por niveles (`lightweight`, `standard`, `advanced`, `premium`).
+  - **Soporte Extensible y Fallback:** Adaptadores compatibles con OpenAI para **Groq**, **NVIDIA NIM** (con limitación de tasa vía `RateLimitedAdapter`), **DeepSeek** y **Azure OpenAI**.
+- **Análisis Contextual Multi-Documento:**
+  - Posibilidad de adjuntar documentos de respaldo (anexos, adendas, modificaciones) a un análisis existente (`AnalysisSupportingDocument`) y ejecutar un re-análisis contextual combinado (`ProcessAncillaryAnalysisJob`).
+- **Economía de Créditos de IA Auditada:**
+  - Sistema de cuotas y libro mayor inmutable de doble entrada (`AiCreditService`, `AiCreditLedger`, `CreditTransaction`) para registrar recargas y consumos por organización.
+- **Panel de Administración y Soporte:**
+  - Gestión de usuarios, activación/suspensión de organizaciones, auditoría de análisis globales, métricas de plataforma y gestión de tickets de soporte (`BugTicket`).
+- **API REST Versionada (`/api/v1`):**
+  - Endpoints protegidos con **Laravel Sanctum** y rate limiting para gestionar documentos, disparar parsing, consultar modelos/créditos y ejecutar análisis.
+- **Modo Demo Interactivo:**
+  - Vista previa funcional en `/demo` y capacidad de exportar un bundle estático sin dependencias de base de datos para **Vercel** (`composer demo:build`).
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Arquitectura y Flujo de Funcionamiento
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+El procesamiento de documentos se ejecuta de manera completamente **asíncrona** para evitar bloqueos HTTP y garantizar escalabilidad:
 
-## Laravel Sponsors
+```mermaid
+flowchart LR
+    A[Usuario sube PDF / DOCX] --> B[StoreDocumentAction]
+    B --> C[DocumentStorageService\nDisco Privado / S3]
+    B --> D[(PostgreSQL\nEstado: pending)]
+    B --> E[ProcessDocumentJob\nCola Redis: documents]
+    E --> F[DocumentParsingService\nUnstructured API]
+    F --> G[LlmServiceResolver\nCerebras / Qwen Cloud]
+    G --> H[AiCreditService\nDescuento y Auditoría]
+    H --> I[(PostgreSQL\nDocumentAnalysis + Estado: processed)]
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Organización del Código (`app/`)
 
-### Premium Partners
+| Directorio | Responsabilidad |
+|---|---|
+| `app/Actions/` | Casos de uso encapsulados (registro, subida/eliminación de documentos, tickets, gestión admin). |
+| `app/DTOs/` | Objetos de transferencia tipados entre controllers, actions y services. |
+| `app/Enums/` | Estados y enumeraciones tipadas (`UserRole`, `SubscriptionStatus`, `CreditTransactionType`, etc.). |
+| `app/Http/Controllers/` | Controladores web, panel `/admin` y API REST (`Api/V1/`), delegando lógica a Actions/Services. |
+| `app/Http/Requests/` | Validación y autorización de entrada mediante Form Requests. |
+| `app/Jobs/Documents/` | Jobs asíncronos (`ProcessDocumentJob`, `ProcessAncillaryAnalysisJob`). |
+| `app/Models/` | Modelos Eloquent con aislamiento por organización (`Organization`, `Document`, `DocumentAnalysis`, `LawEmbedding`, etc.). |
+| `app/Policies/` | Autorización granular por recurso y tenant (`DocumentPolicy`, `DocumentAnalysisPolicy`, etc.). |
+| `app/Services/` | Lógica de negocio: `Documents/`, `LLM/` (adaptadores y prompt builders), `Billing/`, `Admin/`, `System/`. |
+| `app/Console/Commands/` | Comandos Artisan (`services:check`, `documents:prune-free`, `demo:build-static`). |
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## Stack Tecnológico
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **Backend:** Laravel 12, PHP `^8.2` (recomendado `8.3+`), Laravel Sanctum 4
+- **Base de Datos:** PostgreSQL 15+ con extensión `pgvector` (preparado para RAG en `law_embeddings`)
+- **Colas y Caché:** Redis (`phpredis`)
+- **Frontend:** Blade, Tailwind CSS v4, Vite 7
+- **Parsing Documental:** Unstructured API (Cloud o Docker self-hosted)
+- **Proveedores LLM:** Cerebras, Qwen Cloud (DashScope), Groq, NVIDIA NIM, DeepSeek, Azure OpenAI
+- **Testing & Calidad:** PHPUnit 11, Laravel Pint, Laravel Pail
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Instalación y Uso en Local (Desarrollo)
 
-## Security Vulnerabilities
+### 1. Requisitos previos
+- PHP `8.2+` (con extensiones `pdo_pgsql`, `pgsql`, `redis`, `mbstring`, `fileinfo`, `openssl`)
+- Composer 2
+- Node.js `20+` y npm
+- PostgreSQL (con extensión `pgvector` instalada)
+- Redis en ejecución
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2. Configuración inicial
 
-## License
+```bash
+# Clonar repositorio
+git clone <URL_DEL_REPOSITORIO> auditor-ia
+cd auditor-ia
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Instalar dependencias PHP y JS
+composer install
+npm install
+
+# Configurar entorno
+cp .env.example .env
+php artisan key:generate
+```
+
+Edita `.env` con tus credenciales locales de PostgreSQL, Redis, Unstructured API y al menos una API Key de LLM (por ejemplo `CEREBRAS_API_KEY`, `GROQ_API_KEY` o `QWEN_API_KEY`).
+
+### 3. Base de datos y datos de demostración
+
+```bash
+# Ejecutar migraciones (habilita pgvector y crea todas las tablas)
+php artisan migrate
+
+# Poblar planes, modelos de IA, usuarios demo y usuario administrador
+php artisan db:seed
+```
+
+El seeder crea las siguientes cuentas de prueba (contraseña: `password`):
+- **Usuario Free:** `free@auditor-ia.test`
+- **Usuario Pro:** `pro@auditor-ia.test`
+- **Administrador:** `admin@auditor-ia.test`
+
+### 4. Levantar el entorno de desarrollo
+
+El proyecto incluye un script en `composer.json` que inicia simultáneamente el servidor web, el worker de colas, los logs en tiempo real (Pail) y Vite:
+
+```bash
+composer dev
+```
+
+Accede a la aplicación en [http://127.0.0.1:8000](http://127.0.0.1:8000) o a la vista previa demo en [http://127.0.0.1:8000/demo](http://127.0.0.1:8000/demo).
+
+### 5. Comandos útiles
+
+```bash
+# Verificar conectividad con proveedores LLM y Unstructured API
+php artisan services:check
+
+# Ejecutar la suite de pruebas automatizadas
+composer test
+
+# Compilar bundle estático de demo para Vercel (carpeta vercel-dist/)
+composer demo:build
+
+# Limpiar documentos expirados del plan Free (ejecutado diariamente por el scheduler)
+php artisan documents:prune-free --days=7
+```
+
+---
+
+## Endpoints Principales de la API (`v1`)
+
+Todas las rutas bajo `/api/v1` requieren autenticación Bearer mediante **Laravel Sanctum** (`auth:sanctum`) y cuentan con rate limiting (`throttle:api`):
+
+- `GET /api/v1/documents` — Listar documentos de la organización autenticada.
+- `POST /api/v1/documents` — Subir un nuevo documento PDF/DOCX.
+- `GET /api/v1/documents/{document}` — Ver detalle y estado de un documento.
+- `POST /api/v1/documents/{document}/parse` — Ejecutar parsing del documento.
+- `GET /api/v1/documents/{document}/parsed` — Obtener contenido estructurado extraído.
+- `GET /api/v1/ai-models` — Listar modelos de IA disponibles y créditos.
+- `POST /api/v1/documents/{document}/analyze` — Iniciar análisis legal con IA.
+- `GET /api/v1/documents/{document}/analyses` — Listar análisis de un documento.
+- `POST /api/v1/analyses/{analysis}/supporting-documents` — Adjuntar documento de respaldo.
+- `POST /api/v1/analyses/{analysis}/analyze-with-context` — Ejecutar re-análisis contextual.
+
+---
+
+## Documentación Adicional del Proyecto
+
+- **[`DEPLOYMENT.md`](DEPLOYMENT.md)** — Manual completo de despliegue en producción (Linux/VPS, Nginx, Supervisor, PostgreSQL/pgvector, Unstructured Docker, Supabase/S3 y Vercel).
+- [`PROJECT_DEFENSE_DOCUMENTATION.md`](PROJECT_DEFENSE_DOCUMENTATION.md) — Documentación técnica integral del sistema, arquitectura, seguridad, cumplimiento legal y modelo de negocio.
+- [`CLASS_DIAGRAM.md`](CLASS_DIAGRAM.md) — Diagrama de clases de la aplicación.
+- [`USER_STORIES_AND_USE_CASES.md`](USER_STORIES_AND_USE_CASES.md) / [`USE_CASES.md`](USE_CASES.md) — Historias de usuario y casos de uso.
+- [`TEST_SUITE.md`](TEST_SUITE.md) — Detalle de la suite de pruebas automatizadas.
+- [`Auditor-IA_Document_Security_Checklist.md`](Auditor-IA_Document_Security_Checklist.md) / [`PENTESTING_CHECKLIST.md`](PENTESTING_CHECKLIST.md) — Listas de verificación de seguridad y pentesting.
+
+---
+
+## Licencia
+
+Este proyecto está licenciado bajo la licencia [MIT](https://opensource.org/licenses/MIT).

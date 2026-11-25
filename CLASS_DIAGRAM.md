@@ -661,7 +661,7 @@ classDiagram
 3. Si se abre el **Model Wizard** (*Start Here*), ciérralo sin seleccionar plantillas: construiremos todo desde cero.
 4. Abre la ventana **Browser** (`Alt+0`) si no está visible.
 
-- [ ] Hecho
+- [X] Hecho
 
 ### 2.2 Estructura de paquetes
 
@@ -677,7 +677,7 @@ classDiagram
 | P4 | `Base de Conocimiento` | `LawEmbedding` |
 | P5 | `Soporte` | `BugTicket`, `BugTicketStatus` |
 
-- [ ] Hecho
+- [X] Hecho
 
 ### 2.3 Crear el diagrama
 
@@ -688,7 +688,7 @@ classDiagram
    - Pestaña **Elements** (o *Features* según la build): activa *Show Attributes*, *Show Operations*, *Show Element Stereotypes* y *Show Feature Stereotypes*. En *Operations* elige mostrar parámetros con nombre y tipo.
    - Pestaña **Connectors**: activa *Show Stereotype Labels*.
 
-- [ ] Hecho
+- [X] Hecho
 
 ### 2.4 Tipos de datos (opcional)
 
@@ -741,7 +741,7 @@ EA acepta **texto libre** en el campo *Type* de atributos y parámetros, así qu
 | `canManageSettings` | — | `bool` |
 | `canMutateDocuments` | — | `bool` |
 
-- [ ] Hecho
+- [X] Hecho
 
 #### E2 · `SubscriptionStatus` — Paquete P2 · [SubscriptionStatus.php](app/Enums/SubscriptionStatus.php)
 
@@ -758,7 +758,7 @@ EA acepta **texto libre** en el campo *Type* de atributos y parámetros, así qu
 | `label` | — | `string` |
 | `allowsUsage` | — | `bool` |
 
-- [ ] Hecho
+- [X] Hecho
 
 #### E3 · `UsageType` — Paquete P2 · [UsageType.php](app/Enums/UsageType.php)
 
@@ -773,7 +773,7 @@ EA acepta **texto libre** en el campo *Type* de atributos y parámetros, así qu
 | `label` | — | `string` |
 | `unit` | — | `string` |
 
-- [ ] Hecho
+- [X] Hecho
 
 #### E4 · `AiModelTier` — Paquete P2 · [AiModelTier.php](app/Enums/AiModelTier.php)
 
@@ -804,7 +804,7 @@ EA acepta **texto libre** en el campo *Type* de atributos y parámetros, así qu
 | `label` | — | `string` |
 | `approximateDays` | — | `int` |
 
-- [ ] Hecho
+- [X] Hecho
 
 #### E6 · `CreditTransactionType` — Paquete P2 · [CreditTransactionType.php](app/Enums/CreditTransactionType.php)
 
@@ -822,7 +822,7 @@ EA acepta **texto libre** en el campo *Type* de atributos y parámetros, así qu
 | `isCredit` | — | `bool` |
 | `isDebit` | — | `bool` |
 
-- [ ] Hecho
+- [X] Hecho
 
 #### E7 · `DocumentStatus` — Paquete P3 · [DocumentStatus.php](app/Enums/DocumentStatus.php)
 
@@ -842,7 +842,7 @@ EA acepta **texto libre** en el campo *Type* de atributos y parámetros, así qu
 > [!TIP]
 > Las transiciones válidas son `Pending → Processing | Failed`, `Processing → Processed | Failed`, `Failed → Pending` (reintento) y `Processed` es terminal. Si quieres documentarlas, agrega una **Note** enlazada al enum, o modela una máquina de estados separada (fuera del alcance de este diagrama).
 
-- [ ] Hecho
+- [X] Hecho
 
 #### E8 · `DocumentType` — Paquete P3 · [DocumentType.php](app/Enums/DocumentType.php)
 
@@ -868,7 +868,7 @@ EA acepta **texto libre** en el campo *Type* de atributos y parámetros, así qu
 | `label` | — | `string` |
 | `description` | — | `string` |
 
-- [ ] Hecho
+- [X] Hecho
 
 #### E9 · `AnalysisType` — Paquete P3 · [AnalysisType.php](app/Enums/AnalysisType.php)
 
@@ -886,7 +886,7 @@ EA acepta **texto libre** en el campo *Type* de atributos y parámetros, así qu
 | `label` | — | `string` |
 | `description` | — | `string` |
 
-- [ ] Hecho
+- [X] Hecho
 
 #### E10 · `BugTicketStatus` — Paquete P5 · [BugTicketStatus.php](app/Enums/BugTicketStatus.php)
 
@@ -900,7 +900,7 @@ EA acepta **texto libre** en el campo *Type* de atributos y parámetros, así qu
 | `label` | — | `string` |
 | `badgeClasses` | — | `string` |
 
-- [ ] Hecho
+- [X] Hecho
 
 ---
 
